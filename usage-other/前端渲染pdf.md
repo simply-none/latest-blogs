@@ -14,7 +14,14 @@
 5. pdfh5：能直接展示，但渲染慢
 
 直接使用html元素渲染pdf：
-  1. pdfjs部署，并用iframe嵌套，`<iframe src="http://127.0.0.1:5500/web/viewer.html?file=http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" width="100%" height="1000px"></iframe>`
+  1. pdfjs部署，并用iframe嵌套，
+  ```html
+   <iframe src="http://127.0.0.1:5500/web/viewer.html?file=http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" width="100%" height="1000px"></iframe>
+
+   <!-- mozilla pdf在线渲染 -->
+   <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" width="100%" height="1000px"></iframe>
+
+   ```
   2. 直接使用embed：`<embed src="http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" type="application/pdf" width="100%" height="1000px">`
 
 ### 插件渲染用法及试错
