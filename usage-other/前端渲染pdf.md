@@ -2,9 +2,7 @@
 
 > 参考链接：https://www.i4k.xyz/article/m0_37903882/113320701
 
-## 字体缺失问题总结
-
-### 前提概要
+### 渲染方式
 
 直接按照文档进行引入时，会发现有字体缺少的情况（pdfh5除外）
 
@@ -19,7 +17,7 @@
   1. pdfjs部署，并用iframe嵌套，`<iframe src="http://127.0.0.1:5500/web/viewer.html?file=http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" width="100%" height="1000px"></iframe>`
   2. 直接使用embed：`<embed src="http://localhost:21212/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%20(Thomas%20H.Cormen)%20(z-lib.org).pdf" type="application/pdf" width="100%" height="1000px">`
 
-#### 用法
+### 插件渲染用法及试错
 
 > vue-pdf-embed、vue-pdf-app、pdfh5的使用请见官方文档
 
