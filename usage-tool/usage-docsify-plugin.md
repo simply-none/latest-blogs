@@ -24,7 +24,7 @@ graph LR
 ## 展示pdf
 
 ```pdf
-/_media/1.pdf
+../_media/1.pdf
 ```
 
 ## 展示提示样式
