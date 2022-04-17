@@ -68,7 +68,7 @@
       window.$docsify = {
         timeUpdater: {
           text: ">最后更新时间: {docsify-updated}",
-          formatUpdated: "{YYYY}/{MM}/{DD}",
+          formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}",
           whereToPlace: "bottom",
         },
         // 阅读进度
@@ -79,8 +79,8 @@
         },
         // 页脚增强
         footer: {
-          copy: '<span>解璎 &copy; 2022</span>',
-          auth: 'by 解璎',
+          copy: '<span>内容整理权归解璎所有&copy; 2022</span>',
+          auth: '',
           pre: '<hr/>',
           style: 'text-align: right;',
         },
@@ -283,17 +283,6 @@
             },
           },
         },
-        plugins: [
-          function (hook, vm) {
-            hook.beforeEach(function (html) {
-              return (
-                html +
-                '\n\n----\n\n' +
-                '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by docsify</a>'
-              );
-            })
-          },
-        ],
       };
     </script>
     <script src="./3rdParty/js/docsify.min.js"></script>
@@ -346,8 +335,7 @@
       border-radius: 0;
       outline: 0;
       font-size: 0.6em;
-      background: grey;
-      background: red;
+      background: #767676;
       color: #fff;
       opacity: 0;
     }
