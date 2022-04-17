@@ -13,7 +13,7 @@
   - [npm操作](usage-tool/npm%E6%93%8D%E4%BD%9C.md)
 
 - 其他工作相关
-  - [前端渲染pdf字体缺失问题总结](usage-other/%E5%89%8D%E7%AB%AF%E6%B8%B2%E6%9F%93pdf%E5%AD%97%E4%BD%93%E7%BC%BA%E5%A4%B1%E9%97%AE%E9%A2%98.md)
+  - [前端渲染pdf](usage-other/%E5%89%8D%E7%AB%AF%E6%B8%B2%E6%9F%93pdf.md)
 
 - 使用docsify plugin
   - [使用docsify plugin](usage-tool/usage-docsify-plugin.md)
