@@ -18,7 +18,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
     />
-    <link rel="stylesheet" href="./3rdParty/css/toc.css">
     <link
       rel="stylesheet"
       href="./3rdParty/css/vue.css"
@@ -42,12 +41,6 @@
       title="pure"
       disabled
     />
-    <link rel="stylesheet" href="./3rdParty/css/fontawesome.css" />
-    <link rel="stylesheet" href="./3rdParty/css/brands.css" />
-    <link rel="stylesheet" href="./3rdParty/css/regular.css" />
-    <link rel="stylesheet" href="./3rdParty/css/solid.css" />
-    <link rel="stylesheet" href="./3rdParty/css/docsify-dark-mode.css" />
-    <link rel="stylesheet" href="./3rdParty/css/sidebar.min.css" />
     <style>
       nav.app-nav li ul {
         min-width: 100px;
@@ -58,53 +51,38 @@
   <body>
     <div id="app">Loading ...</div>
     <script>
+      var defaultOptions = {
+          countable: true,
+          position: "top",
+          margin: "10px",
+          float: "right",
+          fontsize: "0.9em",
+          color: "rgb(90,90,90)",
+          language: "english",
+          isExpected: true,
+          text: ">Last Modify: {docsify-updated}",
+          formatUpdated: "{YYYY}/{MM}/{DD}",
+          whereToPlace: "bottom",
+      }
       // Docsify configuration
       window.$docsify = {
         timeUpdater: {
           text: ">最后更新时间: {docsify-updated}",
           formatUpdated: "{YYYY}/{MM}/{DD}",
-          whereToPlace: "top",
+          whereToPlace: "bottom",
         },
         // 阅读进度
         progress: {
           position: "top",
-          color: "var(--theme-color,#42b983)",
+          color: "#42b983",
           height: "3px",
-        },
-        // 添加右上角图标
-        corner: {
-          url: "https://github.com/simply-none/latest-blogs",
-          // you can set the image link here  
-          icon: "https://github.githubassets.com/images/icons/emoji/unicode/1f48a.png",
-          // the size of the image  
-          width: 80,
-          height: 80
-        },
-        // 暗黑模式
-        darkMode: {
-          dark: {
-            background: "#1c2022",
-            toggleBtnBg: "#34495e",
-            textColor: "#b4b4b4"
-          },
-          light: {
-            background: "white",
-            toggleBtnBg: "var(--theme-color)",
-            textColor: "var(--theme-color)"
-          }
         },
         // 页脚增强
         footer: {
-          copy: '<span>解璎 &copy; 2020</span>',
+          copy: '<span>解璎 &copy; 2022</span>',
           auth: 'by 解璎',
           pre: '<hr/>',
           style: 'text-align: right;',
-        },
-        // todo
-        toc: {
-          scope: '.markdown-section',
-          headings: 'h1, h2, h3, h4, h5, h6',
-          title: '章节目录',
         },
         // 配置样式
         'flexible-alerts': {
@@ -169,16 +147,6 @@
               if(pdf_renderer(code, lang, true)){
                 return pdf_renderer(code, lang, false);
               }
-              /* SECTION START: Put other custom code rendering functions here
-                i.e. If the language of the code block is LaTex, 
-                put the code below to replace original code block with the text: 
-                'Using LaTex is much better than handwriting!' inside a div container.
-
-                if (lang == "latex") {
-                  return ('<div class="container">Using LaTex is much better than handwriting!</div>');
-                }
-
-              SECTION END */
               return (base ? base : this.origin.code.apply(this, arguments));
             }
           }
@@ -204,10 +172,18 @@
           tabHeadings: true       // default
         },
         count:{
-          countable:true,
+          countable: true,
+          position: 'bottom',
+          margin: '10px',
+          float: 'right',
           fontsize:'0.9em',
           color:'rgb(90,90,90)',
-          language:'chinese'
+          language:'chinese',
+          localization: {
+            words: "",
+            minute: ""
+          },
+          isExpected: true
         },
         copyCode: {
           buttonText: {
@@ -234,7 +210,7 @@
         mergeNavbar: true,
         maxLevel: 5,
         subMaxLevel: 5,
-        sidebarDisplayLevel: 1,
+        // sidebarDisplayLevel: 1,
         ga: 'UA-106147152-1',
         matomo: {
           host: '//matomo.thunderwave.de',
@@ -329,24 +305,19 @@
     <script src="./3rdParty/js/prism-php.min.js"></script>
     <script src="./3rdParty/js/zoom-image.min.js"></script>
     <script src="./3rdParty/js/docsify-copy-code.min.js"></script>
+    <script src="./3rdParty/js/time-updater.min.js"></script>
     <script src="./3rdParty/js/countable.js"></script>
     <script src="./3rdParty/js/docsify-tabs@1.js"></script>
     <script src="./3rdParty/js/docsify-plantuml.min.js"></script>
     <script src="./3rdParty/js/pdfobject.min.js"></script>
     <script src="./3rdParty/js/docsify-pdf-embed.js"></script>
     <script src="./3rdParty/js/docsify-plugin-flexible-alerts.min.js"></script>
-    <script src="./3rdParty/js/toc.js"></script>
-    <script src="./3rdParty/js/docsify-fontawesome.min.js"></script>
     <script src="./3rdParty/js/docsify-themeable.min.js"></script>
     <script src="./3rdParty/js/docsify-footer-enh.min.js"></script>
-    <script src="./3rdParty/js/docsify-dark-mode.js"></script>
     <script src="./3rdParty/js/mermaid.js"></script>
     <script src="./3rdParty/js/docsify-mermaid.js"></script>
     <script src="./3rdParty/js/pangu.min.js"></script>
-    <script src="./3rdParty/js/docsify-corner.min.js"></script>
-    <script src="./3rdParty/js/docsify-sidebar-collapse.min.js"></script>
     <script src="./3rdParty/js/progress.min.js"></script>
-    <script src="./3rdParty/js/time-updater.min.js"></script>
     <script>mermaid.initialize({ startOnLoad: true });</script>
 
     <script>

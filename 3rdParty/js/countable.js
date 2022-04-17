@@ -1,14 +1,14 @@
 //default values
-var defaultOptions = {
-    countable: true,
-    position: "top",
-    margin: "10px",
-    float: "right",
-    fontsize: "0.9em",
-    color: "rgb(90,90,90)",
-    language: "english",
-    isExpected: true,
-}
+// const defaultOptions = {
+//     countable: true,
+//     position: "top",
+//     margin: "10px",
+//     float: "right",
+//     fontsize: "0.9em",
+//     color: "rgb(90,90,90)",
+//     language: "english",
+//     isExpected: true,
+// }
 
 // Docsify plugin functions
 function plugin(hook, vm) {
@@ -33,20 +33,17 @@ function plugin(hook, vm) {
         //add html string
         next(
             `
-        ${defaultOptions.position === "bottom" ? html : ""}
-        <div style="margin-${defaultOptions.position ? "bottom" : "top"}: ${
-                defaultOptions.margin
-            };">
+        <div style="margin-top: 10px !important; position: absolute; top: 0; right: 0; padding-top: 30px; color: #c8c8c8;">
             <span style="
-                  float: ${defaultOptions.float === "right" ? "right" : "left"};
-                  font-size: ${defaultOptions.fontsize};
-                  color:${defaultOptions.color};">
+                  float: 'right';
+                  font-size: '0.9em';
+                  color:'rgb(90,90,90)'">
             ${str}
             ${defaultOptions.isExpected ? `&nbsp; | &nbsp;${readTime}` : ""}
             </span>
             <div style="clear: both"></div>
         </div>
-        ${defaultOptions.position !== "bottom" ? html : ""}
+        ${html}
         `
         )
     })
