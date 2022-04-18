@@ -10,4 +10,4 @@
 
 [GitHub](https://github.com/simply-none/latest-blogs/)
 [Gitee](https://Gitee.com/simply-none/latest-blogs/)
-[Getting Started](#解璎的学习日记)
+[Getting Started](/dicts/dict)

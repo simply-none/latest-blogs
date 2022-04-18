@@ -61,3 +61,148 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 ### `homepage`
 
 `homepage`字段是一个链接到项目主页是字符串url
+
+### `bugs`
+
+`bugs`字段是一个链接到项目issue的url，或者是一个记录issue的邮箱地址。可以提供一个或两个值（使用对象的方式），如果只提供一个值，则使用字符串的形式；如果提供了url，则在项目根目录下运行`npm bugs`会自动打开跳转到这个网址
+
+```json
+"bugs": {
+  "url" : "https://github.com/owner/project/issues",
+  "email" : "project@hostname.com"
+}
+```
+
+### `license`
+
+`license`字段指定了项目的使用授权许可，以及一些其他项目所有者设置的约束。下面是一些使用案例：
+
+1. 使用一个[公共的许可证](https://spdx.org/licenses/)：
+```json
+{
+  "license" : "BSD-3-Clause"
+}
+```
+2. 使用多个公共的授权许可，可以使用一个包[SPDX license expression syntax version 2.0 string](https://www.npmjs.com/package/spdx)验证是否合法；
+```json
+{
+  "license" : "(ISC OR GPL-3.0)"
+}
+```
+3. 指定一个自定义的许可，使用字符串表示，这个自定义的许可必须包含一个文件，该文件放在根目录下；
+```json
+{
+  "license" : "SEE LICENSE IN <filename>"
+}
+```
+1. 若不想别人在其他项目中使用一个私有的和未发布的包，则赋值`UNLICENSED`字段即可，也可以使用`"private": true`阻止包的发布
+```json
+{
+  "license": "UNLICENSED"
+  // 或者
+  "private": true
+}
+```
+
+### people fileds
+
+当作者是一个人时，可以使用一个包含name，以及可选的url和email字段的author对象表示，或者将他们缩短成一个字段放进author字段中，npm将会解析author字段
+```json
+{
+  "name" : "Jade Qiu",
+  "email" : "admin@jadeQ.com",
+  "url" : "http://jadeQ.com/"
+}
+// 或者
+{
+  "author": "Jade Qiu <admin@jadeQ.com> (http://jadeQ.com/)"
+}
+```
+
+当作者是一群人时，可以使用一个数组形式的maintainers字段，或者contributors字段表示，数组元素和上面的author对象相类似
+```json
+{
+  "contributors": [
+    {
+      "name" : "Jade Qiu",
+      "email" : "admin@jadeQ.com",
+      "url" : "http://jadeQ.com/"
+    }
+  ]
+}
+```
+
+### `funding`
+
+`funding`可以指定一个有助于你开发的资助渠道的信息，可以是一个包含URL的对象，字符串，或者数组。可以使用`npm fund`列出项目中所有的依赖包的资助信息，也可以使用`npm fund <package_name>`的方式直接自动跳转到该依赖包的资助渠道网址（同时有多个，则将跳转第一个）
+
+```json
+{
+  // 一个对象
+  "funding": {
+    "type" : "individual",
+    "url" : "http://example.com/donate"
+  },
+  // 一个字符串
+  "funding": "http://example.com/donate",
+  // 一个数组
+  "funding": [
+    {
+      "type" : "individual",
+      "url" : "http://example.com/donate"
+    },
+    "http://example.com/donateAlso",
+    {
+      "type" : "patreon",
+      "url" : "https://www.patreon.com/my-account"
+    }
+  ]
+}
+```
+
+### `files`
+
+可选的`files`字段是包被当作依赖安装时包含的一些文件（夹），文件匹配规则和`.gitignore`类似，但是功能相反。忽略这个字段，默认为`['*']`，意味着将包含所有文件。  
+
+可以提供一个`.npmignore`文件（和`.gitignore`类似）放在根目录/子目录下，放在根目录不能覆盖`files`字段设置的值，放在子目录则可以，如果未设置该文件，默认是`.gitignore` ，包含在`files`字段下的文件不能被ignore排除
+
+不管`files`字段如何描述，一些特殊的文件将被包含或排除：
+1. 被包含的文件：`package.json`, `README`, `LICENSE`/`LICENCE`, 包含在`main`字段中的文件，其中`README`, `LICENSE`字段可以有任何的扩展
+2. 被排除的文件：`.git`, `CVS`, `.svn`, `.hg`, `.lock-wscript`, `.wafpickle-N`, `.*.swp`, `.DS_Store`, `._*`, `npm-debug.log`, `.npmrc`, `node_modules`, `config.gypi`, `*.orig`, `package-lock.json`，若`package-lock.json`想被发布，可以用`npm-shrinkwrap.json`代替（使用[npm shrinkwrap](https://docs.npmjs.com/cli/v8/configuring-npm/npm-shrinkwrap-json)命令创建，内容和`package-lock.json`一致，但是可发布）
+
+
+### `main`
+
+`main`字段设置了一个包的入口地址，如果包被安装引入`require()`，将会返回该入口文件的默认导出对象。入口地址是一个相对于根目录的地址，若未设置，则默认是根目录下的`index.js`；该字段表示在服务器端使用
+
+附：[browser，module，main 字段优先级](https://github.com/SunshowerC/blog/issues/8)
+
+1. 如果 npm 包导出的是 ESM 规范的包，使用 module
+2. 如果 npm 包只在 web 端使用，并且严禁在 server 端使用，使用 browser。
+3. 如果 npm 包只在 server 端使用，使用 main
+4. 如果 npm 包在 web 端和 server 端都允许使用，使用 browser 和 main
+
+### `browser`
+
+`browser`字段表示在客户端浏览器使用，这意味着可能会包含nodejs模块不可用的原始值，比如`window`
+
+### `bin`
+
+若想让包中的一些可执行脚本/程序安装在PATH中，可将这些脚本相对路径放在`bin`字段对象中
+
+使用方法是，全局安装这个包，若是本地项目，全局安装方法：在项目根目录下，使用命令`npm install . -g`或者`npm link`，全局安装的包，会生成一个`bin`对象下的所有脚本（脚本文件的开头第一行必须是`#!/usr/bin/env node`）命令存放在nodejs安装全局包的地方
+```json
+{
+  "bin": {
+    "myapp": "./cli.js"
+  }
+}
+```
+如果只有一个可执行文件，并且脚本名字是包名，则提供一个字符串即可：
+```json
+{
+  "name": "my-program",
+  "version": "1.2.5",
+  "bin": "./path/to/program"
+}
+```
