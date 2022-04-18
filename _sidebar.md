@@ -1,3 +1,6 @@
+- 单词表
+  - [英语单词表](dicts/dict.md)
+
 - 项目相关
   - [项目版本依赖升级](usage-project/项目版本升级.md)
   - [项目启动时依赖安装失败问题汇总](usage-project/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB.md)
@@ -11,6 +14,7 @@
 - 工具使用
   - [git操作](usage-tool/git%E6%93%8D%E4%BD%9C.md)
   - [npm操作](usage-tool/npm%E6%93%8D%E4%BD%9C.md)
+  - [pdfjs本地化部署](usage-tool/pdfjs本地部署.md)
 
 - 其他工作相关
   - [前端渲染pdf](usage-other/%E5%89%8D%E7%AB%AF%E6%B8%B2%E6%9F%93pdf.md)
