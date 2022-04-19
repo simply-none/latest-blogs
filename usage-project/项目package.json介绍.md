@@ -22,7 +22,7 @@
 
 ### `version`
 
-`version`字段必须可被[node-semver]([)](https://github.com/npm/node-semver)解析，node-semver作为一个依赖和npm绑定在一起（使用它：`npm install semver`）
+`version`字段必须可被[node-semver](https://github.com/npm/node-semver)解析，node-semver作为一个依赖和npm绑定在一起（使用它：`npm install semver`）
 
 ### `description`
 
