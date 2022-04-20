@@ -7,6 +7,7 @@
   - [项目package.json介绍](usage-project/%E9%A1%B9%E7%9B%AEpackage.json%E4%BB%8B%E7%BB%8D.md)
   - [项目git历史大文件删除追踪](usage-project/git%E5%8E%86%E5%8F%B2%E5%A4%A7%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4%E8%BF%BD%E8%B8%AA.md)
   - [electron-vue依赖升级](usage-project/electron-vue%E4%BE%9D%E8%B5%96%E5%8D%87%E7%BA%A7.md)
+  - [vue-cli项目启动报错汇总](usage-project/vue-cli项目启动报错汇总.md)
 
 - 框架使用
   - [electron知识](usage-frame/electron%E7%9F%A5%E8%AF%86.md)
