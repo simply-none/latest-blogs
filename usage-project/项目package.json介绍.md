@@ -206,3 +206,64 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
   "bin": "./path/to/program"
 }
 ```
+
+### `man`
+
+> 不明之处，可查看npm的[package.json](https://registry.npmjs.org/npm/latest)
+
+`man`命令指定一个文件路径，或者一个文件路径数组，可通过命令`man xxx`找到，例如：
+```json
+{
+  "name": "foo",
+  "version": "1.2.3",
+  "description": "A packaged foo fooer for fooing foos",
+  "main": "foo.js",
+  // 一个文件时，直接使用man foo（主文件名字，不管路径名是什么）
+  "man": "./man/doc.1"
+  // 多个文件时，必须以数字后缀结尾，压缩文件必须以gz结尾，使用man foo和man foo-bar
+  "man": [
+    "./man/foo.1",
+    "./man/bar.1"
+  ]
+  // 也可以：man foo和man 2 foo
+  "man": [
+    "./man/foo.1",
+    "./man/foo.2"
+  ]
+}
+```
+
+### `directories`
+
+commonJS包规格使用`directories`表明包的结构，例如在[npm package.json](https://registry.npmjs.org/npm/latest)可看到它给doc、lib、man指定了路径
+
+如果在directories.bin中指定了一个bin目录，则里面的所有文件将被添加，由于bin指令的工作方式，不能够同时设置字符串形式的bin字段和directories.bin字段，若指定单个文件，则用bin字段，指定所有存在于bin目录的字段，则用directories.bin字段
+
+### `repository`
+
+`repository`字段指定了代码存放的网络地址，如果他是一个github的仓库，可以在目录下运行npm docs命令会自动打开浏览器跳到该地址。但是这个url必须是公共可访问的。如果是GitHub，GitHub gist，bitbucket，gitlab，可以直接在安装的时候使用短命令
+```json
+{
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm/cli.git"
+  }
+  // 短命令：
+  "repository": "npm/npm",
+  "repository": "github:user/repo",
+  "repository": "gist:11081aaa281",
+  "repository": "bitbucket:user/repo",
+  "repository": "gitlab:user/repo"
+}
+```
+
+如果包存放的地址并不在根目录，而是项目的一部分，则可以在`directory`字段中指定目录地址
+```json
+{
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react.git",
+    "directory": "packages/react-dom"
+  }
+}
+```
