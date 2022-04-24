@@ -12,8 +12,8 @@
 
 文档地址：
 
-> 安装地址：https://github.com/newren/git-filter-repo/blob/main/INSTALL.md
-> 手册地址https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html
+> 安装地址：https://github.com/newren/git-filter-repo/blob/main/INSTALL.md    
+> 手册地址https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html     
 
 ### 安装（针对 Windows）
 

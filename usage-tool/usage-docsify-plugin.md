@@ -23,8 +23,10 @@ graph LR
 
 ## 展示pdf
 
-```pdf
-https://simply-none.github.io/latest-blogs/_media/1.pdf
+```markdown
+# ```pdf
+# https://simply-none.github.io/latest-blogs/_media/1.pdf
+# ```
 ```
 
 ## 展示提示样式

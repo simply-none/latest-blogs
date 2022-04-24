@@ -23,3 +23,6 @@
 - 使用docsify plugin
   - [使用docsify plugin](usage-tool/usage-docsify-plugin.md)
 
+- 效率提升工具
+  - [电脑常用软件列表](usage-work-tool/电脑常用软件列表.md)
+  - [在任何地方使用沙拉查词](usage-work-tool/沙拉查词.md)
