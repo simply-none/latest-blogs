@@ -267,3 +267,23 @@ commonJS包规格使用`directories`表明包的结构，例如在[npm package.j
   }
 }
 ```
+
+### `scripts`
+
+`scripts`属性是一个包含各种脚本命令的字典，查看[详细信息](https://docs.npmjs.com/cli/v8/using-npm/scripts)
+
+### `config`
+
+`config`对象用于设置配置一个类环境变量参数，该参数可在程序代码中使用`npm_package_config_<name>`来引用
+
+```js
+// package.json
+{
+  "config": {
+    "port": "8080"
+  }
+}
+
+// vue.config.js
+const currentPost = process.env.npm_package_config_port
+```
