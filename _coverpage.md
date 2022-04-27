@@ -10,4 +10,4 @@
 
 [GitHub](https://github.com/simply-none/latest-blogs/)
 [Gitee](https://Gitee.com/simply-none/latest-blogs/)
-[Getting Started](/dicts/dict)
+[Getting Started](#每日十五谏)
