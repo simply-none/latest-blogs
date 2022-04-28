@@ -209,7 +209,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 
 ### `man`
 
-> 不明之处，可查看npm的[package.json](https://registry.npmjs.org/npm/latest)
+> 不明之处，可查看npm自身的[package.json](https://registry.npmjs.org/npm/latest)
 
 `man`命令指定一个文件路径，或者一个文件路径数组，可通过命令`man xxx`找到，例如：
 ```json
@@ -287,3 +287,118 @@ commonJS包规格使用`directories`表明包的结构，例如在[npm package.j
 // vue.config.js
 const currentPost = process.env.npm_package_config_port
 ```
+
+### `dependencies`
+
+该字段是一个包含了包名、包版本映射关系的对象，其中包版本可以是一个范围，也可以是一个可识别的包/git url。测试、转换、开发工具包应该放在`devDependencies`字段中
+
+包版本规则如下[1](https://github.com/npm/node-semver#versions)：
+- `version`：确切的版本号
+- `>version`：必须大于该版本号才生效
+- `>=version`, `<version`, `<=version`
+- `~version`：
+  - `~1.2.3` === `>=1.2.3 < 1.3.0-0`
+  - `~1.2` === `>=1.2.0 < 1.3.0-0` === `1.2.x`
+  - `~1` === `>=1.0.9 < 2.0.0-0` === `1.x`
+- `^version`：小于第一个非0数字（可为具体数字或者泛指x）出现的`num + 1`的版本
+  - `^1.2.3` === `>=1.2.3 < 2.0.0-0`
+  - `^0.2.3` === `>=0.2.3 < 0.3.0-0`
+  - `^0.0.3` === `>=0.0.3 < 0.0.4-0`
+  - `^0.0` === `>=0.0.0 < 0.1.0-0`
+- `1.2.x` === `>=1.2.0 < 1.3.0-0`
+- `http://xxx`：一个url，url作为包版本时，这个包将被下载并安装在本地
+- `*`, `""`：所有的版本号
+- `version1 - version2` === `[version1, version2]`
+- `range1 || range2`
+- `git...`：git url，需符合`<protocol>://[<user>[:<password>]@]<hostname>[:<port>][:][/]<path>[#<commit-ish> | #semver:<semver>]`，其中协议可以是`git`, `git+ssh`, `git+http`, `git+https`, `git+file`，`commit-ish`是一个确切的提交，`<semver>`是指版本规则，可运用所有包的规则
+- `user/repo`：GitHub url
+- `tag`
+- `path/path/path`：可以是本地路径
+
+```json
+// git url
+"express": "git+ssh://git@github.com:npm/cli.git#v1.0.27"
+"express": "git+ssh://git@github.com:npm/cli#semver:^5.0"
+"express": "git+https://isaacs@github.com/npm/cli.git"
+"express": "git://github.com/npm/cli.git#v1.0.27"
+
+// github url
+{
+  "name": "foo",
+  "version": "0.0.0",
+  "dependencies": {
+    "express": "expressjs/express",
+    "mocha": "mochajs/mocha#4727d357ea",
+    "module": "user/repo#feature\/branch"
+  }
+}
+
+// local path
+{
+  "name": "baz",
+  "dependencies": {
+    "bar": "file:../foo/bar"
+    "bar": "file:~/foo/bar"
+    "bar": "file:./foo/bar"
+    "bar": "file:/foo/bar"
+  }
+}
+
+### `peerDependencies`
+
+前提：插件运行的前提是核心依赖必须先下载安装，不能脱离核心单独引用
+
+解释：该字段规则和dependencies类似，当依赖包和本项目都依赖一个包A时，若都放在dependencies中时，该依赖包A将被下载多次，若放在peerDependencies中，则将下载一次（放在根目录的node modules中）；若包版本不一致产生错误，需自行修复
+
+### `override`
+
+### `engines`
+
+该字段指定了运行项目的环境，防止报错
+
+```json
+{
+  "engines": {
+    "node": ">=0.10.3 <15",
+    "npm": "~1.0.20"
+  }
+}
+```
+
+### `os`
+
+该字段指定了运行项目的环境，防止报错
+
+```json
+{
+  "os": [
+    "darwin",
+    "linux",
+    "!win32"
+  ]
+}
+```
+
+### `cpu`
+
+该字段指定了运行项目的环境，防止报错
+
+```json
+{
+  "cpu": [
+    "x64",
+    "ia32",
+    "!arm",
+    "!mips"
+  ]
+}
+```
+
+### `private`
+
+`private`字段设置为true时，将组织项目发布到包存储组织（比如npm）
+
+### `publishConfig`
+
+### `workspaces`
+
