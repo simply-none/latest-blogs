@@ -27,6 +27,7 @@ Z:/apps/Git/mingw64/libexec/git-core
 ```
 
 3. 安装 python3，将文件`git_filter_repo.py`复制到 python3 安装目录`Scripts`中
+4. 若使用过程中出现报错：`bash: /c/Users/username/AppData/Local/Microsoft/WindowsApps/python3: Permission denied`，则需要到该目录，删除`python.exe`和`python3.exe`，并且删掉环境变量path中的该路径
 
 ### 使用
 
