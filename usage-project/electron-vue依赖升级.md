@@ -10,7 +10,7 @@ NPM 6.14.15
 ## 启动Nodejs版本不同的项目介绍
 
 1. 使用nvm管理nodejs版本，下载：windows-nvm
-2. 打开某项目（比如sitir-electron）
+2. 打开某项目（比如electron-vue）
 3. 切换node版本：nvm use `[version-number]`
 4. 安装依赖：例如（npm install）
 5. 运行项目

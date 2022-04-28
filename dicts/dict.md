@@ -1189,4 +1189,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |satisfied|满意的，满足的，欣慰的，确信的，感到满意的，心满意足||
 |in place of|代替，取代，交换||
 |locally|在本地，局部地||
+|peer|仔细看，端详，费力地看；同龄人，同辈，同等地位的人||
+|ever|曾经，从来，总是，到底，永远，在任何时候||
 
