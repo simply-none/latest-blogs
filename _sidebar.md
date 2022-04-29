@@ -26,6 +26,7 @@
   - [Vue](code-frames/Vue.md)
 
 - 工具使用
+  - [前端开发工具库](usage-tool/前端开发工具库.md)
   - [git](usage-tool/git操作.md)
   - [npm](usage-tool/npm操作.md)
   - [babel](usage-tool/babel操作.md)
