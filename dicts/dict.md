@@ -1030,6 +1030,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |onward|向前的，前进的，发展的，（从某时起）一直|
 |elimination|消除，消灭，淘汰|**[ɪˌlɪmɪˈneɪʃn]**|
 |epithet|绰号，修饰符，别称|**['epɪ.θet]**|
+|post|邮政，岗位，职位；邮寄，发布，张贴；在之后|
 |postfix|加后缀于，把..加在后面|
 |alias|别名，假名|**['eɪliəs]**|
 |terribly|非常，很，极度地|
@@ -1191,4 +1192,5 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |locally|在本地，局部地||
 |peer|仔细看，端详，费力地看；同龄人，同辈，同等地位的人||
 |ever|曾经，从来，总是，到底，永远，在任何时候||
+|flush|（人的皮肤、脸）发红，冲洗，冲走；赶出隐藏地，使暴露；使发光，使流露；齐平地，正好地；刷新|
 
