@@ -1193,4 +1193,5 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |peer|仔细看，端详，费力地看；同龄人，同辈，同等地位的人||
 |ever|曾经，从来，总是，到底，永远，在任何时候||
 |flush|（人的皮肤、脸）发红，冲洗，冲走；赶出隐藏地，使暴露；使发光，使流露；齐平地，正好地；刷新|
+|emit|发出，射出，散发|
 
