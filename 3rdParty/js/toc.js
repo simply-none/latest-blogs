@@ -1,11 +1,11 @@
-var defaultOptions = {
-  headings: 'h1, h2',
-  scope: '.markdown-section',
+// var defaultOptions = {
+//   headings: 'h1, h2',
+//   scope: '.markdown-section',
 
-  // To make work
-  title: 'Contents',
-  listType: 'ul',  
-}
+//   // To make work
+//   title: 'Contents',
+//   listType: 'ul',  
+// }
 
 // Element builders
 var tocHeading = function(Title) {
@@ -123,7 +123,7 @@ function plugin(hook, vm) {
     if (content) {
       var nav = window.Docsify.dom.create("aside", "");
       window.Docsify.dom.toggleClass(nav, "add", "nav");
-      window.Docsify.dom.before(content, nav);
+      window.Docsify.dom.appendTo(content, nav);
     }
   });
 

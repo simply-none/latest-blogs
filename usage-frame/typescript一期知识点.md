@@ -72,15 +72,13 @@
     function sum (x: number, y: number): number {
       return x + y
     }
-
-    // 函数表达式，左边的是函数的定义(参数类型) => 返回值类型
+    // 函数表达式，左边的是函数的定义 (参数类型) => 返回值类型    
     let mySum: (x: number, y: number) => number = function (x: number, y: number): number {
       return x + y
     }
-
-    // 接口
+    // 接口   
     interface MySum {
-      // 和函数表达式类似，对等号左边的类型进行限制
+      // 和函数表达式类似，对等号左边的类型进行限制   
       (x: number, y: number): number;
     }
     let mySum: MySum = function (x: number, y: number): number {

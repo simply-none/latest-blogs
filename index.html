@@ -20,6 +20,10 @@
     />
     <link
       rel="stylesheet"
+      href="./3rdParty/css/toc.css"
+    />
+    <link
+      rel="stylesheet"
       href="./3rdParty/css/vue.css"
       title="vue"
     />
@@ -53,20 +57,35 @@
     <div id="app">Loading ...</div>
     <script>
       var defaultOptions = {
-          countable: true,
-          position: "top",
-          margin: "10px",
-          float: "right",
-          fontsize: "0.9em",
-          color: "rgb(90,90,90)",
-          language: "english",
-          isExpected: true,
-          text: ">Last Modify: {docsify-updated}",
-          formatUpdated: "{YYYY}/{MM}/{DD}",
-          whereToPlace: "bottom",
+        headings: 'h1, h2',
+        scope: '.markdown-section',
+        title: '',
+        listType: 'ul', 
+        countable: true,
+        position: "top",
+        margin: "10px",
+        float: "right",
+        fontsize: "0.9em",
+        color: "rgb(90,90,90)",
+        language: "english",
+        isExpected: true,
+        text: ">Last Modify: {docsify-updated}",
+        formatUpdated: "{YYYY}/{MM}/{DD}",
+        whereToPlace: "bottom",
       }
       // Docsify configuration
       window.$docsify = {
+        customPageTitle: {
+          prefix:     '解璎的学习日记',      // [optional] title prefix. default: false eg: prefix: "Application"
+          suffix:     '🔨 📚',      // [optional] title suffix. default: false eg: suffix: "v1.0.0"
+          seprator:   '-',        // [optional] seprator for title eg: title->   prefix | title | suffix
+          debug:      false,      // [optional] should debug
+        },
+        toc: {
+          scope: '.markdown-section',
+          headings: 'h1, h2, h3, h4, h5, h6',
+          title: '',
+        },
         timeUpdater: {
           text: ">最后更新时间: {docsify-updated}",
           formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}",
@@ -210,7 +229,7 @@
         // loadNavbar: true,
         mergeNavbar: true,
         maxLevel: 5,
-        subMaxLevel: 5,
+        subMaxLevel: 0,
         // sidebarDisplayLevel: 1,
         ga: 'UA-106147152-1',
         matomo: {
@@ -286,6 +305,7 @@
         },
       };
     </script>
+    <script src="//cdn.jsdelivr.net/npm/@sujaykumarh/docsify-plugin-title@1.x/dist/plugin.min.js"></script>
     <script src="./3rdParty/js/docsify.min.js"></script>
     <script src="./3rdParty/js/docsify-pagination.min.js"></script>
     <script src="./3rdParty/js/search.min.js"></script>
@@ -304,9 +324,10 @@
     <script src="./3rdParty/js/docsify-plugin-flexible-alerts.min.js"></script>
     <script src="./3rdParty/js/docsify-themeable.min.js"></script>
     <script src="./3rdParty/js/docsify-footer-enh.min.js"></script>
-    <script src="./3rdParty/js/mermaid.js"></script>
+    <script src="//unpkg.com/mermaid/dist/mermaid.js"></script>
     <script src="./3rdParty/js/docsify-mermaid.js"></script>
     <script src="./3rdParty/js/pangu.min.js"></script>
+    <script src="./3rdParty/js/toc.js"></script>
     <script src="./3rdParty/js/progress.min.js"></script>
     <script>mermaid.initialize({ startOnLoad: true });</script>
 
