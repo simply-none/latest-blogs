@@ -58,11 +58,15 @@
 
 ### 日志（log）
 
-- 统计git提交次数：`git log --author="xxx" --since='2018-10-01' --oneline | wc -l`
+- 统计总的git提交次数：`git log --oneline | wc -l`
+- 统计git提交次数（某人某段时间）：`git log --author="xxx" --since='2018-10-01' --oneline | wc -l`
 - 查看某文件的提交记录：`git log <file_name>`
 - 查看某文件的提交记录（只展示commit-id和提交信息）：`git log --pretty=oneline <file_name>`
 - 查看某文件每次提交的差异修改：`git log -p <file_name>`
 - 查看当前分支提交的树状图commit：`git log --graph`
+- 查看git所有的贡献人提交排名：`git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r`
+- 查看所有贡献人贡献的代码量：`git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done`
+- 查看某个贡献人贡献的代码量：`git log --author="<user_name>" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'`
 
 ### 综合应用
 
