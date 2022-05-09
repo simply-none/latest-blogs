@@ -17,11 +17,61 @@
 
 ## 常用操作
 
-1. git查看配置信息：`git config <--system | --global | --local> --list`
-2. 统计git提交次数：`git log --author="xxx" --since='2018-10-01' --oneline | wc -l`
+### 零散的
+
+- 对当前提交打标签：`git tag <version_name>`
+
+### 基本配置（config）
+
+- git查看配置信息：`git config <--system | --global | --local> --list`
+- git配置用户信息：`git config <--global | --local | --system> user.name|email xxx`
+
+### 分支相关（branch）
 
 
-## 新仓库操作
+- 创建分支：`git branch <branch>`
+- 切换分支：`git checkout <branch>`
+- 创建并切换分支：`git checkout -b <branch>`
+- 删除本地分支：先切换到其他分支`git checkout <other_branch>`，然后执行`git branch -d <local_branch>`，强制删除`git branch -D <lobal_branch>`
+- 删除远程分支：`git push origin --delete <origin_branch>`
+- 查看远程分支：`git branch -r`
+- 查看远程分支和本地分支：`git branch -a`
+- 删除远程分支：`git remote rm <origin_branch>`
+- 重命名远程分支：`git remote rename <origin_branch>`
+- 查看远程分支的地址：`git remote show origin`
+- 解除关联远程仓库：`git remote remove origin`
+- 关联远程仓库：`git remote add origin <new_branch>`
+
+### 提交、拉取（push、pull、fetch）
+
+- 一次性push所有的远程分支：`git push --all origin`
+- 一次性拉取远程所有代码：`git fetch --all`
+- 一次性push所有tags到远程分支：`git push origin --tags`
+- 多人协作防止出现无效的merge提交：`git pull --rebase origin <branch>`
+- 将远程的分支合并到当前的分支：`git pull origin <origin_branch>:<local_branch>`
+
+
+### 合并（merge）
+
+- 合并其他分支到当前分支，比如使当前分支不落后远程分支：`git merge origin/master`
+- 非快速合并，主要是防止master混入开发分支的一些新特性，在回滚时搅乱master的提交历史：`git merge --no-ff <dev_branch>`
+
+### 日志（log）
+
+- 统计git提交次数：`git log --author="xxx" --since='2018-10-01' --oneline | wc -l`
+- 查看某文件的提交记录：`git log <file_name>`
+- 查看某文件的提交记录（只展示commit-id和提交信息）：`git log --pretty=oneline <file_name>`
+- 查看某文件每次提交的差异修改：`git log -p <file_name>`
+- 查看当前分支提交的树状图commit：`git log --graph`
+
+### 综合应用
+
+git仓库迁移的方法：
+- 克隆一份裸仓库`git clone --bare old.git`，推送到新仓库`git push --mirror new.git`
+- 直接切换remote url，`git remote set-url origin new.git`，`git push --mirror`
+
+
+## 新仓库操作（提取自github）
 
 ```bash
 
