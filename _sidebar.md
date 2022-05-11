@@ -17,6 +17,7 @@
   - [CSS](usage-frame/CSS知识点.md)
   - [SCSS](usage-frame/SCSS知识点.md)
   - [Vue](usage-frame/Vue知识点.md)
+  - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
 
@@ -39,6 +40,7 @@
   - [webpack.config.js](usage-config/webpack.config.js.md)
   - [babel.config.js](usage-config/babel.config.js.md)
   - [tsconfig.json](usage-config/tsconfig.json.md)
+  - [eslintrc.js](usage-config/eslintrc.js.md)
 
 - 其他工作相关
   - [前端渲染pdf](usage-other/前端渲染pdf.md)
