@@ -10,6 +10,7 @@
   - [项目git历史大文件删除追踪](usage-project/git历史大文件删除追踪.md)
   - [electron-vue依赖升级](usage-project/electron-vue依赖升级.md)
   - [vue-cli项目启动报错汇总](usage-project/vue-cli项目启动报错汇总.md)
+  - [vite项目启动报错汇总](usage-project/vite项目启动报错汇总.md)
 
 - 常用常新
   - [electron](usage-frame/electron知识.md)
