@@ -1,6 +1,6 @@
 ![logo](_media/icon.svg)
 
-# 解璎的学习日记 <small>0.0.1-alpha-v1</small>
+# 锦书难凭 <small>0.0.1-alpha-v1</small>
 
 > 记录工作、居家过程中学习到的知识点与一些人生思考
 
