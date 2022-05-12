@@ -4,9 +4,8 @@
 
 > 记录工作、居家过程中学习到的知识点与一些人生思考
 
-- 记录工作中遇到的难点，以及新的知识点
-- 记录居家学习中的一些知识
-- 记录一些自己的日常
+- 当初凌然非势境，不道未了轻松，旧字浮沉心绪浓
+- 佳期独怅惘，故梦已成空
 
 [GitHub](https://github.com/simply-none/latest-blogs/)
 [Gitee](https://Gitee.com/simply-none/latest-blogs/)
