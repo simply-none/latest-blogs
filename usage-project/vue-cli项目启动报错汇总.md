@@ -41,3 +41,11 @@ module.exports = {
 原因：单向数据流，不允许在子组件中修改父组件传过来的props
 
 解决：使用data或computed为props重新赋予变量，或者将该值传递回`this.$emit()`父组件修改
+
+## 报错5：Error in nextTick: "NotFoundError: Failed to execute 'insertBefore' on 'Node
+
+问题：出现错误，页面卡死
+
+原因：组件中v-if切换改变了页面的结构
+
+解决方法：在v-if语句中，使用`:key='xxx'`来解决

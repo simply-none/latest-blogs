@@ -17,7 +17,8 @@
   - [JavaScript](usage-frame/JavaScript知识点.md)
   - [CSS](usage-frame/CSS知识点.md)
   - [SCSS](usage-frame/SCSS知识点.md)
-  - [Vue](usage-frame/Vue知识点.md)
+  - Vue
+    - [Vue2](usage-frame/Vue2知识点.md)
   - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
