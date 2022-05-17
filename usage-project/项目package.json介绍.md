@@ -4,7 +4,7 @@
 
 ## npm 字段
 
-### `name`
+### name
 
 若要发布npm包，必须包含`name`和`version`字段，这两个一起作为一个完整唯一的标识符；如果不发布，则两者是可选的  
 
@@ -20,11 +20,11 @@
 3. 包名可传给`require()`作为参数，所以应该尽量短，但也要适当描述详尽
 4. 在确定包名前，可在[npmjs](https://www.npmjs.com/)中查看是否已被人抢先命名了
 
-### `version`
+### version
 
 `version`字段必须可被[node-semver](https://github.com/npm/node-semver)解析，node-semver作为一个依赖和npm绑定在一起（使用它：`npm install semver`）
 
-### `description`
+### description
 
 `description`字段是一个字符串，在进行`npm search package_name`时，可帮助人们发现你的包
 
@@ -54,15 +54,15 @@ generator-jhipster        | Spring Boot +…       | =jdubois…       | 2022-04
 vue-numeric               | Input field…         | =kevinongko     | 2021-06-11 | 2.4.3    | component currency input text number numeric separator vue vue.js
 ```
 
-### `keywords`
+### keywords
 
 `keywords`字段是一个字符串数组，在进行`npm search package_name`时，可帮助人们发现你的包
 
-### `homepage`
+### homepage
 
 `homepage`字段是一个链接到项目主页是字符串url
 
-### `bugs`
+### bugs
 
 `bugs`字段是一个链接到项目issue的url，或者是一个记录issue的邮箱地址。可以提供一个或两个值（使用对象的方式），如果只提供一个值，则使用字符串的形式；如果提供了url，则在项目根目录下运行`npm bugs`会自动打开跳转到这个网址
 
@@ -73,7 +73,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 }
 ```
 
-### `license`
+### license
 
 `license`字段指定了项目的使用授权许可，以及一些其他项目所有者设置的约束。下面是一些使用案例：
 
@@ -132,7 +132,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 }
 ```
 
-### `funding`
+### funding
 
 `funding`可以指定一个有助于你开发的资助渠道的信息，可以是一个包含URL的对象，字符串，或者数组。可以使用`npm fund`列出项目中所有的依赖包的资助信息，也可以使用`npm fund <package_name>`的方式直接自动跳转到该依赖包的资助渠道网址（同时有多个，则将跳转第一个）
 
@@ -160,7 +160,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 }
 ```
 
-### `files`
+### files
 
 可选的`files`字段是包被当作依赖安装时包含的一些文件（夹），文件匹配规则和`.gitignore`类似，但是功能相反。忽略这个字段，默认为`['*']`，意味着将包含所有文件。  
 
@@ -171,7 +171,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 2. 被排除的文件：`.git`, `CVS`, `.svn`, `.hg`, `.lock-wscript`, `.wafpickle-N`, `.*.swp`, `.DS_Store`, `._*`, `npm-debug.log`, `.npmrc`, `node_modules`, `config.gypi`, `*.orig`, `package-lock.json`，若`package-lock.json`想被发布，可以用`npm-shrinkwrap.json`代替（使用[npm shrinkwrap](https://docs.npmjs.com/cli/v8/configuring-npm/npm-shrinkwrap-json)命令创建，内容和`package-lock.json`一致，但是可发布）
 
 
-### `main`
+### main
 
 `main`字段设置了一个包的入口地址，如果包被安装引入`require()`，将会返回该入口文件的默认导出对象。入口地址是一个相对于根目录的地址，若未设置，则默认是根目录下的`index.js`；该字段表示在服务器端使用
 
@@ -182,11 +182,11 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 3. 如果 npm 包只在 server 端使用，使用 main
 4. 如果 npm 包在 web 端和 server 端都允许使用，使用 browser 和 main
 
-### `browser`
+### browser
 
 `browser`字段表示在客户端浏览器使用，这意味着可能会包含nodejs模块不可用的原始值，比如`window`
 
-### `bin`
+### bin
 
 若想让包中的一些可执行脚本/程序安装在PATH中，可将这些脚本相对路径放在`bin`字段对象中
 
@@ -207,7 +207,7 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 }
 ```
 
-### `man`
+### man
 
 > 不明之处，可查看npm自身的[package.json](https://registry.npmjs.org/npm/latest)
 
@@ -233,13 +233,13 @@ vue-numeric               | Input field…         | =kevinongko     | 2021-06-1
 }
 ```
 
-### `directories`
+### directories
 
 commonJS包规格使用`directories`表明包的结构，例如在[npm package.json](https://registry.npmjs.org/npm/latest)可看到它给doc、lib、man指定了路径
 
 如果在directories.bin中指定了一个bin目录，则里面的所有文件将被添加，由于bin指令的工作方式，不能够同时设置字符串形式的bin字段和directories.bin字段，若指定单个文件，则用bin字段，指定所有存在于bin目录的字段，则用directories.bin字段
 
-### `repository`
+### repository
 
 `repository`字段指定了代码存放的网络地址，如果他是一个github的仓库，可以在目录下运行npm docs命令会自动打开浏览器跳到该地址。但是这个url必须是公共可访问的。如果是GitHub，GitHub gist，bitbucket，gitlab，可以直接在安装的时候使用短命令
 ```json
@@ -268,11 +268,11 @@ commonJS包规格使用`directories`表明包的结构，例如在[npm package.j
 }
 ```
 
-### `scripts`
+### scripts
 
 `scripts`属性是一个包含各种脚本命令的字典，查看[详细信息](https://docs.npmjs.com/cli/v8/using-npm/scripts)
 
-### `config`
+### config
 
 `config`对象用于设置配置一个类环境变量参数，该参数可在程序代码中使用`npm_package_config_<name>`来引用
 
@@ -288,7 +288,7 @@ commonJS包规格使用`directories`表明包的结构，例如在[npm package.j
 const currentPost = process.env.npm_package_config_port
 ```
 
-### `dependencies`
+### dependencies
 
 该字段是一个包含了包名、包版本映射关系的对象，其中包版本可以是一个范围，也可以是一个可识别的包/git url。测试、转换、开发工具包应该放在`devDependencies`字段中
 
@@ -344,15 +344,15 @@ const currentPost = process.env.npm_package_config_port
   }
 }
 
-### `peerDependencies`
+### peerDependencies
 
 前提：插件运行的前提是核心依赖必须先下载安装，不能脱离核心单独引用
 
 解释：该字段规则和dependencies类似，当依赖包和本项目都依赖一个包A时，若都放在dependencies中时，该依赖包A将被下载多次，若放在peerDependencies中，则将下载一次（放在根目录的node modules中）；若包版本不一致产生错误，需自行修复
 
-### `override`
+### override
 
-### `engines`
+### engines
 
 该字段指定了运行项目的环境，防止报错
 
@@ -365,7 +365,7 @@ const currentPost = process.env.npm_package_config_port
 }
 ```
 
-### `os`
+### os
 
 该字段指定了运行项目的环境，防止报错
 
@@ -379,7 +379,7 @@ const currentPost = process.env.npm_package_config_port
 }
 ```
 
-### `cpu`
+### cpu
 
 该字段指定了运行项目的环境，防止报错
 
@@ -394,11 +394,11 @@ const currentPost = process.env.npm_package_config_port
 }
 ```
 
-### `private`
+### private
 
 `private`字段设置为true时，将组织项目发布到包存储组织（比如npm）
 
-### `publishConfig`
+### publishConfig
 
-### `workspaces`
+### workspaces
 

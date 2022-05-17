@@ -19,6 +19,7 @@
   - [SCSS](usage-frame/SCSS知识点.md)
   - Vue
     - [Vue2](usage-frame/Vue2知识点.md)
+    - [ElementUI](usage-frame/elementui知识点)
   - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
@@ -32,6 +33,7 @@
 
 - 工具使用
   - [前端开发工具库](usage-tool/前端开发工具库.md)
+  - [JavaScript工具函数](usage-tool/JavaScript工具函数.md)
   - [git](usage-tool/git操作.md)
   - [npm](usage-tool/npm操作.md)
   - [babel](usage-tool/babel操作.md)

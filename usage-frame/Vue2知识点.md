@@ -5,10 +5,23 @@
 1. provide、inject
 
 语法：
-```vue
+```js
 provide: Object | () => Object
 inject: Array<string> | { [key: string]: string | Symbol | Object }
 ```
+
+## 响应式原理
+
+为了监测数组的变化，须按照下面要求进行数据修改：
+1. 数据删除/修改数组长度：`this.list.splice(length)`
+2. 数据修改：
+   - `this.$set(this.list, indexOfItem, newValue)`
+   - `this.list.splice(indexOfItem, 1, newValue)`
+
+为了监测对象的变化，须按照下面要求进行数据修改：
+1. 修改一个属性：`this.$set(this.currentForm, formItem, newValue)`
+2. 修改多个属性：`this.currentForm = Object.assign({}, this.currentForm, { xxx }`
+
 
 ## vuex基本操作
 
