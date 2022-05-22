@@ -22,6 +22,7 @@ inject: Array<string> | { [key: string]: string | Symbol | Object }
 1. 修改一个属性：`this.$set(this.currentForm, formItem, newValue)`
 2. 修改多个属性：`this.currentForm = Object.assign({}, this.currentForm, { xxx }`
 
+当使用修改原数组的方法时，可以检测到数组的变化（响应式）：push、pop、unshift、shift、splice、sort、reserve
 
 ## vuex基本操作
 
