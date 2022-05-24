@@ -273,6 +273,7 @@ let strLength: number = (someValue as string).length
   1. 接口属性是可选属性`name?:string;`（减少）。
   2. 若接口包括一个任意类型的属性`[propName: string]: string | number;`，则对象属性可以有无限多个（增加），此时接口中与任意类型属性的 key`propName`同类型`string`的属性，必须是那个任意类型的子类型`string`或`number`
   3. 特例，使用变量的方式，将变量传给参数，而不是直接在参数定义一个变量字面量
+- 接口可用于描述JavaScript各种类型，不管是普通的对象，也可以是函数
 
 <!-- tabs:start -->
 <!-- tab:任意个接口属性 -->
@@ -298,8 +299,11 @@ function createSquare(config: SquareConfig): any {
   // ...
 }
 
+// 声明一个变量，然后将该变量传递给函数调用参数，不会报错，因为squareOptions不会经过额外的属性检查
+// 前提是：
+// 变量squareOptions的结构，要符合接口SquareConfig的最小结构即可，可以有多余的参数
+// 毕竟SquareConfig的结构可以是：{}，{color}，{width}，{color，width}；如果是空值，则不能有多余的参数
 let squareOptions = { colour: "red", width: 100 };
-// 不会报错
 let mySquare = createSquare(squareOptions);
 ```
 
@@ -361,3 +365,142 @@ ra[0] = 12
 // The type 'readonly number[]' is 'readonly' and cannot be assigned to the mutable type 'number[]'.
 a = ra
 ```
+
+3. 接口描述函数类型
+
+语法：类似一个只有参数列表和返回值类型的函数定义，如下：
+```typescript
+interface SearchFunc {
+  (source: string, subString: string): boolean;
+}
+
+// 使用
+let mySearch: SearchFunc
+// 其中，函数参数，可以不需要和接口定义的一致，只要相对应的位置上的类型兼容就行，同时函数参数也可不指定类型，会自动推断出来
+mySearch = function (src: string, sub: string) {
+  // 返回值类型是类型推断出来的
+  return src.srarch(sub) > -1
+}
+```
+
+4. 接口描述具有索引的对象类型（数组、map等）
+
+前置描述：
+- typescript支持两种索引签名，字符串和数字
+- 同一个接口中，每种类型的索引，只能存在一次，不然会报错：Duplicate index signature for type 'number'.
+- 当两种索引签名同时存在时，数字索引的值 必须是 字符串索引的值的子类型，因为当引用时，a[0]等同于a['0']
+- 当存在了一种类型的索引签名时，其他具体的对象属性的key若和该种索引类型一致，则对应的值，必须是该种索引（子）类型
+- 设置只读索引，在语句前面，加上关键字readonly
+
+
+<!-- tabs:start -->
+<!-- tab:索引签名语法 -->
+```typescript
+interface StringArray {
+  // 下面这个是数字索引签名，索引签名，就是`[index: number]`这部分
+  [index: number]: string;
+}
+
+let myArr: StringArray
+myArr = ['bob']
+
+let str: string = myArr[0]
+```
+
+<!-- tab:两种索引签名同时存在的情形 -->
+```typescript
+class Animal {
+  name: string;
+}
+class Dog extends Animal {
+  breed: string;
+}
+
+// 错误：使用数值型的字符串索引，有时会得到完全不同的Animal!
+interface NotOkay {
+  [x: number]: Animal;
+  [x: string]: Dog;
+}
+// 正确用法，数字索引签名的值，必须是字符串索引签名的值的子类型
+// 因为Dog是Animal的子类，所以Animal必须是字符串索引
+interface Okay {
+  [x: string]: Animal;
+  [x: number]: Dog;
+}
+
+```
+<!-- tab:只读索引 -->
+```typescript
+interface ReadonlyStringArray {
+  readonly [index: number]: string;
+}
+
+let myArr: ReadonlyStringArray = ['bob']
+// Index signature in type 'ReadonlyStringArray' only permits reading.
+myArr[0] = 'tom'
+```
+<!-- tabs:end -->
+
+5. <b class="puzzled">接口描述类类型</b>
+
+使用：
+- 接口描述了类的公共部分，不会检查类是否具有私有成员
+- 可以在接口中描述一个方法，然后在类中来实现
+- 类实现接口时，只会对类的实例进行类型检查，constructor存在于类的静态部分，所以不会进行检查
+
+实现：
+<!-- tabs:start -->
+<!-- tab:第一种方式 -->
+```typescript
+interface ClockConstructor {
+  new (hour: number, minute: number): ClockInterface;
+}
+interface ClockInterface {
+  tick(): void;
+}
+
+function createClock(
+  ctor: ClockConstructor,
+  hour: number,
+  minute: number
+): ClockInterface {
+  return new ctor(hour, minute);
+}
+
+class DigitalClock implements ClockInterface {
+  constructor(h: number, m: number) {}
+  tick() {
+    console.log("beep beep");
+  }
+}
+class AnalogClock implements ClockInterface {
+  constructor(h: number, m: number) {}
+  tick() {
+    console.log("tick tock");
+  }
+}
+
+let digital = createClock(DigitalClock, 12, 17);
+let analog = createClock(AnalogClock, 7, 32);
+
+```
+
+<!-- tab:第二种方式 -->
+```typescript
+interface ClockConstructor {
+  new (hour: number, minute: number);
+}
+
+interface ClockInterface {
+  tick();
+}
+
+const Clock: ClockConstructor = class Clock implements ClockInterface {
+  constructor(h: number, m: number) {}
+  tick() {
+    console.log("beep beep");
+  }
+};
+
+```
+<!-- tabs:end -->

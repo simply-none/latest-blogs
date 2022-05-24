@@ -21,3 +21,28 @@ del:hover:after {
   width: 120px;
 }
 /* 废弃或验证失败的说明 */
+
+/* 困惑的 */
+.puzzled {
+  color: red;
+  background-color: yellow;
+  position: relative;
+  display: inline-block;
+}
+
+.puzzled:hover:after {
+  position: absolute;
+  bottom: 40px;
+  right: 0px;
+  padding: 5px;
+  background-color: #fbe5eb;
+  border-left: 2px solid #d30038;
+  border-radius: 5px;
+  color: #6d696a;
+  font-size: 12px;
+  transform: scale(0.8);
+  /*这里显示的内容为title属性对应的值*/
+  content: '困惑的内容';
+  z-index: 2;
+  width: 120px;
+}
