@@ -175,50 +175,6 @@ function nev (): never {
 }
 ```
 
-## 函数
-
-1.  函数的定义方式，如下：
-
-```ts
-// 函数声明
-function sum(x: number, y: number): number {
-  return x + y;
-}
-// 函数表达式，左边的是函数的定义 (参数类型) => 返回值类型
-let mySum: (x: number, y: number) => number = function (
-  x: number,
-  y: number
-): number {
-  return x + y;
-};
-// 接口
-interface MySum {
-  // 和函数表达式类似，对等号左边的类型进行限制
-  (x: number, y: number): number;
-}
-let mySum: MySum = function (x: number, y: number): number {
-  return x + y;
-};
-```
-
-1.  函数传入的参数必须是和定义时一致
-2.  函数的可选参数，必须在必须参数后面`(x: number, y?: number)`
-3.  函数参数的默认值`(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用`undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了
-4.  函数定义中参数也可用剩余参数，必须在参数的最后一个`(x: number, ...y: any[])`，用于获取剩下的参数，其中 y 是一个数组
-5.  函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，若多个函数定义有包含关系，需要把精确的函数定义写在前面
-
-```ts
-function reverse(x: number): number;
-function reverse(x: string): string;
-function reverse(x: number | string): number | string | void {
-  if (typeof x === "number") {
-    return Number(x.toString().split("").reverse().join(""));
-  } else if (typeof x === "string") {
-    return x.split("").reverse().join("");
-  }
-}
-```
-
 ## 联合类型
 
 定义：union，使用`|`分隔类型`string | number`，其值可以是声明类型的某一种`string`或者`number`。
@@ -282,8 +238,8 @@ interface Int {
   // 普通属性，这些都不会报错，因为propName`『接口的key可以是任意类型』`是一个number，所以不会进行匹配
   name: string;
   age: number;
-  // 任意类型属性, propName可为其他值，一个指代符罢了，markdown会报错，先注释一下
-  // [ propName: number ]: string;
+  // 任意类型属性, propName可为其他值，一个指代符罢了
+  [ propName: number ]: string;
   // 此时 1 会报错，因为 1 和任意类型的属性key: propName是同一个类型number。故1所对应值的类型，必须是string的子类型
   1: true;
 }
@@ -501,6 +457,194 @@ const Clock: ClockConstructor = class Clock implements ClockInterface {
     console.log("beep beep");
   }
 };
+
+```
+<!-- tabs:end -->
+
+6. 接口继承
+
+定义：接口可以相互继承，即能够从一个接口复制成员到另一个接口，从而更灵活将接口分割到可重用的模块中
+
+语法如下：
+```typescript
+interface Shape {
+  color: string;
+}
+
+interface PenStroke {
+  penWidth: number;
+}
+
+interface Square extends Shape, PenStroke {
+  sideLength: number
+}
+
+let square = {} as Square
+square.color = 'red'
+square.penWidth = 10
+square.sideLength = 20
+```
+
+7. 接口实现混合类型
+
+定义：接口能够描述JavaScript中丰富的类型，比如一个对象可以同时作为函数、对象使用，并拥有额外的方法/属性
+
+语法：
+```typescript
+interface Counter {
+  // 定义一个函数
+  (start: number): string;
+  // 定义一个对象属性
+  interval: number;
+  // 定义一个对象方法
+  reset(): void;
+}
+
+function getCounter(): Counter {
+  let counter = function(start: number) {} as Counter;
+  counter.interval = 123;
+  counter.reset = function() {};
+  return counter;
+}
+
+let c = getCounter();
+c(10);
+c.reset();
+c.interval = 5.0;
+```
+
+8. 接口继承类
+
+使用
+- 接口继承类时，会继承类的成员（包括private和protected），但是不包括其具体的实现
+- 当一个接口继承了拥有private/protected成员的类时，该接口只能被该类或该类的子类所实现
+
+```typescript
+class Control {
+  private state: any;
+}
+
+// 接口继承了一个包含私有属性的类，所以只能被该类或其子类实现
+interface SelectableControl extends Control {
+  select(): void;
+}
+
+class Button extends Control implements SelectableControl {
+  select() {}
+}
+
+class TextBox extends Control {
+  select() {}
+}
+
+// 下面的私有属性， 是该类自身带的，而非继承的
+class ImageControl implements SelectableControl {
+// Error: Class 'ImageControl' incorrectly implements interface 'SelectableControl'.
+//  Types have separate declarations of a private property 'state'.
+  private state: any;
+  select() {}
+}
+```
+
+## 函数
+
+定义：声明式和函数表达式形式，如下：
+```typescript
+// 函数声明
+function sum(x: number, y: number): number {
+  return x + y;
+}
+
+// 函数表达式，左边的是函数的定义 (参数类型) => 返回值类型
+// 左边参数的名字，不需要和右边参数的名字一一对应，只要参数类型一致即可
+// 函数的参数类型不一定是必须的，ts编译器可以自动推断出对应类型（上下文归类）
+let mySum: (x: number, y: number) => number = function (
+  x: number,
+  y: number
+): number {
+  return x + y;
+};
+
+// 接口
+interface MySum {
+  // 和函数表达式类似，对等号左边的类型进行限制
+  (x: number, y: number): number;
+}
+let mySum: MySum = function (x: number, y: number): number {
+  return x + y;
+};
+```
+
+场景：
+- 用于实现抽象类、模拟类、信息隐藏、模块
+- 虽然ts中支持类、命名空间、模块，然而函数仍然是主要定义行为的方式
+
+使用：
+- 函数传入的参数类型必须是和定义时一致
+- 函数的可选参数，必须在必须参数后面`(x: number, y?: number)`
+- 函数参数的默认值`(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用`undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
+- 函数定义中参数也可用剩余参数，必须在参数的最后一个`(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
+- 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，若多个函数定义有包含关系，需要把精确的函数定义写在前面
+
+<!-- tabs:start -->
+<!-- tab:函数重载 -->
+```typescript
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string | void {
+  if (typeof x === "number") {
+    return Number(x.toString().split("").reverse().join(""));
+  } else if (typeof x === "string") {
+    return x.split("").reverse().join("");
+  }
+}
+```
+
+<!-- tab:函数内的this -->
+```typescript
+interface Card {
+    suit: string;
+    card: number;
+}
+interface Deck {
+    suits: string[];
+    cards: number[];
+    createCardPicker(this: Deck): () => Card;
+}
+let deck: Deck = {
+    suits: ["hearts", "spades", "clubs", "diamonds"],
+    cards: Array(52),
+    // NOTE: The function now explicitly specifies that its callee must be of type Deck
+    createCardPicker: function(this: Deck) {
+        return () => {
+            let pickedCard = Math.floor(Math.random() * 52);
+            let pickedSuit = Math.floor(pickedCard / 13);
+
+            return {suit: this.suits[pickedSuit], card: pickedCard % 13};
+        }
+    }
+}
+
+let cardPicker = deck.createCardPicker();
+let pickedCard = cardPicker();
+
+alert("card: " + pickedCard.card + " of " + pickedCard.suit);
+
+```
+
+<!-- tab:回调参数的this -->
+```typescript
+// 此例不能编译成功
+interface UIElement {
+  addClickListener(onclick: (this: void, e: Event) => void): void;
+}
+
+class Handler {
+    info: string;
+    onClickGood = (e: Event) => { this.info = e.message }
+}
+let h = new Handler();
+uiElement.addClickListener(h.onClickGood);
 
 ```
 <!-- tabs:end -->
