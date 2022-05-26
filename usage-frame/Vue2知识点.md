@@ -24,6 +24,25 @@ inject: Array<string> | { [key: string]: string | Symbol | Object }
 
 当使用修改原数组的方法时，可以检测到数组的变化（响应式）：push、pop、unshift、shift、splice、sort、reserve
 
+## computed操作
+
+1. computed传入参数
+
+解释：正常的computed变量，直接传入变量名称即可（就会return 一个返回值过来），若想要传入参数，则里面需要再嵌套一个函数
+
+```vue
+computed: {
+  getCurrentPerson () {
+    return (personId) => {
+      return this.persons[personId]
+    }
+  }
+}
+
+<!-- html中使用 -->
+<el-form v-model="getCurrentPerson(21)"></el-form>
+```
+
 ## vuex基本操作
 
 注意：
