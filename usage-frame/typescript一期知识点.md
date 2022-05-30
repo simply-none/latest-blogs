@@ -175,13 +175,80 @@ function nev (): never {
 }
 ```
 
+## 交叉类型
+
+通俗理解：交叉类型，即`求同`，只能是各种类型的交集
+
+定义：使用`&`分隔类型，一般用于联合类型、接口交叉，若两者之间无交集，则该值为never类型
+
+使用：
+- 交叉类型常用来定义公共的部分
+
+```typescript
+// 普通类型交叉，无交集，类型为never
+type a = number & string
+// Type 'number' is not assignable to type 'never'.
+let k: a = 89
+
+// 联合类型交叉，交集为共有的值
+type UnionA = 'px' | 'em' | 'rem' | '%';
+type UnionB = 'vh' | 'em' | 'rem' | 'pt';
+type IntersectionUnion = UnionA & UnionB;
+// Type '"px"' is not assignable to type '"em" | "rem"'.
+let m: IntersectionUnion = 'px'
+
+// 接口交叉，若有相同属性值，则返回该属性值的交叉类型
+interface X {
+  c: string;
+  d: string;
+}
+
+interface Y {
+  c: number;
+  e: string
+}
+
+// 交叉类型结果为：{ c: string & number, d: string, e: string }
+type XY = X & Y;
+// Type 'number' is not assignable to type 'never'.
+let p: XY = { c: 6, d: "d", e: "e" };
+
+// 接口交叉，相同属性值的对象属性，则直接合并
+interface D { d: boolean; }
+interface E { e: string; }
+interface F { f: number; }
+
+interface A { x: D; }
+interface B { x: E; }
+interface C { x: F; }
+// 交叉类型结果为：{ x: { d: boolean, e: string, f: number } }
+/**
+ * 若改成下面类型：则结果为：{ x: { d: boolean & string } }😢😢😢
+interface D { d: boolean; }
+interface E { d: string; }
+interface F { f: number; }
+ * /
+type ABC = A & B & C;
+
+let abc: ABC = {
+    x: {
+      d: true,
+      e: 'semlinker',
+      f: 666
+    }
+};
+
+```
+
 ## 联合类型
+
+通俗理解：联合类型，即`存异`，可以是某种类型，也可以是另一种类型
 
 定义：union，使用`|`分隔类型`string | number`，其值可以是声明类型的某一种`string`或者`number`。
 
 使用：
-- 当不能（用类型推断）确定联合类型的具体类型时，只能访问所有类型共有方法/属性。
-- 只有使用条件语句指定具体类型`if (typeof xxx === 'number') { xxx.toFixed() }`，才能访问特定类型的方法/属性
+- 当不能（用类型推断）确定联合类型属于某一具体类型时，只能访问所有类型共有方法/属性。
+- 只有确定具体类型`if (typeof xxx === 'number') { xxx.toFixed() }`之后（比如使用条件语句、类型推断），才能访问特定类型的方法/属性
 
 ## 类型相关
 
@@ -218,6 +285,15 @@ let strLength: number = (someValue as string).length
 
 使用：
 - typescript 类型之间的对比只会比较他们最终的结构，而忽略他们定义时的关系。
+
+4. 类型兼容：
+
+定义：
+- 由于typescript使用的是结构类型的系统，当比较两种不同的类型时，并不在乎他们从何而来，若所有成员的类型都是兼容的，则他们也是兼容的；
+- 当成员的修饰符为private、protected时，只有他们来自同一处声明时（实例的继承链都继承自同一个对象、都是某个对象的实例），他们的类型才是兼容的
+
+使用
+- 兼容的类型，可以进行赋值操作（只能是成员多的赋给成员少的或成员相同的，不能成员少的赋值给成员多的）
 
 ## 接口
 
@@ -648,3 +724,151 @@ uiElement.addClickListener(h.onClickGood);
 
 ```
 <!-- tabs:end -->
+
+## 类
+
+1. 类的修饰符
+
+修饰符类型：
+- public：可以自由的访问，若未具体声明，则默认为public类型
+- private：不能在被声明的类的外部访问，不能通过实例访问
+- protected：能够在继承的类内部被访问，不能通过类的实例访问；当构造函数是protected时，则不能被实例化，只能被继承，然后被继承的类实例化
+- readonly：只读属性，只能在声明时或通过构造函数进行初始化
+
+2. 参数属性
+
+定义：
+- 参数属性可以在一个地方同时定义并初始化成员属性，将声明和赋值合并到一处
+- 参数属性通过给构造函数添加一个访问修饰符（public、private、protected）来声明，修饰符不能省略
+
+```typescript
+// 声明了一个私有属性name
+class Animal {
+    constructor(private name: string) { }
+    move(distanceInMeters: number) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+```
+
+3. 静态属性
+
+定义：存在于类本身，而非类的实例上，直接通过类名来访问
+
+4. 存取器（get、set）
+
+定义：截取控制对对象成员的访问，返回截取后的内容
+
+注意：只带有get，没有set的存取器自动推断为readonly属性
+
+```typescript
+const fullNameMaxLength = 10;
+
+class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+        return this._fullName;
+    }
+
+    set fullName(newName: string) {
+        if (newName && newName.length > fullNameMaxLength) {
+            throw new Error("fullName has a max length of " + fullNameMaxLength);
+        }
+
+        this._fullName = newName;
+    }
+}
+// 截取对属性fullName的访问
+let employee = new Employee();
+// 存值
+employee.fullName = "Bob Smith";
+// 取值
+if (employee.fullName) {
+    alert(employee.fullName);
+}
+```
+
+5. 类的继承
+
+解释：一个类若从另一个类继承了属性和方法，则该类称为子类/派生类，另一个类成为基类/超类/父类
+
+场景：
+```typescript
+class Animal {
+    name: string;
+    constructor(theName: string) { this.name = theName; }
+    move(distanceInMeters: number = 0) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+
+class Horse extends Animal {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 45) {
+        console.log("Galloping...");
+        super.move(distanceInMeters);
+    }
+}
+
+// tom类型为父类类型，而右侧的类型为子类的类型，tom只能调用【父类存在】的方法，若子类重写了，则会调用子类的
+let tom: Animal = new Horse("Tommy the Palomino");
+// 由于子类重写了父类的move方法，此时会直接调用子类的move
+tom.move(34);
+
+```
+
+6. 抽象类
+
+定义：用关键字`abstract`定义抽象类和抽象类内的抽象方法，一般作为类的基类使用，一般不会直接被实例化
+
+使用：
+- 抽象类可以有抽象函数，也可以包括具体实现的函数
+- 抽象类的抽象方法（必须用abstract修饰）可以包含修饰符（不能是private），且必须在继承类中实现其具体细节
+- 抽象类内的方法，若无abstract修饰符，则必须有具体的实现
+
+7. 构造函数的使用
+
+```typescript
+class Greeter {
+    static standardGreeting = "Hello, there";
+    greeting: string;
+    greet() {
+        if (this.greeting) {
+            return "Hello, " + this.greeting;
+        }
+        else {
+            return Greeter.standardGreeting;
+        }
+    }
+}
+
+let greeter1: Greeter;
+greeter1 = new Greeter();
+console.log(greeter1.greet());
+
+// typeof Greeter，即取Greeter的类型，然后将Greeter赋值给greeterMaker，此时greeterMaker就是类Greeter，拥有构造函数和静态成员
+let greeterMaker: typeof Greeter = Greeter;
+// 所以可以访问静态属性
+greeterMaker.standardGreeting = "Hey there!";
+// 所以可以通过new调用
+let greeter2: Greeter = new greeterMaker();
+console.log(greeter2.greet());
+```
+
+8. 把类当作接口使用
+
+场景：由于类的定义会创建类型（类的实例类型和构造函数），所以在可以使用接口的地方也可以使用类
+
+```typescript
+class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+
+let point3d: Point3d = {x: 1, y: 2, z: 3};
+```
