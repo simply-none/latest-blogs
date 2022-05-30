@@ -114,7 +114,15 @@ const tuple: [string, number, boolean] = ['1', 1, true]
 
 13. `enum`类型
 
-定义：枚举类型表示可以有特殊名字的一组值，如下：
+定义：
+- 枚举类型表示可以有特殊名字的一组值
+- 字面量枚举成员类型：指不带初始值的常量枚举成员、值被初始化为字符串字面量、数字字面量的成员。
+- 当所有枚举成员都有字面量枚举值时，他们就成为了字面量枚举成员类型。而枚举类型也是枚举成员类型的联合类型
+- 常量枚举通过修饰符const定义，只能使用常量枚举表达式（无计算成员等），且会在编译阶段进行删除
+- 外部枚举，使用修饰符declare定义，描述已经存在的枚举类型的形状
+<!-- tabs:start -->
+
+<!-- tab:枚举类型 -->
 ```typescript
 // 定义
 enum Color { Red = 1, Blue, Green }
@@ -126,10 +134,32 @@ const c: Color = Color.Red
 const s: string = Color[1]
 ```
 
-14. `object`类型
+<!-- tab:枚举成员类型 -->
+```typescript
+
+enum Color { Red = 1, Blue, Green }
+
+type enumChildType = Color.Red
+// Type 'Color.Blue' is not assignable to type 'Color.Red'.
+let a: enumChildType = Color.Blue
+// 而下面的就没错，因为是同一种类型（类型兼容），可以进行赋值操作
+let a: enumChildType = 23
+```
+<!-- tabs:end -->
+
+使用场景：
+- 枚举若未初始化，第一个值为0
+- 枚举成员可以使用常量枚举表达式（表达式字面量、对前面枚举成员的引用、一元运算符、二元运算符、计算值等）初始化
+- 若枚举常量表达式的结果为NaN或infinite，则会在编译阶段出错；直接赋值NaN或infinite不会出错
+- 枚举是一个在运行时真正存在的对象，故而在兼容的情况下，枚举可以赋值给对象
+- 可以使用`keyof typeof enumVal`获取enumVal里面所有字符串的类型
+- 数字枚举成员具有反向映射，例如`enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`
+
+
+1.   `object`类型
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
-15. 构造函数类型
+1.  构造函数类型
 
 定义：使用大写字母开头，与相对应的小写版本类型一致
 
@@ -173,6 +203,35 @@ function nev (): never {
   // 下面的条件只能为true，若是其他比较符，会报错：A function returning 'never' cannot have a reachable end point.
   while(true) {}
 }
+```
+
+## 字面量类型
+
+定义：字面量类型是类型（字符串、数字、布尔值）的一种更为具体的子类型
+
+字面量收窄：从无穷多可能的例子到确切数量的例子的过程
+
+字符串字面量类型：`'a' | 'b' | 'c'`，他的值只能是列出的值的某个值，不能是除此之外的其他值
+
+数字字面量类型：常用来定义配置的值
+
+布尔值字面量类型：用来约束属性之间互有关联的对象
+
+```typescript
+interface ValidationSuccess {
+  isValid: true;
+  reason: null;
+};
+
+interface ValidationFailure {
+  isValid: false;
+  reason: string;
+};
+
+// 注意此处，这里第一个|之前可以为空
+type ValidationResult =
+  | ValidationSuccess
+  | ValidationFailure;
 ```
 
 ## 交叉类型
@@ -256,7 +315,7 @@ let abc: ABC = {
 定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
 
 2. 类型推断：
-定义：typescript 会在无明确类型时按照类型推断规则推测出该值的类型
+定义：typescript 会在无明确类型时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性
 
 3. 类型断言：
 定义：手动指定一个值的类型，就可以调用该类型的方法而不在编译时报错（但在运行时该报错还是会报错）
@@ -872,3 +931,146 @@ interface Point3d extends Point {
 
 let point3d: Point3d = {x: 1, y: 2, z: 3};
 ```
+
+## 泛型
+
+定义：使用泛型来定义可重用的组件，一个组件可以支持多个类型的数据（不仅是目前的，还可能是未来的），这样用户就可以以自己的数据类型来使用组件
+
+类型变量：是一种特殊的变量，只用于表示类型，而不是值（比如下面的T）
+
+<!-- tabs:start -->
+<!-- tab:类型变量 -->
+```typescript
+// 类型变量的使用
+// 给identity添加了类型变量T，T帮助捕获用户传入的类型，后面就能够使用这个类型了，这个identity函数就是泛型
+function identity <T> (args: T): T {
+  return args
+}
+
+```
+
+<!-- tab:泛型的使用 -->
+```typescript
+// 1. 显式声明
+let output = identity<string>('mystring')
+// 2. 类型推断，若不能自动推断类型，必须显式声明
+let output = identity('mystring')
+```
+
+<!-- tabs:end -->
+
+泛型变量：使用泛型创建泛型函数等时，必须在函数体内正确使用这个通用的泛型，即把这些参数当作任意类型或所有类型，不能访问不存在的方法/属性
+
+泛型类型：泛型函数的类型和非泛型函数的类型基本类似，只是加了一个类型参数；可以把泛型参数当作整个接口的一个参数，这样可以清楚知道具体是哪个泛型类型，并且锁定了内部使用的泛型类型
+
+使用：
+- 泛型类型可以定义泛型类和泛型接口，无法定义泛型枚举和泛型命名空间
+
+泛型类：和泛型接口类似，泛型变量跟在类名后面
+
+使用：
+- 泛型类指的是实例部分的类型，因为构造函数传入的值，只能在实例中使用，通过类名调用静态成员获取不到这个类型
+
+<!-- tabs:start -->
+
+<!-- tab:泛型变量的使用 -->
+```typescript
+// 错误的使用
+function identity <T> (args: T): T {
+  // Property 'length' does not exist on type 'T'.
+  console.log(args.length)
+  return args
+}
+
+// 正确的使用：将泛型变量T当作类型的一部分使用，而非整个类型，增加了灵活性
+function identity <T> (args: T[]): T[] {
+  // Property 'length' does not exist on type 'T'.
+  console.log(args.length)
+  return args
+}
+function identity <T> (args: Array<T>): Array<T> {
+  // Property 'length' does not exist on type 'T'.
+  console.log(args.length)
+  return args
+}
+```
+
+<!-- tab:泛型类型及定义泛型接口 -->
+```typescript
+// 泛型参数名可以使用任意的标识，只要数量上和使用方式上对应即可
+function identity <U> (args: U[]): U[] {
+  return args
+}
+
+let myIdentity: <T>(args: T[]) => T[] = identity
+// 上面这可以用接口定义泛型函数
+interface GeneraticIdentityFn {
+  <T>(args: T[]): T[];
+}
+let myIdentity: GeneraticIdentityFn = identity
+```
+
+<!-- tab:泛型参数当作接口的一个参数 -->
+```typescript
+interface GeneraticIdentityFn <T> {
+  (args: T[]): T[];
+}
+
+function identity <U> (args: U[]): U[] {
+  return args
+}
+
+// 这时锁定了泛型为number类型，之后整个函数内部都是number类型的T
+let myIdentity: GeneraticIdentityFn<number> = identity
+```
+
+<!-- tab:泛型类 -->
+```typescript
+class GenericNumber<T> {
+    zeroValue: T;
+    add: (x: T, y: T) => T;
+}
+// 定义的时候传入泛型T，构造实例的时候传入具体的类型，比如number；之后凡是涉及泛型的地方，只能使用number类型的值
+let myGenericNumber = new GenericNumber<number>();
+myGenericNumber.zeroValue = 0;
+myGenericNumber.add = function(x, y) { return x + y; };
+```
+<!-- tabs:end -->
+
+泛型约束：定义一个接口来描述约束条件，让泛型继承这个接口实现约束。在定义了约束的泛型中，只适用于符合约束类型的值
+
+在泛型约束中使用类型参数：声明一个类型参数，其被另一个类型参数所约束
+
+在泛型中使用类类型：😢😢😢
+
+
+<!-- tabs:start -->
+
+<!-- tab:泛型约束用法 -->
+```typescript
+interface Lengthwise {
+    length: number;
+}
+
+// 泛型T继承了接口lengthwise，此时泛型T具备了属性length
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);  // Now we know it has a .length property, so no more error
+    return arg;
+}
+// 必须包含约定的属性才行
+loggingIdentity({length: 10, value: 3});
+```
+
+<!-- tab:在泛型约束中使用类型参数 -->
+```typescript
+// 泛型K继承了泛型T的key的类型
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(x, "a"); // okay
+getProperty(x, "m"); // error: Argument of type 'm' isn't assignable to 'a' | 'b' | 'c' | 'd'.
+```
+<!-- tabs:end -->
