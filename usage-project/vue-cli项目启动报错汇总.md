@@ -49,3 +49,11 @@ module.exports = {
 原因：组件中v-if切换改变了页面的结构
 
 解决方法：在v-if语句中，使用`:key='xxx'`来解决
+
+## 报错6：TypeError: "StackFrame" is not a constructor
+
+问题：git clone项目后，使用npm install和npm run dev就出现这个问题，并且网络上查询无对应解决方案，错误提示中有webpack字样
+
+原因：未明
+
+解决方法：删除node modules，删除package-lock.json，清空npm缓存`npm cache clear -f`，重新安装`vue-cli`全局组件，之后错误才消失
