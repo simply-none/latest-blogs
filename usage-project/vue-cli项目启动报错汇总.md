@@ -49,3 +49,9 @@ module.exports = {
 原因：组件中v-if切换改变了页面的结构
 
 解决方法：在v-if语句中，使用`:key='xxx'`来解决
+
+## 报错6：Conflict: Multiple assets emit different content to the same filename index.html; ERROR in Conflict: Multiple assets emit different content to the same filename index.html; webpack compiled with 1 error
+
+问题：拷贝项目后，然后直接在项目下安装依赖并运行，并报该错误
+
+解决历程：删掉node_modules, package-lock.json,清空缓存，删除全局依赖@vue/cli,webpack，均无效；最后将项目里面的文件，拷贝至另一个英文路径目录下，正常运行
