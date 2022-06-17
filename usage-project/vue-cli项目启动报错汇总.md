@@ -55,3 +55,11 @@ module.exports = {
 问题：拷贝项目后，然后直接在项目下安装依赖并运行，并报该错误
 
 解决历程：删掉node_modules, package-lock.json,清空缓存，删除全局依赖@vue/cli,webpack，均无效；最后将项目里面的文件，拷贝至另一个英文路径目录下，正常运行
+
+## 报错7：TypeError: "StackFrame" is not a constructor
+
+问题：git clone项目后，使用npm install和npm run dev就出现这个问题，并且网络上查询无对应解决方案，错误提示中有webpack字样
+
+原因：未明
+
+解决方法：删除node modules，删除package-lock.json，清空npm缓存`npm cache clear -f`，重新安装`vue-cli`全局组件，之后错误才消失
