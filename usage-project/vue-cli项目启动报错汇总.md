@@ -63,3 +63,11 @@ module.exports = {
 原因：未明
 
 解决方法：删除node modules，删除package-lock.json，清空npm缓存`npm cache clear -f`，重新安装`vue-cli`全局组件，之后错误才消失
+
+## 报错8：Unable to preventDefault inside passive event listener invocation.
+
+问题：监听滚轮事件出现的
+
+原因：装了插件default-passive-events，然后组件中使用了addEventListener监听事件的方法
+
+解决方法：在addEventListener中第三个选项参数，添加一个对象，并给该对象添加一个属性passive为false
