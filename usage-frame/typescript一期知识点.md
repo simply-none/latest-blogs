@@ -1,5 +1,8 @@
 # TypeScript 知识点（第一期）
 
+> 参考文档：http://www.patrickzhong.com/TypeScript/   
+> 注意：可能有些过时内容
+
 ## 基础知识
 
 1. 脚本编译 ts 文件，使用命令`tsc xxx.ts xxx.js`
@@ -52,6 +55,9 @@ a.concat([])
 使用：
 - 是所有类型的子类型，可以赋值给任何类型的变量
 - 指定了 **--strictNullChecks** 之后，只能赋值给any、void和它本身
+
+注意：
+- 在指定了 **--strictNullChecks** 之后，*函数的可选参数*以及*类的可选属性*的类型会被自动的加上`| undefined`
 
 6. `never`类型
 定义：表示永远不存在的值的类型
@@ -234,6 +240,10 @@ type ValidationResult =
   | ValidationFailure;
 ```
 
+注意：
+- 在实际应用中，字面量类型可以与联合类型、类型守卫、类型别名结合使用
+- 字符串字面量类型还可用于区分函数重载，和普通函数重载一致
+
 ## 交叉类型
 
 通俗理解：交叉类型，即`求同`，只能是各种类型的交集
@@ -309,6 +319,49 @@ let abc: ABC = {
 - 当不能（用类型推断）确定联合类型属于某一具体类型时，只能访问所有类型共有方法/属性。
 - 只有确定具体类型`if (typeof xxx === 'number') { xxx.toFixed() }`之后（比如使用条件语句、类型推断），才能访问特定类型的方法/属性
 
+### 可辨识联合
+
+定义：同时使用单例类型、联合类型、类型守卫、类型别名这些语法概念，然后创建一个可辨识联合的高级模式，也叫做标签联合或代数数据联合
+
+特征（3要素）：
+- 具有普通的单例类型属性，即可辨识的特征
+- 一个类型别名包含了那些类型的联合，即联合
+- 此属性上的类型守卫
+
+```typescript
+// 下面三个接口，都具备了属性kind，并且属性值不一样，此时称kind为可辨识的特征（标签）
+interface Square {
+  kind: 'square'
+  size: number
+}
+interface Rectangle {
+  kind: 'rectangle'
+  width: number
+  height: number
+}
+interface Circle {
+  kind: 'circle'
+  radius: number
+}
+// 联合
+type Shape = Square | Reatangle | Circle
+// 可辨识联合
+// 完整性检查：当未涵盖所有可辨识的联合变化时，想让编译器通知
+// 完整性检查方法1：启用--strictNullChecks，并指定函数的返回类型
+function area (s: Shape) {
+  switch (s.kind) {
+    case 'square': return s.size * s.size
+    case 'rectangle': return s.height * s.width
+    case 'circle': return Math.PI * s.radius ** 2
+    // 完整性检查方法2：使用never类型，用其表示除去所有可能情况的剩下的类型
+    default: return assertNever(s)
+  }
+}
+function assertNever (x: never): never {
+  throw new Error('unexpected object: ' + x)
+}
+```
+
 ## 类型相关
 
 1. 类型声明：
@@ -353,6 +406,157 @@ let strLength: number = (someValue as string).length
 
 使用
 - 兼容的类型，可以进行赋值操作（只能是成员多的赋给成员少的或成员相同的，不能成员少的赋值给成员多的）
+
+5. 类型守卫
+
+前景：
+- 联合类型中，若要访问非共同拥有的成员，每次调用都需要使用类型断言才会工作
+
+定义：
+- 类型守卫机制可以避免多次断言的问题，当通过类型检查之后，该代码块下的所有该变量就会判定为该类型（类型兼容）
+- 类型守卫是一些表达式，会在运行时检查，以确保在某个作用域下的类型
+
+类型守卫使用方式：
+- 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
+- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型；条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
+- typeof类型守卫：typescript会将`typeof v === 'typename'`和`typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
+- instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为`n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
+
+注意事项：
+- 对于包含null的参数联合类型，需要使用类型守卫去除null；方法包括：条件语句`if (sn === null) {}`, 短路运算符`return sn || 'default'`
+- 若编译器不能自动去除null或undefined，需要手动使用类型断言去除，方式是在变量后面添加`!`，例如`name!.charAt(0)`
+
+<!-- tabs:start -->
+<!-- tab:类型断言 -->
+```typescript
+interface Bird {
+  fly();
+  layEggs();
+}
+interface Fish {
+  swim();
+  layEggs();
+}
+
+function getSmallPet (): Fish | Bird {}
+let pet = getSmallPet()
+// 使用类型断言
+if ((pet as Fish).swim) {
+  (pet as Fish).swim()
+} else if ((pet as Bird).fly) {
+  (pet as Bird).fly()
+}
+```
+<!-- tab:类型判定 -->
+```typescript
+// 定义类型判定函数
+function isFish (pet: Fish | Bird): pet is Fish {
+  return (pet as Fish).swim !== undefined
+}
+// 使用类型判定
+if (isFish(pet)) {
+  pet.swim()
+} else {
+  // 自动识别该分支下非Fish类型
+  pet.fly()
+}
+```
+<!-- tab:in操作符 -->
+```typescript
+function move (pet: Fish | Bird) {
+  if ('swim' in pet) {
+    return pet.swim()
+  }
+  return pet.fly()
+}
+```
+<!-- tab:instanceof类型守卫 -->
+```typescript
+function getRandomPadder () {
+  return Math.random() < 0.5 ? new SpaceRepeatingPadder(4) : new StringPadder(' ')
+}
+let padder: Padder = getRandomPadder()
+if (padder instanceof SpaceRepeatingPadder) {
+  // 该条件语句下的类型细化为SpaceRepeatingPadder
+  padder;
+}
+if (padder instanceof StringPadder) {
+  // 该条件语句下的类型细化为StringPadder
+  padder;
+}
+```
+<!-- tabs:end -->
+
+6. 类型别名
+
+定义：类型别名会给一个类型起一个新名字，有时和接口很像，除此之外，他还可以用于原始值、联合类型、元组、以及其他手写类型
+
+用法：`type typeName = typexxx`
+
+注意：
+- 类型别名可以是泛型，可以添加类型参数并且在别名声明的右侧typexxx传入泛型参数
+- 可以在右侧typexxx中的属性里面引用自身，但类型别名不能出现在声明右侧的任何地方（属性除外）
+- 和交叉类型`&`一起使用时，可以创建一些古怪的类型
+
+```typescript
+// 使用泛型
+type Container<T> = { value: T }
+// 在属性引用自身
+type Tree<T> = {
+  value: T
+  left: Tree<T>
+  right: Tree<T>
+}
+// 与交叉类型使用，LinkedList是一个具有无限嵌套属性next的类对象结构
+type LinkedList<T> = T & { next: LinkedList<T> }
+// 🈲，类型别名不能直接出现在右侧（官方web演练场未报错， v4.7.4）
+type Yikes = Array<Yikes>
+```
+
+类型别名与接口的不同点：
+- 接口创建了一个新的名字，可以在其他任何地方使用；而类型别名并非创建一个新名字，且错误信息不会使用别名
+- 从v2.7开始，类型别名可以被继承并生成新的交叉类型
+- 接口无法描述一个原始值、联合类型、元组类型，但类型别名可以
+- 由于软件中的对象应该对于扩展是开放的，对于修改是封闭的，应该尽量使用接口代替类型别名
+
+### 多态的this类型
+
+定义：表示某个包含类或接口的子类型，称为F-bounded多态性，能够很容易的表现连贯接口间的继承；同时继承他的新类也能使用之前的方法
+
+```typescript
+class BasicCalculator {
+  public constructor(protected value: number = 0) { }
+  public currentValue(): number {
+    return this.value;
+  }
+  public add(operand: number): this {
+    this.value += operand;
+    return this;
+  }
+  public multiply(operand: number): this {
+    this.value *= operand;
+    return this;
+  }
+  // ... other operations go here ...
+}
+
+class ScientificCalculator extends BasicCalculator {
+  public constructor(value = 0) {
+    super(value);
+  }
+  public sin() {
+    this.value = Math.sin(this.value);
+    return this;
+  }
+  // ... other operations go here ...
+}
+// 这里的this指向ScientificCalculator
+let v = new ScientificCalculator(2)
+        .multiply(5)
+        .sin()
+        .add(1)
+        .currentValue();
+```
 
 ## 接口
 
