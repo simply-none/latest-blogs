@@ -126,6 +126,7 @@ const tuple: [string, number, boolean] = ['1', 1, true]
 - 当所有枚举成员都有字面量枚举值时，他们就成为了字面量枚举成员类型。而枚举类型也是枚举成员类型的联合类型
 - 常量枚举通过修饰符const定义，只能使用常量枚举表达式（无计算成员等），且会在编译阶段进行删除
 - 外部枚举，使用修饰符declare定义，描述已经存在的枚举类型的形状
+
 <!-- tabs:start -->
 
 <!-- tab:枚举类型 -->
@@ -162,10 +163,10 @@ let a: enumChildType = 23
 - 数字枚举成员具有反向映射，例如`enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`
 
 
-1.   `object`类型
+14.    `object`类型
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
-1.  构造函数类型
+15.   构造函数类型
 
 定义：使用大写字母开头，与相对应的小写版本类型一致
 
@@ -361,6 +362,72 @@ function assertNever (x: never): never {
   throw new Error('unexpected object: ' + x)
 }
 ```
+
+## 索引类型（index types）
+
+定义：使用索引类型后，编译器就能够检查使用了动态属性名（即属性不确定的类对象）的代码
+
+索引类型查询操作符：
+- 使用方式：`keyof T`，其结果为T上已知的公共*属性名*的联合，当T的属性自动增减时，其结果也会自动增减
+
+索引访问操作符：
+- 使用方式：`T[K]`，表示T的属性K的值，表示一种类型，其中需结合`K extends keyof T`来使用
+
+索引签名：
+- 指的是类似接口中的属性名，但是其属性名不是确切的，使用方式为`[key: string]: T`，当类型不正确时，报错An index signature parameter type must be 'string', 'number', 'symbol', or a template literal type.
+
+<!-- tabs:start -->
+<!-- tab:索引类型 -->
+```typescript
+// 索引类型查询即keyof T，它的值为T的所有键名，k继承了T的所有键名（但是k的值只能是T中有的各种集合，无自身的值）
+// 索引访问即T[K]，他为😊一个类型 ，类型值为T[K]，若T[K]是反正某一种类型，则T[K]就是该种类型
+function pluck <T, K extends keyof T>(o: T, propertyNames: K[]): T[K][] {
+  return propertyNames.map(n => o[n])
+}
+interface Car {
+  manufacturer: string
+  model: string
+  year: number
+}
+let taxi: Car = {
+  manufacturer: 'toyota'
+  model: 'camry'
+  year: 2014
+}
+// 值为'manufacturer' | 'model' | 'year'
+let carProps: keyof Car
+// 其中，['manufacturer', 'model']位置的数据必须是taxi中已有的属性的集合，否则报错
+// 这里的T[K]指的是Car[manufacturer]和Car[model]而非taxi[manufacturer]，是Car，所以T[K]的类型为string
+let makeAndModel: string[] = pluck(taxi, ['manufacturer', 'model'])
+```
+
+<!-- tab:字符串索引签名与其的使用 -->
+```typescript
+interface Dictionary<T> {
+  // 字符串索引签名的类型
+  [key: string]: T
+}
+// 值为string | number,这个特性和js一致，因为对象可以通过字符串引用，也能通过数字引用，效果一致；当同时出现相同的字符串和数字时会报错的
+let key: keyof Dictionary<number>
+// 这里面Dictionary<number>其实是T，而['foo']是K，合起来就是T[K]，值为number
+let value: Dictionary<number>['foo']
+```
+
+<!-- tab:数字索引签名与其的使用 -->
+```typescript
+interface Dictionary<T> {
+  // 数字索引签名的类型
+  [key: number]: T
+}
+// 值只能是number
+let key: keyof Dictionary<number>
+// 此处报错，因为Dictionary<T>的属性key只能是number类型，不存在字符串foo
+let value: Dictionary<number>['foo']
+// 此处值为number
+let value: Disctionary<number>[42]
+```
+<!-- tabs:end -->
+
 
 ## 类型相关
 
