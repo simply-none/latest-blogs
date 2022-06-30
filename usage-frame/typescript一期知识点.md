@@ -1,7 +1,8 @@
 # TypeScript 知识点（第一期）
 
 > 参考文档：http://www.patrickzhong.com/TypeScript/   
-> 注意：可能有些过时内容
+> 注意：可能有些过时内容    
+> 😢😢😢表示文中不明白的，未记录的内容
 
 ## 基础知识
 
@@ -247,7 +248,7 @@ type ValidationResult =
 
 ## 交叉类型
 
-通俗理解：交叉类型，即`求同`，只能是各种类型的交集
+通俗理解：交叉类型，将多个类型合并为一个类型，包含了所有类型的特性，同时拥有所有类型的成员
 
 定义：使用`&`分隔类型，一般用于联合类型、接口交叉，若两者之间无交集，则该值为never类型
 
@@ -428,6 +429,40 @@ let value: Disctionary<number>[42]
 ```
 <!-- tabs:end -->
 
+## 映射类型😢😢😢
+
+定义：从旧类型中创建新类型的一种方式，新类型以相同的方式去转换旧类型里的每个属性
+
+注意：
+- 若想给映射类型添加新成员，需要结合交叉类型一起使用
+- 对于同态转换（Readonly、Partial、Pick，指的是需要输入类型来拷贝属性，Record不是，因为他不需要输入类型），编译器知道在添加任何新属性之前拷贝所有存在的属性修饰符
+
+<!-- tabs:start -->
+<!-- tab:Readonly -->
+```typescript
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P]
+}
+```
+<!-- tab:Partial -->
+```typescript
+type Partial<T> = {
+  [P in keyof T]?: T[P]
+}
+```
+<!-- tab:Pick -->
+```typescript
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P]
+}
+```
+<!-- tab:Record -->
+```typescript
+type Record<K extends keyof any, T> = {
+  [P in K]: T
+}
+```
+<!-- tabs:end -->
 
 ## 类型相关
 
