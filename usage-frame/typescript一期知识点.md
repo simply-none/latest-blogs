@@ -117,6 +117,7 @@ interface IArguments {
 表示形式如下：
 ```typescript
 const tuple: [string, number, boolean] = ['1', 1, true]
+const tuple2: [a: string, b: number, c: boolean] = ['1', 1, true]
 ```
 
 13. `enum`类型
@@ -461,6 +462,164 @@ type Pick<T, K extends keyof T> = {
 type Record<K extends keyof any, T> = {
   [P in K]: T
 }
+```
+<!-- tabs:end -->
+
+## 内置工具类
+
+1. `Partial<Type>`：表一部分，构造一个所有属性均为可选的类型Type
+2. `Required<Type>`：表必须，构造一个所有属性均必填的类型Type
+3. `Readonly<Type>`：表只读，构造一个所有属性均为只读的类型Type
+4. `Record<Keys, Type>`：构造一个类型，他的属性名为联合类型Keys（一般是字符串字面量类型的联合，其中类型string也可看做所有字符串的联合类型）的因子类型K（`keyof Keys`），属性值的类型为Type
+5. `Pick<Type, Keys>`：表挑选，从类型Type中挑选只存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
+6. `Omit<Type, keys>`：表剔除，从类型Type中剔除存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
+7. `Exclude<Type, ExcludedUnion>`：表排斥，从联合类型Type中剔除能够赋值给联合类型ExcludedUnion的因子类型T后，构造一个新的类型
+8. `Extract<Type, Union>`：表提取，从联合类型Type中提取能够赋值给联合类型Union的因子类型T，构造一个新的类型
+9. `NonNullable<Type>`：从类型Type中剔除null和undefined后，构造一个新的类型
+10. `Parameters<Type>`：从函数类型Type的参数类型构造出一个新的元组类型
+11. `ConstructorParameters<>`：从构造函数类型Type的参数类型来构造出一个元组类型，若Type非构造参数类型，返回never😢😢😢
+12. `ReturnType<Type>`：从函数类型Type的返回值类型中构造一个新的类型
+13. `InstanceType<Type>`：从构造函数类型Type的实例类型 来构造一个类型
+14. `ThisParameterType<Type>`：从函数类型Type中提取this参数的类型，若函数类型不包含this参数，返回unknown类型😢😢😢
+15. `OmitThisParameter<Type>`：从类型Type中剔除this参数，若未声明this参数，结果类型为Type，否则构建一个不带this参数的类型。泛型会被忽略，且只有最后的重载签名会被采用😢😢😢
+16. `ThisType<Type>`：不会返回一个转换后的类型，仅作为上下文this类型的一个标记。若使用该类型，需启用`--noImplicitThis`😢😢😢
+17. 操作字符串的类型，即模板字面量类型
+
+<!-- tabs:start -->
+<!-- tab:Partial -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+}
+
+let p: Partial<Todo> = {
+  title: 'hello'
+}
+```
+<!-- tab:Required -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+}
+
+let p: Required<Todo> = {
+  title: 'hello',
+  description: 'desc'
+}
+```
+<!-- tab:Readonly -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+}
+
+let p: Readonly<Todo> = {
+  title: 'hello',
+  description: 'desc'
+}
+// Cannot assign to 'title' because it is a read-only property.
+p.title = 'edit title'
+```
+<!-- tab:Record -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+}
+type Page = 'home' | 'about' | 'body'
+
+let p: Record<Page, Todo> = {
+  home: { title: 'a', description: 'desc' },
+  about: { title: 'a', description: 'desc' },
+  body: { title: 'a', description: 'desc' }
+}
+```
+<!-- tab:Pick -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+  footer: string
+}
+type Page = 'title' | 'footer'
+
+let p: Pick<Todo, Page> = {
+  title: 'a',
+  footer: 'b'
+}
+```
+<!-- tab:Omit -->
+```typescript
+interface Todo {
+  title: string
+  description: string
+  footer: string
+}
+type Page = 'title' | 'footer'
+
+let p: Omit<Todo, Page> = {
+  description: 'a'
+}
+```
+<!-- tab:Exclude -->
+```typescript
+// 'b' | 'c'
+type T0 = Exclude<'a' | 'b' | 'c', 'a'>
+// string | number
+type T2 = Exclude<string | number | (() => void), Function>
+```
+<!-- tab:Extract -->
+```typescript
+// 'a'
+type T0 = Extract<'a' | 'b' | 'c', 'a'>
+// () => void
+type T2 = Extract<string | number | (() => void), Function>
+```
+<!-- tab:NonNullable -->
+```typescript
+// string | number
+type T = NonNullable<string | number | null | undefined>
+```
+<!-- tab:Parameters -->
+```typescript
+declare function f1 (arg: { a: number, b: string }): void
+// []
+type T0 = Parameters<() => string>
+// [s: string]
+type T1 = Parameters<(s: string) => void>
+// [arg: unknown]
+type T2 = Parameters<<T>(arg: T) => T>
+// 对于函数，使用typeof😊😊😊，[arg: { a: number; b: string }]
+type T3 = Parameters<typeof f1>
+
+// never:
+type T4 = Parameters<never>
+// 下面2个，报错，Type 'string' does not satisfy the constraint '(...args: any) => any'.
+type T5 = Parameters<string>
+type T6 = Parameters<Function>
+
+// unknown[]
+type T7 = Parameters<any>
+```
+<!-- tab:ConstructorParameters -->
+```typescript
+// [message?: string | undefined]
+type T0 = ConstructorParameters<ErrorConstructor>
+// 报错，Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
+type T1 = ConstructorParameters<Function>
+```
+<!-- tab:ReturnType -->
+```typescript
+// string
+type T0 = ReturnType<() => string>
+// unknown
+type T1 = ReturnType<(<T>()) => T>
+// 报错：Type 'string' does not satisfy the constraint '(...args: any) => any'.
+type T2 = ReturnType<string>
+type T3 = ReturnType<Function>
 ```
 <!-- tabs:end -->
 
