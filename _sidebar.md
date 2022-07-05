@@ -24,6 +24,7 @@
   - typescript
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
     - [第二阶段知识点](usage-frame/typescript二期知识点.md)
+    - [奇怪或有用的代码](usage-frame/typescript-code.md)
 
 - 代码片段
   - [electron](code-frames/electron.md)
