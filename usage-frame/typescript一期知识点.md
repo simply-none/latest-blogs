@@ -247,6 +247,35 @@ type ValidationResult =
 - 在实际应用中，字面量类型可以与联合类型、类型守卫、类型别名结合使用
 - 字符串字面量类型还可用于区分函数重载，和普通函数重载一致
 
+## symbol类型
+
+通过`Symbol('desc')`创建的值是不可改变且唯一的；
+
+用途：
+- 用作对象属性的键
+- 与计算出的属性名声明相结合来声明对象的属性和类成员
+
+```typescript
+// 用过对象的键
+const sym = Symbol()
+let obj = {
+  [sym]: 123
+}
+console.log(obj[sym])
+
+// 用作类成员
+const getClassNameSymbol = Symbol()
+class C {
+  [getClassNameSymbol] () {
+    return 'c'
+  }
+}
+let c = new C()
+console.log(c[getClassNameSymbol](), 'get c')
+```
+
+内置的symbols😢😢😢
+
 ## 交叉类型
 
 通俗理解：交叉类型，将多个类型合并为一个类型，包含了所有类型的特性，同时拥有所有类型的成员

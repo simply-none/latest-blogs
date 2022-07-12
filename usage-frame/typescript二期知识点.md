@@ -1,5 +1,237 @@
 # TypeScript 知识点（第二期）
 
+## 声明合并
+
+定义：声明合并是指编译器将针对同一个名字的多个独立声明合并为一个单一声明，合并后的声明同时拥有原先多个声明的特性
+
+声明定义：声明会创建三种实体的组合，分别是命名空间、类型或值，如下所示：
+
+| Declaration Type | Namespace | Type | Value |
+| --- | --- | --- | --- |
+| Namespace | ✔ |  | ✔ |
+| Class |  | ✔ | ✔ |
+| Enum |  | ✔ | ✔ |
+| Interface |  | ✔ |  |
+| Type Alias |  | ✔ |  |
+| Function |  |  | ✔ |
+| Variable |  |  | ✔ |
+
+声明合并分类：
+
+1. 接口合并：把双方的成员放到一个同名的接口里
+
+注意：
+- 接口的非函数成员若不唯一，他们必须要是相同的类型，否则报错
+- 接口的函数成员若有多个，则会当成该函数的重载
+- 接口合并时，后者优先级更高（后者的成员放在合并接口的前面）
+- 若同名函数有多个，并且包含有单一的字符串字面量的参数类型，则该函数会提升到重载列表的顶端，并按照后来者居上原则排序
+
+2. 命名空间合并：同名的命名空间也会合并其成员，命名空间会创建出命名空间和值
+
+注意：
+- 命名空间内模块导出的同名接口会进行合并
+- 后面的命名空间的导出成员会加到第一个命名空间里面
+- 命名空间的非导出成员仅在原有的命名空间内可见，其他命名空间合并过来的成员无法访问
+
+3. 命名空间可以和类、函数、枚举类型合并，只要命名空间的定义符合将要合并类型的定义，合并结果包含两者的声明类型（可以使用这个实现JavaScript的设计模式）
+
+4. 命名空间与类合并：合并结果是一个类带有一个内部类，可以使用命名空间为类增加静态属性，类只能访问已导出的命名空间成员
+5. 命名空间与函数合并：可以给函数添加一些属性，保证类型安全
+6. 命名空间与枚举类型合并：扩展枚举类型，这里的扩展，更多的是对枚举类型的应用罢了
+
+<!-- tabs:start -->
+<!-- tab:接口合并 -->
+```typescript
+interface Document {
+  createElement (tagName: any): Element
+}
+interface Document {
+  createElement (tagName: "div"): HTMLDivElement
+  createElement (tagName: "span"): HTMLSpanElement
+}
+interface Document {
+  createElement (tagName: string): HTMLDivElement
+  createElement (tagName: "canvas"): HTMLCanvasElement
+}
+// 合并后
+interface Document {
+  createElement(tagName: "canvas"): HTMLCanvasElement;
+  createElement(tagName: "div"): HTMLDivElement;
+  createElement(tagName: "span"): HTMLSpanElement;
+  createElement(tagName: string): HTMLElement;
+  createElement(tagName: any): Element;
+}
+
+```
+<!-- tab:命名空间与类合并 -->
+```typescript
+class Album {
+  // 使用命名空间中的类
+  label: Album.AlbumLabel
+}
+namespace Album {
+  export class AlbumLabel {}
+}
+```
+<!-- tab:命名空间与函数合并 -->
+```typescript
+function buildLabel (name: string): string {
+  // 使用命名空间中的属性
+  return buildLabel.prefix + name + buildLabel.suffix
+}
+namespace buildLabel {
+  export let suffix = ''
+  export let prefix = 'hello, '
+}
+console.log(buildLabel('sam smith'))
+```
+<!-- tab:命名空间扩展枚举类型 -->
+```typescript
+enum Color {
+  red = 1,
+  green = 2
+}
+namespace Color {
+  export function mixColor (colorName: string) {
+    if (colorName === 'yellow') {
+      return Color.red + Color.green
+    }
+    return Color.red
+  }
+}
+// 使用，得出一个新的值罢了（所谓的扩展？😢😢😢）
+console.log(Color.mixColor('yellow'))
+```
+<!-- tabs:end -->
+
+**声明合并注意事项**：
+- 类不能与其他类或变量合并
+
+## 混入mixins
+
+多继承的弊端：
+- 在支持多继承的环境下，若一个子类所继承的多个父类都拥有一个同名方法，子类在调用该方法时，不知道调用哪一个父类的该方法
+
+混入定义：有的时候，声明一个同时继承两个或多个类的类是一个好的想法，思路有2种：
+- 定义两个基类，然后定义一个子类implements两个基类，然后定义一个函数，将基类的原型prototype的方法实现/复制到子类的原型prototype中
+- 定义两个基类，然后定义一个子类，并定义一个同名子类的接口extendds两个基类，然后定义一个函数，将基类的原型prototype的方法实现/复制到子类的原型prototype中
+
+<!-- tabs:start -->
+<!-- tab:implements -->
+```typescript
+class Basic1 {
+  isBasic1: boolean
+  setBasic1 () {
+    this.isBasic1 = true
+  }
+}
+class Basic2 {
+  isBasic2: boolean
+  setBasic2 () {
+    this.isBasic2 = true
+  }
+}
+class Child {}
+interface Child extends Basic1, Basic2 {}
+// 将基类的属性，复制到目标类中
+function mixins (child: any, basics: any[]) {
+  basics.forEach(basic => {
+    Object.getOwnPropertyNames(basic.prototype).forEach(name => {
+      const nameDescptor = Object.getOwnPropertyDescriptor(basic.prototype, name)
+      if (!nameDescptor) {
+          return
+      }
+      Object.defineProperty(child.prototype, name, nameDescptor);
+    })
+  })
+}
+
+mixins(Child, [Basic2, Basic1])
+```
+<!-- tab:extends -->
+```typescript
+class Basic1 {
+  isBasic1: boolean
+  setBasic1 () {
+    this.isBasic1 = true
+  }
+}
+class Basic2 {
+  isBasic2: boolean
+  setBasic2 () {
+    this.isBasic2 = true
+  }
+}
+// 此处只是占坑
+class Child implements Basic1, Basic2 {
+  isBasic1: boolean
+  isBasic2: boolean
+  setBasic1: () => void
+  setBasic2: () => void
+}
+
+function mixins (child: any, basics: any[]) {
+  basics.forEach(basic => {
+    Object.getOwnPropertyNames(basic.prototype).forEach(name => {
+      if (name !== 'constructor') {
+        child.prototype[name] = basic.prototype[name]
+      }
+    })
+  })
+}
+
+mixins(Child, [Basic2, Basic1])
+```
+<!-- tabs:end -->
+
+
+注意事项：
+- 若多个基类包含了同名方法，只会继承传入*复制函数*里最后一个基类赋值的该方法
+### implements与extends的区别
+
+类的声明：既可以当成一个*类*来使用，同时也能当成一个*类类型*来使用；因为类可以作为一个接口使用，同时类实现了接口，所以有以下关系:
+  - 类只能继承类
+  - 接口能继承类和接口
+  - 类能实现接口和类，因为接口不包含具体实现呀，所以只能在类上实现
+  - 接口不能实现接口或类
+
+implements：一个新的类，从父类或接口实现所有的属性和方法，同时可以重写属性和方法，还可以新增一些属性和方法
+
+extends：一个新的接口或类，从父类或者接口继承所有的属性和方法，不能重写属性，可以重写方法
+
+<!-- tabs:start -->
+<!-- tab:类声明 -->
+```typescript
+// 声明类Point，同时也声明了一个类类型Point
+class Point {
+  x: number
+  y: number
+  constructor (x: number, y: number) {
+    this.x = x
+    this.y = y
+  }
+}
+
+// 同时声明了一个类类型Point（隐式的，偷偷呈现的）
+interface Point {
+  x: number
+  y: number
+}
+
+// 作为类使用
+let p: Point = new Point(2, 3)
+
+// 作为类类型使用
+function printPoint (p: Point) {
+  console.log(p.x, p.y)
+}
+printPoint(new Point(2, 3))
+
+
+```
+
+<!-- tabs:end -->
+
 ## 三斜线指令
 
 定义：
@@ -221,6 +453,50 @@ calss extendCal extends Cal {
 }
 export { test } from './cal.ts'
 ```
+
+### 模块扩展和全局扩展
+
+定义：顾名思义，即扩展模块，给模块增加新的特性或功能
+
+注意事项：
+- 仅可以对模块中已经存在的声明进行扩展
+- 不能扩展模块的默认导出
+
+<!-- tabs:start -->
+<!-- tab:模块扩展 -->
+```typescript
+// obse.ts
+export class Obse<T> {}
+
+// map.ts
+import { Obse } from './obse.ts'
+declare module './obse.ts' {
+  interface Obse<T> {
+    // 对原有的声明扩展出一个新的方法声明
+    map<U>(f: (x: T) => U): Obse<U>
+  }
+}
+Obse.prototype.map = function (f) {}
+
+// 在com.ts中使用
+import { Obse } from './obse.ts'
+import './map.ts'
+let o: Obse<number>
+o.map(x => x.toFixed())
+```
+<!-- tab:全局扩展 -->
+```typescript
+// obse.ts
+export class Obse<T> {}
+declare global {
+  interface Array<T> {
+    // 给全局对象中的Array扩展一个新的实例方法toObse
+    toObse: Obse<T>
+  }
+}
+Array.property.toObse = function () {}
+```
+<!-- tabs:end -->
 
 ## 模块解析
 
