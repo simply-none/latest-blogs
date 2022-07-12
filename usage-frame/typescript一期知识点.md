@@ -247,6 +247,82 @@ type ValidationResult =
 - 在实际应用中，字面量类型可以与联合类型、类型守卫、类型别名结合使用
 - 字符串字面量类型还可用于区分函数重载，和普通函数重载一致
 
+## 模板字面量类型
+
+定义：模板字面量类型以字符串字面量类型为基础，且可以展开为多个字符串类型的联合类型
+
+语法：
+- 与JavaScript的模板字面量一致，只不过它是作用于类型上
+- 该类型的值，本质上来说，是一个字符串类型
+- 适用于数量较少的情况
+
+```typescript
+type EmailLocaleIDs = 'welcome_email' | 'email_heading'
+type FooterLocaleIDs = 'footer_title' | 'footer_sendoff'
+type Lang = 'en' | 'cn'
+
+// "welcome_email_id" | "email_heading_id" | "footer_title_id" | "footer_sendoff_id"
+type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`
+// "en_welcome_email_id" | "en_email_heading_id" | "en_footer_title_id" | "en_footer_sendoff_id" | "cn_welcome_email_id" | "cn_email_heading_id" | "cn_footer_title_id" | "cn_footer_sendoff_id"
+type LocaleMsg = `${Lang}_${AllLocaleIDs}`
+```
+
+**类型中的字符串联合类型**：模板字面量的强大之处是能够基于给定的字符串来创建新的字符串
+
+```typescript
+// javascript常见的模式是基于现有的对象属性进行扩展，比如定义一个函数类型on，监听值的变化
+type PropEventSource<Type> {
+  on(
+    // 这里注释下面这行，不然排版会出问题
+    // eventName: `${string & keyof Type}Changed`,
+    callback: (newValue: any) => void
+  ): void
+}
+// 此处的返回值类型是T & PropEventSource<T> => T & { on: (...) => void }，即给T增加了一个对象方法on
+declare function makeWatchedObject<T>(obj: T): T & PropEventSource<T>
+
+const person = makeWatchedObject({
+  firstName: 'Sao',
+  lastName: 'Ron',
+  age: 26
+})
+// 正常，因为eventName的值，是string & keyof Person => `${'firstName' | 'lastName' | 'age'}Changed`
+person.on('firstNameChanged', () => {})
+// 错误，因为不存在firstName
+person.on('firstName', () => {})
+```
+
+**模板字面量类型推断**：模板字面量类型能够从替换字符串的位置推断出类型，即person.on的第一个参数
+
+```typescript
+type PropEventSource<Type> {
+  on<Key extends string & keyof Type>(
+    // 这里注释下面这行，不然排版会出问题
+    // eventName: `${Key}Changed`,
+    callback: (newValue: Type[Key]) => void
+  ): void
+}
+// 此处的返回值类型是T & PropEventSource<T> => T & { on: (...) => void }，即给T增加了一个对象方法on
+declare function makeWatchedObject<T>(obj: T): T & PropEventSource<T>
+
+const person = makeWatchedObject({
+  firstName: 'Sao',
+  lastName: 'Ron',
+  age: 26
+})
+
+person.on('firstNameChanged', (newName) => {
+  // 此处能够自动推断出，newName的类型是peson[firstName]，即字符串字面量类型，所以下面的调用toUpperCase方法不会报错
+  console.log(`new name is ${newName.toUpperCase}`)
+})
+person.on('ageChanged', (newAge) => {
+  // 此处能够自动推断出，newAge的类型是person[age]，即数字字面量类型，所以下面的条件判断不会报错
+  if (newAge < 0>) {
+    console.warn('warning!')
+  }
+})
+```
+
 ## symbol类型
 
 通过`Symbol('desc')`创建的值是不可改变且唯一的；
@@ -512,7 +588,10 @@ type Record<K extends keyof any, T> = {
 14. `ThisParameterType<Type>`：从函数类型Type中提取this参数的类型，若函数类型不包含this参数，返回unknown类型😢😢😢
 15. `OmitThisParameter<Type>`：从类型Type中剔除this参数，若未声明this参数，结果类型为Type，否则构建一个不带this参数的类型。泛型会被忽略，且只有最后的重载签名会被采用😢😢😢
 16. `ThisType<Type>`：不会返回一个转换后的类型，仅作为上下文this类型的一个标记。若使用该类型，需启用`--noImplicitThis`😢😢😢
-17. 操作字符串的类型，即模板字面量类型
+17. `Uppercase<StringType>`：将字符串中的每个字符转为大写字母
+18. `Lowercase<StringType>`：将字符串的每个字符转为小写字母
+19. `Capitalize<StringType>`：将字符串的首字母转换为大写字母
+20. `Uncapitalize<StringType>`：将字符串的首字母转为小写字母
 
 <!-- tabs:start -->
 <!-- tab:Partial -->
@@ -649,6 +728,30 @@ type T1 = ReturnType<(<T>()) => T>
 // 报错：Type 'string' does not satisfy the constraint '(...args: any) => any'.
 type T2 = ReturnType<string>
 type T3 = ReturnType<Function>
+```
+<!-- tab:Uppercase -->
+```typescript
+type Greeting = 'hello'
+// HELLO
+type TitleGreeting = Uppercase<Greeting>
+```
+<!-- tab:Lowercase -->
+```typescript
+type Greeting = 'HeLlo'
+// hello
+type TitleGreeting = Lowercase<Greeting>
+```
+<!-- tab:Capitalize -->
+```typescript
+type Greeting = 'heLlo'
+// HeLlo
+type TitleGreeting = Capitalize<Greeting>
+```
+<!-- tab:Uncapitalize -->
+```typescript
+type Greeting = 'HeLlo'
+// heLlo
+type TitleGreeting = Uncapitalize<Greeting>
 ```
 <!-- tabs:end -->
 
@@ -1586,3 +1689,12 @@ class BeeKeeper {
 createInstance(Bee).Keeper.hasMask
 ```
 <!-- tabs:end -->
+
+## 生成器和迭代器
+
+可迭代对象：实现了属性Symbol.iterator，比如Array、Map、Set、String、Int32Array、Unit32Array、arguments等
+
+### for...of和for...in
+
+- for...of：遍历可迭代对象，调用对象上的Symbol.iterator方法
+- for...in：以任意顺序迭代一个对象除Symbol以外的可枚举的属性，包括继承的属性
