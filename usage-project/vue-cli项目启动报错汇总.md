@@ -71,3 +71,9 @@ module.exports = {
 原因：装了插件default-passive-events，然后组件中使用了addEventListener监听事件的方法
 
 解决方法：在addEventListener中第三个选项参数，添加一个对象，并给该对象添加一个属性passive为false
+
+## 报错9：element-ui表格无法展示
+
+原因：由于vue升级为2.7.x导致vue及vue-template-compiler版本对element-ui解析策略不一致造成的错误
+
+解决方法，固定vue及vue-template-compiler的版本号为`~2.6.0`
