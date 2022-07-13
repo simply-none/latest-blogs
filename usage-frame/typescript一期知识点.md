@@ -4,6 +4,64 @@
 > 注意：可能有些过时内容    
 > 😢😢😢表示文中不明白的，未记录的内容
 
+## 变量声明
+
+var、let、const比较：
+- var声明可以在包含他的函数、模块、命名空间、全局作用域中的任何位置被访问到，可以多次使用var声明同一个变量，属于函数作用域或var作用域
+- let声明：只能在包含他们的块内访问（比如大括号括起的，又比如同一个文件内），声明之前不能被读写（暂时性死区），只能声明一次（又，不能对函数参数使用let重新声明，除非在函数内一个明显的块内（用大括号括起的）），属于词法作用域或块作用域
+- const声明：赋值后不能再改变，拥有与let相同的作用域规则
+
+<!-- tabs:start -->
+<!-- tab:var变量 -->
+```typescript
+// 此处由于setTimeout是微任务，在所有宏任务执行完毕后再执行，此时i为10
+// 然后执行微任务，由于i是一个全局变量，所以每一条语句的i的值都为10
+for (var i = 0; i < 10; i++) {
+  setTimeout(function() { console.log(i); }, 100 * i);
+}
+// 解决方法之一：使用立即执行表达式捕获i的值
+for (var i = 0; i < 10; i++) {
+  // 这里传入了i，所以下次执行微任务时这里面的i就固定住了
+  (function(i) {
+      setTimeout(function() { console.log(i); }, 100 * i);
+  })(i);
+}
+
+```
+<!-- tab:let变量 -->
+```typescript
+// 报错
+function f(x: number) {
+  let x = 100
+}
+// 正确
+function f(x: number) {
+  if (Date.now() > 0) {
+    let x = 100
+  }
+}
+
+```
+<!-- tabs:end -->
+
+## 解构
+
+### 数组解构
+
+```typescript
+// 解构数组
+let input = [1, 2]
+// 这里的分号不能省略
+let [first, second] = input;
+[first, second] = [second, first]
+console.log(first, second)
+```
+
+### 元组解构
+
+注意：
+- 解构元组时，超过元组索引范围会报错
+
 ## 基础知识
 
 1. 脚本编译 ts 文件，使用命令`tsc xxx.ts xxx.js`
