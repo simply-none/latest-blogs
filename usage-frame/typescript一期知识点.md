@@ -757,14 +757,14 @@ type TitleGreeting = Uncapitalize<Greeting>
 
 ## 类型相关
 
-1. 类型声明：   
+### 类型声明
 定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
 
-2. 类型推断：   
+### 类型推断
 定义：typescript 会在无明确类型时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性     
 上下文归类：类型推断的反方向，通常会在包含函数的参数、赋值表达式右侧、类型断言、对象成员和数组字面量、返回值语句中用到
 
-3. 类型断言：   
+### 类型断言
 定义：手动指定一个值的类型，就可以调用该类型的方法而不在编译时报错（但在运行时该报错还是会报错）
 
 语法：
@@ -792,36 +792,6 @@ let strLength: number = (someValue as string).length
 使用：
 - typescript 类型之间的对比只会比较他们最终的结构，而忽略他们定义时的关系。
 
-4. 类型兼容：
-
-定义：
-- 由于typescript使用的是结构类型的系统，当比较两种不同的类型时，并不在乎他们从何而来，若所有成员的类型都是兼容的，则他们也是兼容的；
-- 当成员的修饰符为private、protected时，只有他们来自同一处声明时（实例的继承链都继承自同一个对象、都是某个对象的实例），他们的类型才是兼容的
-
-使用
-- 兼容的类型，可以进行赋值操作（只能是成员多的赋给成员少的或成员相同的，不能成员少的赋值给成员多的）
-
-5. 类型守卫
-
-前景：
-- 联合类型中，若要访问非共同拥有的成员，每次调用都需要使用类型断言才会工作
-
-定义：
-- 类型守卫机制可以避免多次断言的问题，当通过类型检查之后，该代码块下的所有该变量就会判定为该类型（类型兼容）
-- 类型守卫是一些表达式，会在运行时检查，以确保在某个作用域下的类型
-
-类型守卫使用方式：
-- 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
-- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型；条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
-- typeof类型守卫：typescript会将`typeof v === 'typename'`和`typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
-- instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为`n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
-
-注意事项：
-- 对于包含null的参数联合类型，需要使用类型守卫去除null；方法包括：条件语句`if (sn === null) {}`, 短路运算符`return sn || 'default'`
-- 若编译器不能自动去除null或undefined，需要手动使用类型断言去除，方式是在变量后面添加`!`，例如`name!.charAt(0)`
-
-<!-- tabs:start -->
-<!-- tab:类型断言 -->
 ```typescript
 interface Bird {
   fly();
@@ -841,6 +811,137 @@ if ((pet as Fish).swim) {
   (pet as Bird).fly()
 }
 ```
+
+### 类型兼容
+
+定义：
+- 由于typescript使用的是结构类型的系统，当比较两种不同的类型时，并不在乎他们从何而来，只会比较他们的结构是否兼容（包含或被包含），若两者之间所有成员的类型都是兼容的，则他们也是兼容的
+- 对于值来说，当前有两个结构x和y，若想x兼容y（例如将y类型赋值给x类型的变量），则必须保证y类型必须包含（多于）x类型的结构（只能多，但不能少），即结构多的赋值给结构少的
+- 对于函数来说，当前有两个函数x和y，他们除函数参数外其余都相等，若想x兼容y，必须保证y的函数参数被包含（小于）x的函数参数，即参数少的，可以赋值给参数多的，相当于调用的时候，可以省略参数
+- 对于函数来说，当前有两个函数x和y，他们除返回值外其余都相等，若想x兼容y，和值兼容类似，则必须保证y类型必须包含（多余）x类型的结构（只能多，不能少），即结构多的赋值给结构少的
+- 当成员的修饰符为private、protected时，只有他们来自同一处声明时（实例的继承链都继承自同一个对象、都是某个对象的实例），他们的类型才是兼容的
+
+函数参数的双向协变：定义一个函数，该函数含有一个函数类型的参数，且该参数是非具体的（泛的），当调用时，却传入了一个具体的函数类型的参数，它是不稳定的，这就叫做函数的双向协变。可以启用`strictFunctionTypes`选项，让typescript在这种情形下报错。
+
+可选参数和剩余参数：比较函数兼容性时，可选参数和必须参数是可互换的，源类型（调用的）上有额外的可选参数不是错误，目标类型（参照，原函数）的可选参数在源类型没有对应的参数也不是错误，缺少时，相当于该值是undefined
+
+函数重载：对于有重载的函数，源函数的每个重载都要在目标函数上找到对应的函数前面，确保了目标函数可以在所有原函数可调用的地方调用
+
+枚举类型和数字类型互相兼容，但是不同枚举类型之间是互不兼容的
+
+对于类之间的兼容性：
+- 只会比较类的实例成员，静态函数和构造函数不在比较的范围内
+- 类的私有成员和保护成员会影响兼容性，当目标类型（比如父类）包含一个私有成员，则源类型（比如子类）则必须包含来自同一个类的这个私有成员（只有继承关系才会来自同一个类）。这表明子类可以赋值给父类，但是不能赋值给其他和父类同结构的类
+
+对于泛型之间的兼容性：
+- 泛型中的类型参数，若是结构中的内容与类型参数无关，只要两个泛型结构兼容，则类型参数的类型不会影响两者兼容性
+- 泛型的表示不同，只要结构类型都相同，也是不影响兼容的，比如泛型T和泛型U
+
+子类型和赋值：typescript有两者兼容性的方式，就是子类型和赋值
+- 赋值扩展了子类型的兼容性，增加了一些规则，允许和any来回赋值，以及enum和number来回赋值
+- 类型兼容性实际上是由赋值兼容性控制，即使是在implements和extends语句中😢😢😢
+
+<!-- tabs:start -->
+<!-- tab:值兼容 -->
+```typescript
+interface Named {
+  name: string
+}
+let x: Named
+let y = { name: 'alice', location: 'beijing' }
+// x能够兼容y，因为y的结构包含x的结构
+x = y
+```
+<!-- tab:函数参数兼容 -->
+```typescript
+let x = (a: number) => 0
+let y = (a: number, s: string) => 0
+// 兼容
+y = x
+// 不兼容
+x = y
+```
+<!-- tab:函数返回值兼容 -->
+```typescript
+let x = (a: number) => ({ name: 'alice' })
+let y = (a: number) => ({ name: 'alice', location: 'beijing' })
+// 兼容
+x = y
+// 不兼容
+y = x
+```
+<!-- tab:函数的双向协变 -->
+```typescript
+interface Event { timestamp: number }
+interface MouseEvent extends Event { x: number, y: number }
+interface KeyEvent extends Event { keyCode: number }
+// 这里定义的参数的函数参数类型为Event，是不精确的
+function listenEvent(eventType: string, handler: (n: Event) => void) {}
+// 使用它，在启用`strictFunctionTypes`选项时会报错
+// 这里调用它使用了精确的函数参数类型MouseEvent，未启用选项不报错
+listenEvent('Mouse', (e: MouseEvent) => cosole.log(e.x))
+// 其他正确的写法
+listenEvent('Mouse', (e: Event) => console.log((e as MouseEvent).x))
+listenEvent('Mouse', ((e: MouseEvent) => console.log(e.x)) as (e: Event) => void)
+```
+<!-- tab:可选参数和剩余参数 -->
+```typescript
+// 目标函数
+function invoke(callback: (...args: any[]) => void) { callback() }
+// 源函数有可选参数，不会报错，当未传入时，值为undefined
+invoke((x?, y?) => console.log(x + ',' + y))
+
+// 目标函数有可选参数，不会报错
+function invoke(callback: (x: any, y?: any, z?: any) => void) {
+    callback(1, 2, 4)
+}
+invoke((x, y) => console.log(x + ',' + y))
+```
+<!-- tab:泛型兼容性 -->
+```typescript
+// 泛型参数对泛型兼容性的影响1
+interface Empty<T> {
+  name: string
+}
+let x: Empty<number> = { name: '' }
+let y: Empty<string> = { name: '' }
+// 下面互相兼容
+x = y;
+y = x;
+
+// 泛型参数对泛型兼容性的影响2
+interface Empty<T> {
+  name: Array<T>
+}
+let x: Empty<number> = { name: [0] }
+let y: Empty<string> = { name: [''] }
+// 下面互不兼容
+x = y;
+y = x;
+
+```
+<!-- tabs:end -->
+
+### 类型守卫
+
+前景：
+- 联合类型中，若要访问非共同拥有的成员，每次调用都需要使用类型断言才会工作
+
+定义：
+- 类型守卫机制可以避免多次断言的问题，当通过类型检查之后，该代码块下的所有该变量就会判定为该类型（类型兼容）
+- 类型守卫是一些表达式，会在运行时检查，以确保在某个作用域下的类型
+
+类型守卫使用方式：
+- 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
+- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型；条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
+- typeof类型守卫：typescript会将`typeof v === 'typename'`和`typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
+- instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为`n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
+
+注意事项：
+- 对于包含null的参数联合类型，需要使用类型守卫去除null；方法包括：条件语句`if (sn === null) {}`, 短路运算符`return sn || 'default'`
+- 若编译器不能自动去除null或undefined，需要手动使用类型断言去除，方式是在变量后面添加`!`，例如`name!.charAt(0)`
+
+<!-- tabs:start -->
 <!-- tab:类型判定 -->
 ```typescript
 // 定义类型判定函数
@@ -881,7 +982,7 @@ if (padder instanceof StringPadder) {
 ```
 <!-- tabs:end -->
 
-6. 类型别名
+### 类型别名
 
 定义：类型别名会给一个类型起一个新名字，有时和接口很像，除此之外，他还可以用于原始值、联合类型、元组、以及其他手写类型
 
