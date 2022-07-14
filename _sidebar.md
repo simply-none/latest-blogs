@@ -20,6 +20,7 @@
   - Vue
     - [Vue2](usage-frame/Vue2知识点.md)
     - [ElementUI](usage-frame/elementui知识点)
+    - [Vue3](usage-frame/vue3知识点及其代码.md)
   - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
