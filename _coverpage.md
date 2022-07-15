@@ -1,6 +1,6 @@
 ![logo](_media/icon.svg)
 
-# 璎耜 <small>0.0.1-alpha-v1</small>
+# 璎耜 <small>v0.0.2-alpha.2</small>
 
 > 记录工作、居家过程中学习到的知识点与一些人生思考
 
@@ -8,5 +8,4 @@
 - 佳期独怅惘，故梦已成空
 
 [GitHub](https://github.com/simply-none/latest-blogs/)
-[Gitee](https://Gitee.com/simply-none/latest-blogs/)
 [Getting Started](#每日十五谏)
