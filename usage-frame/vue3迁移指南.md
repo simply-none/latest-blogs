@@ -335,6 +335,9 @@ export default {
 使用：
 - 可以使用`watchEffect`函数侦听ref引用的更新，但是由于ref定义在setup中，此时watchEffect中不能够获取到ref对象，除非在watchEffect第二个参数上定义一个对象`{ flush: 'post' }`
 
+与vue2的不同：
+- vue3中ref的本质是，将绑定元素赋值给一个变量保存起来，后面需要使用该元素的时候，则通过变量对应的索引或其他可识别的方式进行获取
+
 <!-- tabs:start -->
 <!-- tab:基础用法 -->
 ```typescript
@@ -389,6 +392,8 @@ export default {
 <!-- tab:结合v-for的用法 -->
 ```typescript
 <template>
+  // ref和v-for一起使用时，ref内容应当是一个函数，然后通过参数将元素的内容赋值到对应的变量中（根据对应规则设置）
+  // 其中divs不一定是数组，也可以是一个对象，其ref通过迭代的key或索引被设置（如下面的i）
   <div v-for="(item, i) in list" :ref="el => { if (el) divs[i] = el }">
     {{ item }}
   </div>
@@ -404,6 +409,7 @@ export default {
       onBeforeUpdate(() => {
         divs.value = []
       })
+      
       return {
         list,
         divs
@@ -413,6 +419,32 @@ export default {
 </script>
 ```
 <!-- tabs:end -->
+
+## 组件
+
+### 异步组件
+
+定义：
+```typescript
+import { defineAsyncComponent } from 'vue'
+import ErrorComponent from './err.vue'
+import LoadingComponent from './loading.vue'
+
+// 不带选项的异步组件
+const asyncModal = defineAsyncComponent(() => import('./modal.vue'))
+
+// 带选项的异步组件
+const asyncModalWithOptions = defineAsyncComponent({
+  loader: () => import('./modal.vue'),
+  delay: 200,
+  timeout: 3000,
+  errorComponent: ErrorComponent,
+  loadingComponent: LoadingComponent
+})
+```
+
+注意：
+- 对于在vue route中的异步组件，使用[懒加载](https://next.router.vuejs.org/guide/advanced/lazy-loading.html)加载路由组件，而不是上面这种方式
 
 
 ## teleport
