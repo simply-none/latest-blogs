@@ -16,7 +16,7 @@
 
 ## 响应性
 
-### 响应性基础
+### ref和reactive
 
 声明响应式状态的方式：
 - 对象类型：reactive，ref
@@ -424,7 +424,17 @@ export default {
 
 ### 异步组件
 
-定义：
+defineAsyncComponent：创建一个只有在需要时才会加载的异步组件，
+- 可接收一个参数，其类型是返回promise的函数，或一个对象
+
+<!-- tabs:start -->
+<!-- tab:基本用法 -->
+```typescript
+import { defineAsyncComponent } from 'vue'
+const AsyncComp = defineAsyncComponent(() => import('./AsyncComponent.vue'))
+app.component('async-component', AsyncComp)
+```
+<!-- tab:对象格式参数 -->
 ```typescript
 import { defineAsyncComponent } from 'vue'
 import ErrorComponent from './err.vue'
@@ -435,13 +445,38 @@ const asyncModal = defineAsyncComponent(() => import('./modal.vue'))
 
 // 带选项的异步组件
 const asyncModalWithOptions = defineAsyncComponent({
+  // 工厂函数
   loader: () => import('./modal.vue'),
+  // 加载loadingComponent组件之前的延迟
   delay: 200,
+  // 超时时间，超时后加载错误组件
   timeout: 3000,
+  // 组件是否可挂起
+  suspensible: true,
+  // 加载失败时使用的组件
   errorComponent: ErrorComponent,
-  loadingComponent: LoadingComponent
+  // 加载异步组件时要使用的组件
+  loadingComponent: LoadingComponent,
+  /**
+   * error: 错误信息对象
+   * retry：函数，指示当promise加载器reject时，加载器是否要重试
+   * fail：函数，指示加载程序结束退出
+   * attempts：允许最大的重试次数
+   */
+   onError (error, retry, fail, attempts) {
+     if (error.message.match(/fetch/) && attempts <= 3) {
+      // 请求错误时重试，最多可重试三次
+      retry()
+     } else {
+      //  retry、fail像promise的resolve、reject一样，必须调用其中一个才能继续错误处理
+      fail()
+     }
+   }
 })
 ```
+
+<!-- tabs:end -->
+
 
 注意：
 - 对于在vue route中的异步组件，使用[懒加载](https://next.router.vuejs.org/guide/advanced/lazy-loading.html)加载路由组件，而不是上面这种方式
@@ -475,6 +510,15 @@ teleport元素具备以下属性：
   <div>B</div>
 </div>
 ```
+
+## 实例property
+
+### $attrs
+
+定义：
+- 包含了父作用域中不作为组件props、自定义事件的属性绑定、事件
+- 当组件无声明任何prop时，他会包含所有父作用域的绑定，通过`v-bind="$attrs"`传入内部组件
+- vue3中的$attrs包含了所有传递给组件的attribute，其中包括class和style
 
 ## 片段
 
@@ -1030,3 +1074,217 @@ const border = {
 </style>
 ```
 
+## ✅vue3新增的内容
+
+### emits选项
+
+改动：
+- 若想在组件中抛出父组件传入的事件，必须在`$emits`选项（与setup函数同级）中定义该事件
+- 因为移除了native修饰符，不在`$emits`选项中声明的事件，都会算入到组件的`$attrs`中，默认绑定到组件的根节点
+
+### 片段
+
+即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
+
+## ⭕vue3与vue2不兼容的内容
+
+### v-for中ref的定义
+
+### 异步组件的定义方式
+
+### $attrs
+
+定义：
+- 包含了父作用域中不作为组件props、自定义事件的属性绑定、事件
+- 当组件无声明任何prop时，他会包含所有父作用域的绑定，通过`v-bind="$attrs"`传入内部组件
+- vue3中的$attrs包含了所有传递给组件的attribute，其中包括class和style
+
+### 自定义指令
+
+改动：
+- 修改了一些属性表述，其声明周期钩子和组件的保持类似（更容易记住）；
+- 使用`binding.instance`访问组件实例
+- 当作用域多根组件（片段）时，自定义组件会被忽略并抛出警告
+
+```typescript
+const MyDirective = {
+  // 新增
+  created (el, binding, vnode, preVnode) {}
+  beforeMount () {},
+  mounted () {},
+  // 新增
+  beforeUpdate () {},
+  updated () {},
+  // 新增
+  beforeUnmount () {},
+  unMounted () {}
+}
+```
+
+### 自定义元素
+
+改动：
+- 检测并确定哪些标签会被视为自定义元素，会在模板编译期间执行，它应当通过编译器选项进行配置（比如在`vue-loader`中配置`compilerOptions`选项
+- 向内置元素中添加is属性，可以将自定义元素作为自定义内置元素；当将is用于某些元素时，他是将is属性的值传递给元素内部，而不是渲染is属性代表的内容（比如某组件）
+- 若想将某些元素解析为is属性代表的vue组件时，需要对is属性值添加一个前缀`vue:`，比如`<tr is="vue:custom-button"></tr>`
+
+``` typescript
+// 配置自定义元素
+rules: [
+  {
+    test: /\.vue$/,
+    use: 'vue-loader',
+    options: {
+      compilerOptions: {
+        isCustomElement: tag => tag === 'custom-button'
+      }
+    }
+  }
+]
+```
+
+### data选项
+
+改动：
+- data必须是一个返回对象的函数
+- 合并来自mixin或extend的多个data返回值时，仅合并根级的属性，若该属性是一个对象时，会对整个对象进行覆盖（后面的覆盖前面的），而非对对象属性进行覆盖
+
+### 函数式组件
+
+改动：
+- 函数式组件只能通过具备props和context（slots、attrs、emit）参数的函数创建
+
+### 全局API
+
+改动：
+- 通过createApp创建vue实例，通过`createApp(Comp).mount('#app')`挂载app实例
+- 移除了config.productionTip，因为大多数工具已经正确配置了生产环境
+- config.ignoredElements替换成了config.isCustomElement
+- Vue.prototype替换为config.globalProperties，比如创建全局属性api(`createApp().config.globalProperties.$api = () = {}`)
+- 移除了Vue.extend，应该始终使用createApp这个全局API挂载组件
+
+### 全局API Treeshaking
+
+改动：
+- 对于nextTick的使用，修复导致`undefined is not a function`的错误
+
+```typescript
+// 必须显式导入nextTick
+import { nextTick } from 'vue'
+
+nextTick(() => {
+  // 一些和DOM有关的东西
+})
+```
+
+### 挂载API模板的变化
+
+改动：
+- 当挂在一个具有template的应用时，被渲染的应用会作为目标元素的子元素插入（即替换目标元素的innerHTML，而非目标元素本身）
+
+### 事件API
+
+改动：
+- `$on`, `$off`, `$once`都被移除
+- 若想实现这些效果，对于根组件事件，可以通过props传递给createApp函数添加到根组件中；对于事件总线可以使用第三方库（比如mitt、tiny-emitter）实现
+
+### 内联模板属性inline-template
+
+改动：
+- inline-template属性（目前未使用到，先不管了）是将其内部内容作为模板使用，vue3要使用，必须：
+  - 使用script标签，然后将id属性标注(比如`id='my-inline-template'`)，然后在模板中使用：`template: '#my-inline-template'`
+  - 使用默认插槽
+
+### key属性
+
+改动：
+- 对于v-if、v-else、v-else-if的key不是必须的，会自动生成唯一的key；若向手动指定key，必须每个分支保持唯一
+- template v-for上的key应该设置在template上，而非子节点
+
+### 按键修饰符
+
+改动：
+- 不支持数字键码作为v-on的修饰符（比如`v-on:keyup.13`），应该使用短横线名称（比如`v-on:keyup.page-down`），这将导致某些字符无法匹配，可以在监听器内部使用event.key代替
+- 同时全局配置的keyCodes也不再支持
+
+### 在prop的默认函数default中访问this
+
+改动：
+- props的default函数接收原始的prop作为参数传给默认函数，inject可以在默认函数中使用
+
+```typescript
+import { inject } from 'vue'
+export default {
+  props: {
+    theme: {
+      default (props) {
+        // props是传递给组件的，在任何类型默认强制转换之前的原始值
+        // xxx
+
+        // 或使用inject访问从上级组件注入的属性
+        return inject('theme', 'default-theme')
+      }
+    }
+  }
+}
+```
+
+### 插槽
+
+引用作用域插槽使用`this.$slots.header()`的形式，而非`this.$scopedSlots.header`
+
+### 过渡的类名修改
+
+改动：使其更加清晰易读
+- v-enter改为v-enter-from
+- v-leave改为v-leave-from
+
+### v-on:native
+
+v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只需要保证事件写入emits
+
+### v-model
+
+改动：
+- v-model的prop和事件名从value和input改为modelValue和update:modelValue
+- 可以对v-model增加参数，`v-modle:title="pageTitle"`等同于`:title="pageTitle" @update:title="pageTitle = $event" />`
+- 可以传入多个v-model
+- v-model支持自定义修饰符
+
+### v-if和v-for优先级问题
+
+改动：
+- 当两者作用于同一个元素时，v-if的优先级比v-for高
+
+### v-bind合并行为
+
+改动：
+- 若同时定义了`v-bind="{ id: red }" id="blue"`这两个相同的不同表示法，声明的顺序决定了最后渲染谁，上面的由于id在后，所以渲染为`id="blue"`，替换下顺序，就渲染成不同的内容
+
+### VNode生命周期事件
+
+通过事件监听组件生命周期，以前缀`vnode-`开头，并跟随相应的生命周期钩子的名字，比如`vnode-updated`
+
+### 侦听数组
+
+改变：
+- 当使用watch选项侦听数组时，只有当数组被替换时才会触发回调
+- 若想在数组元素改动就触发回调，需要指定deep选项
+
+## ❌vue3中移除的内容
+
+### $children
+
+在vue3中，若想访问子组件的实例，建议使用$refs
+
+### filters选项
+
+对于filters选项，建议使用方法调用或者计算属性代替；对于全局注册的filters，可以通过全局属性（例如：`create(App).config.globalProperties.$filters`）代替
+
+### $listeners
+
+该属性已移除，事件监听器是$attrs的一部分
+
+### propsData
+
+该选项用于在创建vue实例的过程中传入prop，现在想在根组件传入prop，应该使用createApp的第二个参数（一个对象的属性）传入
