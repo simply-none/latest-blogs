@@ -23,6 +23,7 @@
     - [vue3迁移指南](usage-frame/vue3迁移指南.md)
     - [Vue3](usage-frame/vue3知识点及其代码.md)
     - [pinia](usage-frame/Pinia.md)
+    - [vite](usage-frame/vite.md)
     - [vue-router迁移指南](usage-frame/vue-router迁移指南.md)
   - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
