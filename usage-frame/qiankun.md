@@ -80,6 +80,10 @@ let apps = [
     // 同时依次调用微应用暴露出的生命周期钩子
     container: '#subView',
     // 此处的 /child 必须和微应用中 new VueRouter中的base 一一对应，不然会白屏且无任何报错
+    // 此处activeRule可以使用上面的函数getActiveRule（location.pathname）区分微应用
+    // activeRule: getActiveRule('/child1')
+    // 当微应用是history模式时，直接设置路由的base就行
+    // 当微应用是hash模式时，必须使用getActiveRule函数，由于vue-router在hash模式下不支持设置路由base，此时需新建一个路由，将所有路由放在该路由的children下
     activeRule: '/child1',
     props: {
       name: 'child',
@@ -197,8 +201,12 @@ module.exports = {
     },
     configureWebpack: {
       output: {
+        // 异同点，微应用的包名与主应用中注册的微应用名称一致
+        // library: 'same-in-main-app-register-name',
         library: `${packageName}-[name]`,
+        // 将library暴露为所有的模块定义下都可运行的方式
         libraryTarget: 'umd',
+        // 按需加载相关
         jsonpFunction: `webpackJsonp_${packageName}`
       }
     }
@@ -374,6 +382,7 @@ runAfterFirstMounted(() => startMonitor())
 - 用法：
   - 手动加载一个微应用
   - 若要支持主应用手动update微应用，在微应用中需要导出一个update钩子
+  - 若一个页面同时展示多个微应用，需使用手动加载的方式，且若微应用直接都有路由跳转的需求，想让路由之间相互不受干扰，应该使用`momery`路由，即vue-router应该使用`abstract`模式
 - 参数：
   - app
     - 类型为`LoadableApp`，对象形式
@@ -522,3 +531,49 @@ export function mount(props) {
   props.setGlobalState(state)
 }
 ```
+
+## 应用部署
+
+### 场景1：主微应用部署到同一个服务器（同一个IP和端口）
+
+### 场景2：主微应用部署在不同的服务器，使用nginx代理访问
+
+解释：
+- 该场景主要是不允许主应用跨域访问微应用，此时需要将主应用服务器上一个特殊路径的请求全部转发到微应用的服务器上，通过代理实现微应用部署在主应用服务器上的效果
+- 例如主应用在A服务器，微应用在B服务器（/app1），A服务器上所有的`/app1`开头的请求都转发到B服务器上
+- 主应用注册微应用时，entry可以是相对路径，但不能和activeRule一样，否则刷新之后主应用会变成微应用
+
+
+<!-- tabs:start -->
+<!-- tab:主应用Nginx代理配置 -->
+```bash
+# 主应用Nginx代理配置：
+/app/ {
+  proxy_pass http://www.b.com/app1;
+  proxy_set_header Host $host:$server_port;
+}
+```
+<!-- tab:主应用注册微应用 -->
+```JavaScript
+registerMicroApps([
+  {
+    name: 'app1',
+    // 使用相对路径，会自动转向（nginx代理）
+    entry: '/app1',
+    container: '#container',
+    activeRule: '/child-app1'
+  }
+])
+```
+<!-- tab:vue.config.js配置 -->
+```JavaScript
+module.exports = {
+  output: {
+    // 此处必须和entry一致，否则微应用的资源路径(js, css)不会带上/app1/
+    // 同时微应用必须部署在/app1/目录，否则无法独立访问
+    publicPath: `/app1/`
+  }
+}
+```
+<!-- tabs:end -->
+
