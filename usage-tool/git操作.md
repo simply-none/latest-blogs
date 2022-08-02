@@ -45,16 +45,57 @@
 ### 提交、拉取（push、pull、fetch）
 
 - 一次性push所有的远程分支：`git push --all origin`
-- 一次性拉取远程所有代码：`git fetch --all`
+- 一次性拉取远程所有代码：`git fetch --all`，与`git pull`不同的是，他仅仅是拉取远程代码，不会自动进行`merge`操作
+  - 拉取特定分支：`git fetch origin branch_name`
 - 一次性push所有tags到远程分支：`git push origin --tags`
 - 多人协作防止出现无效的merge提交：`git pull --rebase origin <branch>`
 - 将远程的分支合并到当前的分支：`git pull origin <origin_branch>:<local_branch>`
 
+### 暂存工作区间（stash）
 
-### 合并（merge）
+- `git stash`：把本地的改动暂存起来
+- `git stash save 'message'`：把本地的改动暂存起来，添加备注，方便查找
+- `git stash pop`：应用最近一次暂存的修改，同时删除暂存记录
+- `git stash apply stash@{$num}`：无参数默认使用stash@{0}
+- `git stash list`：查看当前stash缓存列表
+- `git stash clear`：删除所有stash缓存
 
-- 合并其他分支到当前分支，比如使当前分支不落后远程分支：`git merge origin/master`
-- 非快速合并，主要是防止master混入开发分支的一些新特性，在回滚时搅乱master的提交历史：`git merge --no-ff <dev_branch>`
+### 提交回滚（revert、reset）
+
+**revert**：
+- 作用：
+  - 撤销某次操作，但不会影响原本的提交记录，而是会增加一条新的提交记录来撤回之前的提交
+- 操作：
+  - `git revert commit_id`：针对普通commit
+  - `git revert commit_id -m`：针对merge的commit
+  - `git revert commit_id1 commit_id2`：回滚多次commit，即`(commit_id1, commit_id2]`
+
+**reset**：
+- 作用：
+  - 直接将提交记录退回到指定的commit上
+
+### 合并（merge、rebase、cherry-pick）
+
+**merge**：
+- 作用：
+  - 适用于多人协作场合
+  - 即把一个分支的修改合并到当前分支上，同时会产生一条额外的合并记录，类似`merge branch xxx into xxx`
+- 用法：
+  - 合并其他分支到当前分支，比如使当前分支不落后远程分支：`git merge origin/master`
+  - 非快速合并，主要是防止master混入开发分支的一些新特性，在回滚时搅乱master的提交历史：`git merge --no-ff <dev_branch>`
+
+**rebase**：
+- 作用：
+  - 适用于个人分支
+  - 变基，即把一个分支的修改合并到当前分支上
+
+**cherry-pick**：
+- 作用：
+  - 意为挑拣，即将某个分支的单个commit，作为一个新的提交引入到当前分支上
+- 用法：
+  - `git cherry-pick commit_id`
+  - `git cherry-pick commit_id1...commit_id2`：应用多个commit，左开右闭
+  - `git cherry-pick commit_id1^...commit_id2`：应用多个commit，左闭右闭
 
 ### 日志（log）
 
@@ -67,6 +108,24 @@
 - 查看git所有的贡献人提交排名：`git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r`
 - 查看所有贡献人贡献的代码量：`git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done`
 - 查看某个贡献人贡献的代码量：`git log --author="<user_name>" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'`
+
+### 别名（alias）
+
+作用：将长命令简写
+
+注意：
+- 通过`--global`配置的别名，可在git全局配置文件中`.gitconfig`找到，其别名在`[alias]`条目下
+
+```bash
+git config --global alias.[简写名称] "长命令"
+# 例如
+# 原命令：查看日志信息
+git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+# 别名
+git config --global alias.jlg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+# 使用别名，效果和上面原命令一致
+git jlg
+```
 
 ### 综合应用
 
