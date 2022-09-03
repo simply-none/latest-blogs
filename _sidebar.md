@@ -31,6 +31,8 @@
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
     - [第二阶段知识点](usage-frame/typescript二期知识点.md)
     - [奇怪或有用的代码](usage-frame/typescript-code.md)
+  - 微前端
+    - [qiankun](usage-frame/qiankun.md)
 
 - 代码片段
   - [electron](code-frames/electron.md)
@@ -67,5 +69,6 @@
 - 效率提升工具
   - [电脑常用软件列表](usage-work-tool/电脑常用软件列表.md)
   - [在任何地方使用沙拉查词](usage-work-tool/沙拉查词.md)
+  - [工作技巧](usage-work-tool/工作技巧.md)
 
 - [突发灵感](usage-inspiration/inspiration.md)

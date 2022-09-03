@@ -1,5 +1,9 @@
 # vue3迁移指南
 
+> 参考文档：      
+> vuejs官方迁移文档（旧）       
+> https://vue3.chengpeiquan.com/component.html#%E7%94%A8%E6%B3%95%E4%B8%8A%E7%9A%84%E5%8F%98%E5%8C%96
+
 ## 准备工作
 
 防止代码出现警告：从vue2迁移到vue3后，需要安装valor插件，同时工作区需要禁用vetur插件
@@ -24,6 +28,12 @@
 
 **ref**：
 
+typescript用法：
+- 类型定义，在ref后面加一个尖括号定义类型，或者在等式左侧定义类型
+- 例如，`const msg = ref<string | number>('hello, Jade!')`
+- 例如，定义ref节点，`const formRef = ref<HTMLElement | null>(null)`
+- 例如，定义组件，`const child = ref<Child | null>(null)`
+
 定义：
 - 创建一个响应式的引用，然后可以在任何地方起作用（通过value属性访问）
 - 它接收一个参数并将其包裹在一个带有value属性的对象中，使用时需要从vue中导入
@@ -47,6 +57,13 @@ ref解包：
 
 只读的响应式对象：
 - 通过readonly函数包裹该响应式对象后，修改该对象将报错
+
+**toRef和toRefs**：
+
+| API | 语法 | 作用 | 解释|
+| --- | --- | --- | --- |
+| toRef | `toRef(obj, key)` | 创建一个新的ref变量，转换 reactive 对象的某个字段为ref变量；若对应的key不存在，值为undefined；若对不存在的key进行赋值，原ref变量也会同步增加这个变量 |只转换一个字段
+| toRefs | `toRefs(obj)` | 创建一个新的对象，它的每个字段都是 reactive 对象各个字段的ref变量 |转换所有字段
 
 
 ## 组合式API
@@ -133,6 +150,7 @@ setup内其他钩子的使用：
 - 在computed中使用props的变量，也需要使用xxx.value形式引用，不然要报错
 
 **setup中的生命周期钩子**：这些hooks接受一个回调函数，当钩子被组件调用时，回调函数将被执行
+- vue3中，在setup内使用生命周期钩子，需要先进行导入才能够使用
 
 | 选项式 API | Hook inside `setup` |
 | --- | --- |
@@ -229,6 +247,43 @@ export default {
 
 **在typescript独有的功能**：
 - https://v3.cn.vuejs.org/api/sfc-script-setup.html#%E4%BB%85%E9%99%90-typescript-%E7%9A%84%E5%8A%9F%E8%83%BD
+
+#### defineComponent
+
+定义：
+- 用于typescript的类型推导，简化很多编写过程中的类型定义（vue中固有的类型，自定义的类型除外），这样就可以专注于具体业务，而不用书写繁琐的类型定义了
+
+```typescript
+// 例如在script标签内，不使用defineComponent
+import { Slots } from 'vue'
+interface Data {
+  [key: string]: unknown;
+}
+interface ContextType {
+  attrs: Data,
+  slots: Slots,
+  emit: (event: string, ...args: unknown[]) => void
+}
+export default {
+  setup (props: PropsType, context: ContextType): Data {
+    return {
+      // xxx
+    }
+  }
+}
+
+// 使用defineComponent
+import { defineComponent } from 'vue'
+export default defineComponent {
+  setup (props, context) {
+    return {
+      // xxx
+    }
+  }
+}
+
+```
+
 ### provide和inject
 
 #### 基础用法
@@ -326,6 +381,50 @@ export default {
     }
   }
 }
+```
+
+### 数据监听
+
+#### watch
+
+语法：
+```typescript
+import { watch } from 'vue'
+
+watch(
+  // 要监听的数据源
+  source,
+  // 监听到变化后要执行的回调函数
+  callback,
+  // 监听选项，比如deep
+  options
+)
+
+// 批量监听
+watch(
+  // 数据源变成了数组
+  [source1, source2],
+  // 回调函数参数也变成了数组，且对应顺序和数据源一致
+  ([newSource1, newSource2], [oldSource1, oldSource2]) => {
+    // xxx
+  }
+)
+```
+
+监听选项：
+
+| 选项 | 类型 | 默认值 | 可选值 | 作用 |
+| --- | --- | --- | --- | --- |
+| deep | boolean | false | true | false | 是否进行深度监听 |
+| immediate | boolean | false | true | false | 是否立即执行监听回调 |
+| flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机 |
+| onTrack | (e) => void |  |  | 在数据源被追踪时调用（开发模式有效） |
+| onTrigger | (e) => void |  |  | 在监听回调被触发时调用（开发模式有效） |
+
+#### watchEffect
+
+```typescript
+
 ```
 
 ### template中的ref引用

@@ -1465,6 +1465,16 @@ interface MySum {
 let mySum: MySum = function (x: number, y: number): number {
   return x + y;
 };
+
+// 对象方法
+interface AddT {
+  add: (x: number, y: number) => number
+}
+const obj: AddT = {
+  add (x: number, y: number): number {
+    return x + y
+  }
+}
 ```
 
 场景：
@@ -1474,15 +1484,19 @@ let mySum: MySum = function (x: number, y: number): number {
 使用：
 - 函数传入的参数类型必须是和定义时一致
 - 函数的可选参数，必须在必须参数后面`(x: number, y?: number)`
+- 函数无返回值，其返回值类型为`void`
 - 函数参数的默认值`(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用`undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
 - 函数定义中参数也可用剩余参数，必须在参数的最后一个`(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
 - 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，若多个函数定义有包含关系，需要把精确的函数定义写在前面
+- 异步函数的返回值，用`Promise<T>`定义，这个适用于promise和async...await
 
 <!-- tabs:start -->
 <!-- tab:函数重载 -->
 ```typescript
 function reverse(x: number): number;
 function reverse(x: string): string;
+// 函数重载中，最后一个出现的必须是函数的实现
+// 此时需要把可能涉及到的参数类型都写出来，用于匹配之前的同名函数参数
 function reverse(x: number | string): number | string | void {
   if (typeof x === "number") {
     return Number(x.toString().split("").reverse().join(""));
@@ -1538,6 +1552,19 @@ class Handler {
 let h = new Handler();
 uiElement.addClickListener(h.onClickGood);
 
+```
+
+<!-- tab:异步函数的返回值 -->
+```typescript
+// 若没有返回数据，则使用`Promise<void>`
+function queryData(): Promise<string> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('hello, Jade!')
+    }, 1000)
+  })
+}
+queryData().then(data => console.log(data))
 ```
 <!-- tabs:end -->
 
