@@ -9,6 +9,7 @@
 
 - 第一种：搜索vetur，然后将主要的后缀（js、vue）等的格式化设置成prettier
 - 第二种：直接在setting.json中进行设置
+- 在项目根目录添加：`.prettierrc.json`文件
 
 <!-- tabs:start -->
 <!-- tab:setting.json -->
@@ -225,9 +226,20 @@
 }
 
 ```
+<!-- tab:.prettierrc.json -->
+```json
+{
+  "singleQuote": true,
+  "semi": false
+}
+```
 <!-- tabs:end -->
 
 ## 代码格式化操作
 
 1. 设置默认格式化程序为prettier
-2. 全局格式化，可在package.json添加脚本：`"prettier": "prettier --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
+2. 全局格式化，可在package.json添加脚本：`"prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
+
+## 注意事项
+
+1. 在setting.json设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置
