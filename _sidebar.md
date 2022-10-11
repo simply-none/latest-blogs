@@ -59,6 +59,7 @@
   - [eslintrc.js](usage-config/eslintrc.js.md)
 
 - 其他工作相关
+  - [vscode代码格式化](usage-other/vscode代码格式化.md)
   - [前端渲染pdf](usage-other/前端渲染pdf.md)
   - [pdfjs本地化部署](usage-other/pdfjs本地部署.md)
   - [docker打包electron](usage-other/Linux-docker打包electron.md)
