@@ -49,6 +49,7 @@
   - [npm](usage-tool/npm操作.md)
   - [babel](usage-tool/babel操作.md)
   - [webpack](usage-tool/webpack操作.md)
+  - [http请求](usage-tool/http请求.md)
   - [命令行快捷操作](usage-tool/命令行快捷操作.md)
 
 - 配置文件

@@ -84,3 +84,9 @@ module.exports = {
 
 原因：
 1. 有可能是`vue.config.js`配置出现了问题，比如publicPath配置错误，当为生产环境时，应该为`./`，当为开发环境时，应为`/`
+
+## 报错11：引入antv-g6，放大缩小画布报错: Unable to preventDefault inside passive event listener invocation.
+
+原因：主函数main.js中引入的`default-passive-events`npm包导致的
+
+解决方法：注释即可
