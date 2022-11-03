@@ -33,7 +33,9 @@
     - [第二阶段知识点](usage-frame/typescript二期知识点.md)
     - [奇怪或有用的代码](usage-frame/typescript-code.md)
   - 小程序
-    - [微信小程序](usage-frame/微信小程序.md)
+    - 微信小程序
+      - [组件](usage-frame/wechat-mini-program/组件.md)
+      - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
 
