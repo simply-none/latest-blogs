@@ -10,8 +10,9 @@
   - [项目npmrc规则解析](usage-project/npmrc规则.md)
   - [项目git历史大文件删除追踪](usage-project/git历史大文件删除追踪.md)
   - [electron-vue依赖升级](usage-project/electron-vue依赖升级.md)
-  - [vue-cli项目启动报错汇总](usage-project/vue-cli项目启动报错汇总.md)
-  - [vite项目启动报错汇总](usage-project/vite项目启动报错汇总.md)
+  - 报错与分析
+    - [vue-cli项目启动报错汇总](usage-project/vue-cli项目启动报错汇总.md)
+    - [其他项目启动报错汇总](usage-project/其他项目启动报错汇总.md)
 
 - 常用常新
   - [electron](usage-frame/electron知识.md)
@@ -31,6 +32,10 @@
     - [第一阶段知识点](usage-frame/typescript一期知识点.md)
     - [第二阶段知识点](usage-frame/typescript二期知识点.md)
     - [奇怪或有用的代码](usage-frame/typescript-code.md)
+  - 小程序
+    - 微信小程序
+      - [组件](usage-frame/wechat-mini-program/组件.md)
+      - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
 
@@ -48,6 +53,7 @@
   - [npm](usage-tool/npm操作.md)
   - [babel](usage-tool/babel操作.md)
   - [webpack](usage-tool/webpack操作.md)
+  - [http请求](usage-tool/http请求.md)
   - [命令行快捷操作](usage-tool/命令行快捷操作.md)
 
 - 配置文件
@@ -58,6 +64,7 @@
   - [eslintrc.js](usage-config/eslintrc.js.md)
 
 - 其他工作相关
+  - [vscode代码格式化](usage-other/vscode代码格式化.md)
   - [前端渲染pdf](usage-other/前端渲染pdf.md)
   - [pdfjs本地化部署](usage-other/pdfjs本地部署.md)
   - [docker打包electron](usage-other/Linux-docker打包electron.md)

@@ -77,3 +77,16 @@ module.exports = {
 原因：由于vue升级为2.7.x导致vue及vue-template-compiler版本对element-ui解析策略不一致造成的错误
 
 解决方法，固定vue及vue-template-compiler的版本号为`~2.6.0`
+
+## 报错10：Unexpected token '<'
+
+问题：当刷新页面后，页面空白，出现该错误
+
+原因：
+1. 有可能是`vue.config.js`配置出现了问题，比如publicPath配置错误，当为生产环境时，应该为`./`，当为开发环境时，应为`/`
+
+## 报错11：引入antv-g6，放大缩小画布报错: Unable to preventDefault inside passive event listener invocation.
+
+原因：主函数main.js中引入的`default-passive-events`npm包导致的
+
+解决方法：注释即可
