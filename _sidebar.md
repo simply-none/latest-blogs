@@ -34,7 +34,8 @@
     - [奇怪或有用的代码](usage-frame/typescript-code.md)
   - 小程序
     - 微信小程序
-      - [组件](usage-frame/wechat-mini-program/组件.md)
+      - [内置组件](usage-frame/wechat-mini-program/组件.md)
+      - [自定义组件](usage-frame/wechat-mini-program/自定义组件.md)
       - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
