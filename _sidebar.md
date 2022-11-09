@@ -39,6 +39,8 @@
       - [内置组件](usage-frame/wechat-mini-program/组件.md)
       - [自定义组件](usage-frame/wechat-mini-program/自定义组件.md)
       - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
+  - react
+    - [基础知识](usage-frame/react/react.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
 
