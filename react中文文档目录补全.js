@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         react中文文档目录补全-dev
-// @version      0.0.5
+// @name         react中文文档目录补全
+// @version      0.0.6
 // @description  展示react中文文档右侧目录，支持2、3、4级目录
 // @author       jade qiu
 // @match        https://zh-hans.reactjs.org/docs/*
@@ -47,11 +47,27 @@
 
   let timer = null
 
-  const render = function () {
+  const insertMenus = (subMenus, target) => {
+    const ul = document.createElement('ul')
+    ul.classList.add('custom-ul')
+    subMenus.map((second) => {
+      const co = second.cloneNode(true)
+      co.classList.add('custom-li', 'custom-li-' + co.nodeName.toLowerCase())
+      ul.appendChild(co)
+    })
+    if (target.parentNode.children.length >= 2) {
+      target.parentNode.removeChild(target.parentNode.childNodes[1])
+    }
+    target.parentNode.appendChild(ul)
+    console.log(ul, target.parentNode)
+    return true
+  }
+
+  const render = function (target) {
     let a = 0
     timer = setInterval(() => {
       a++
-      if (a === 5) {
+      if (a === 2) {
         clearInterval(timer)
         return false
       }
@@ -60,29 +76,26 @@
       const currentPageSecondLevelTitle = Array.from(
         document.querySelectorAll('article>div>div>h2,article>div>div>h3,article>div>div>h4')
       )
+      // if (target) {
+      //   insertMenus(currentPageSecondLevelTitle, target)
+      //   return true
+      // }
       allPageTitle.map((page) => {
-        const pageInnerText = page.innerText.replace(/^[0-9]\.\s/, '')
+        const pageInnerText = page.innerText.replace(/^[0-9]{1,2}\.\s/, '')
         let run = undefined
-        if (pageInnerText === 'React' && currentPageTitle.innerText === 'React 顶层 API') {
+        if (target && page.innerText === target.innerText) {
+          run = true
+        } else if (pageInnerText === 'React' && currentPageTitle.innerText === 'React 顶层 API') {
           run = true
         } else if (pageInnerText === currentPageTitle.innerText) {
           run = true
         }
+
         if (run) {
-          const ul = document.createElement('ul')
-          ul.classList.add('custom-ul')
-          currentPageSecondLevelTitle.map((second) => {
-            const co = second.cloneNode(true)
-            co.classList.add('custom-li', 'custom-li-' + co.nodeName.toLowerCase())
-            ul.appendChild(co)
-          })
-          if (page.parentNode.children.length >= 2) {
-            page.parentNode.removeChild(page.parentNode.childNodes[1])
-          }
-          page.parentNode.appendChild(ul)
+          insertMenus(currentPageSecondLevelTitle, page)
         }
       })
-    }, 1000)
+    }, 200)
   }
 
   // 监听浏览器的返回上一页事件
@@ -101,7 +114,8 @@
     if (!isA) {
       return true
     }
+    console.log(e, 'e')
     clearInterval(timer)
-    render()
+    render(e.target)
   })
 })()
