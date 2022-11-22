@@ -92,6 +92,9 @@ setInterval(hello, 1000)
   - 原生form表单元素会自己维护自身的state，但可以通过state绑定将其变成受控组件
   - 在受控组件设置数据（比如value）的默认值会阻止用户输入更改该值，除非后面又将数据的值更改为null或undefined，这时用户又能够修改内容了
   - 受控组件必须为数据变化的每种方式都编写数据处理函数，比如onChange事件
+- 非受控组件（多指表单元素）：数据将存储在DOM节点中，而非由state管理，代码无法指定该元素的值。若想快速编码且不介意美观性，可使用非受控组件
+  - 非受控组件无value属性，因为是由其内部管理的，但可指定默认初始值（defaultValue、defaultChecked）
+  - 非受控组件的值，可由ref属性获取，这时需要将`this.state.cusFile = React.createRef()`中的cusFile赋值给ref属性，后面通过变量cusFile获取元素的值
 - 状态提升：将多个组件需要共享的state上移到最近的父组件上，这样便可实现state共享，此时需要将state和处理数据的handle函数作为prop传给子组件即可
 
 <!-- tabs:start -->
