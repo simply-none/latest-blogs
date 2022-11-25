@@ -41,6 +41,8 @@
       - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
   - react
     - [基础知识](usage-frame/react/react.md)
+    - [高级指引](usage-frame/react/高级指引.md)
+    - [hooks](usage-frame/react/hooks.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
 

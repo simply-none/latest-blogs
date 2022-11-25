@@ -1,6 +1,29 @@
 # react 基础知识
 
+## Fragments(template)
+
+定义：
+- 将元素分组，而无需引入新的元素来包裹他们，类似vue的template，但又比vue的更强大些
+- 能够自动识别元素，并将代码补充完整，比如`<td></td>`将会补充其上级节点`table`, `tr`，让dom结构更完整
+
+用法：
+- `<React.Fragment> xxx </React.Fragment>`，仅支持key属性
+- `<> xxx </>`，这种短语法不支持key
+
 ## JSX
+
+定义：
+- JSX是`React.createElement(component, props, ...children)`的语法糖
+
+注意：
+- 若定义一个函数组件，即使未使用到React相关的功能，但是还是需要尽量引入react
+- 若组件在一个对象上，可以使用点语法引用组件，比如`<Date.DatePicker/>`这样的方式引入组件
+- 若组件是一个不确定名称的，即类似动态组件，也应该先计算好动态组件的名称，然后再引入组件，比如`const DyncComp = xxx; <DyncComp/>`
+- 自定义组件必须是大写字母开头，若确实是小写字母开头，也应该在引用前将其转为大写字母开头的；小写字母开头的代表html内置组件
+- jsx中的属性值，可以是任何js表达式
+- jsx中，若只有属性名，而无属性值，则属性值默认为true
+- jsx中，可使用属性展开符，比如`<button {...props}>`
+- jsx中的子元素，boolean、null、undefined将会被忽略不予展示
 
 注意：
 - JSX为了防止注入攻击（比如XSS），会在渲染内容之前对其进行转义成字符串形式
@@ -355,6 +378,198 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(<Clock/>)
 ```
 
+## refs
+
+定义：
+- refs允许我们访问DOM节点或在render方法中创建的react元素
+
+功能：
+- refs可以在数据流之外（props）对子组件进行修改（操作子组件的属性或方法）
+
+使用场景：
+- 管理焦点，文本选择，媒体播放
+- 触发强制动画
+- 集成第三方DOM库
+
+注意事项：
+- 切勿过渡的使用refs，在可能的情况下应该优先正确合理的使用state
+- 只能在class组件和dom元素上使用refs，不能在函数组件上（即以该函数组件名为标识符的元素上，比如`<FunctionComponent ref={xxx}`,这个是不允许的）使用ref属性，因为函数组件没有this实例
+
+创建refs的方式：
+- 使用`this.xxxRef = React.createRef()`, `ref={this.xxxRef}`
+- 使用回调形式创建`ref={element => this.xxxRef = element}`
+
+获取refs：直接使用ref属性值表示的变量（比如`ref={this.xxxRef}`中的`this.xxxRef.current`）即可访问当前ref所在的元素或react对象
+
+**refs转发**：将ref自动的通过组件传递到子组件的技巧（父组件能够操作子组件），这一功能对于可重用的组件库是很有用的
+- 使用forwardRef定义的组件的refs，可以转发给dom组件（原生元素），也能转发给class组件
+
+<!-- tabs:start -->
+<!-- tab:创建refs -->
+```js
+// 方式一：使用React.createRef的方式
+Class MyComp extends React.Component {
+  constructor(props) {
+    super(props)
+    this.myRef = React.createRef()
+  }
+
+  getRef = (e) => {
+    console.log(e, this.myRef.current)
+  }
+
+  render () {
+    return (
+      <>
+        <div ref={this.myRef}/>
+        <button onClick={this.getRef}>获取ref</button>
+      </>
+    )
+  }
+}
+
+// 方式二：使用回调的方式
+Class MyComp extends React.Component {
+  constructor(props) {
+    super(props)
+    this.myRef = null
+    // 将绑定节点存储到设置的react实例上的变量上
+    this.setMyRef = element => this.myRef = element
+  }
+
+  getRef = (e) => {
+    if (this.myRef) {
+      console.log(e, this.myRef)
+    }
+  }
+
+  render () {
+    return (
+      <>
+        <div ref={this.setMyRef}/>
+        <button onClick={this.getRef}>获取ref</button>
+      </>
+    )
+  }
+}
+```
+
+<!-- tab:refs转发 -->
+```js
+// 第一种方式：转发到dom组件上
+// 使用forwardRef函数构建组件FancyButton，这时FancyButton组件内部可以得到调用`<FancyButton ref={ref}/>`中的ref变量，并将其赋值给元素或转为其他命名（非ref）的prop传递给子组件
+const FancyButton = React.forwardRef((props, ref) => (
+  // 这里接收的ref，不仅可以转发给dom元素（原生），也能给其他元素，这时ref就是该组件的实例（所以不能转发给函数组件，无实例）
+  <button ref={ref} class="fancy-button">
+    {props.children}
+  </button>
+))
+
+// 调用FancyButton
+const ref = React.createRef()
+// 这里若想获取button元素的实例，直接调用ref.current即可
+<FancyButton ref={ref}>click me</FancyButton>
+```
+
+<!-- tab:在高阶函数中使用refs转发（透传） -->
+```js
+// 若想将操作更深结构下的组件，可将ref透传
+class FancyButton extends React.Component {
+  constructor (props) {
+    super(props)
+    this.focus = this.focus.bind(this)
+    this.inputRef = React.createRef()
+  }
+
+  focus (e) {
+    this.inputRef.current.focus()
+  }
+
+  render () {
+    return (
+      <>
+        <input ref={this.inputRef} />
+        <button className="funcyButton" onClick={this.focus}>点击</button>
+      </input>
+    )
+  }
+}
+
+// 这是一个高阶组件（HOC），参数是组件，返回值也是组件
+function logProps (Component) {
+  // 定义组件，后面使用forwardRef返回该组件实例
+  class LogProps extends React.Componnent {
+    render () {
+      // 接收调用该组件实例的props
+      const { forwardedRef, ...rest} = this.props
+      // 将ref附加到组件Component上，之后ref就是Component实例。可调用Component内的属性和方法
+      // 注意，这里的ref，必须是dom元素，或者是类组件
+      return <Component ref={forwardedRef} {...rest} />
+    }
+  }
+
+  // 返回LogProps，若使用匿名函数参数，则在开发者工具上dom树展示的组件名称为Anonymous
+  return React.forwardedRef((props, ref) => {
+    // 接收ref，然后将ref赋值给forwardedRef的prop
+    // 若是此时将ref直接赋值给LogProps上的ref属性，这时ref代表的就是LogProps组件本身，无法传递给它的下级组件
+    return <LogProps {...props} forwardedRef={ref} />
+  })
+
+  // 返回LogProps，在开发者工具上dom树展示的组件名称为'logProps.' + name
+  const name = Component.displayName || Component.name
+  ForwardRefFn.displayName = 'logProps.' + name
+  function ForwardRefFn (props, ref) {
+    return <LogProps {...props} forwardedRef={ref} />
+  }
+  }
+  return React.forwardedRef(ForwardRefFn)
+}
+
+// 使用高阶组件
+class UseHoc extends React.Component {
+  constructor (props) {
+    super(props)
+    this.ref = React.createRef()
+  }
+
+  getRef = (e) => this.ref.current.focus()
+
+  render () {
+    const LogPropsU = logProps(FancyButton)
+    return (
+      <>
+      // 这里可以在getRef函数中获取this.ref指向的实例（LogPropsU将ref透传给FancyButton的）FancyButton
+      // 然后操作FancyButton内的方法，比如focus方法
+        <button onClick={this.getRef}>获取ref</button>
+        <LogPropsU name="jade" ref={this.ref}/>
+    )
+  }
+}
+```
+<!-- tabs:end -->
+
+## 高阶组件(HOC)
+
+定义：
+- 高阶组件是基于React**组合**特性形成的设计模式
+- 高阶组件是参数（参数中的其中之一）为组件，返回值为新组件的函数（即将旧的组件转成新的组件，当然也可不转成新的）
+- 高阶组件是参数化容器组件（参数之一是组件）
+
+用途：
+- 用于将某些组件中公共特性相同的内容抽离出来，根据不同组件特性返回不同内容
+
+注意：
+- 高阶组件不会修改传入的组件的内容，比如静态方法，实例方法等，而是将传入的组件包装在新的容器中组成新组件，他是一个纯函数。为此在书写高阶组件函数时，不应该修改传入组件的任何内容
+- 高阶组件只是为组件添加特性（组件中不同的部分），自身不应该大幅改变，所以不应该传给它不需要的内容
+- 高阶组件可以定义其返回组件的名称（开发者工具中展示的节点名称），使用displayName属性
+- 不要在render函数内部引入高阶组件，不然每次渲染，都会重新创建一个新的高阶组件。应当在render外部引入高阶组件（比如在constructor中），然后在render中使用以大写字母开头的变量引入就可使用了
+- 高阶组件中，若传入的组件具有静态方法，应该复制传入组件的静态方法，不然新组件不会有原组件的任何静态方法，可以:
+  - 将传入组件的静态方法一个个复制到新组件上
+  - 若使用组件导出的方式，除了默认导出组件本身外，还可一个个导出组件的静态方法，然后再一个个导入即可
+  - 使用插件[`hoist-non-react-statics`](https://github.com/mridgway/hoist-non-react-statics)
+
+例子：可见refs转发
+
 ## 事件处理
 
 知识点：
@@ -638,3 +853,33 @@ export default JqForm
    2. 找出这些组件的父级组件，这个state就应该放置在父级组件或其父组件链上的组件上
    3. 若找不到该父级组件，就应该创建一个父级组件，存放这个state
 5. 添加数据反向流（事件触发）：更新state
+
+
+## 严格模式
+
+使用场景：
+- 用来突出显示程序中潜在的问题，为后代元素触发额外的检查和警告，比如：
+  - 识别不安全的生命周期
+  - 对使用过时废弃的内容发出警告，比如字符串形式的ref、findDOMNode()、过时的context api
+  - 检测渲染（确定更改的内容）和提交（react应用发生变化时，即增删改）阶段发生的异常
+  - 确保state可复用
+- 仅在开发环境有效
+
+## Profiler元素
+
+定义：
+- Profiler是测量一个React应用多久渲染一次以及渲染一次的时间，作用是识别出应用中渲染较慢的部分
+
+注意：
+- 仅在开发环境有效
+
+使用：
+- 在想测量的组件上嵌套一个Profiler元素即可
+
+```html
+<Profiler id="nav" onRender={callback}>
+  <nav>xxx</nav>
+</Profiler>
+
+function callback(id, phase, duration) { xxx }
+```
