@@ -1195,4 +1195,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |flush|（人的皮肤、脸）发红，冲洗，冲走；赶出隐藏地，使暴露；使发光，使流露；齐平地，正好地；刷新|
 |emit|发出，射出，散发|
 |propagation|传播，散播，扩展，宣传，培养，繁殖|**[ˌprɒpə'ɡeɪʃ(ə)n]**|
+|reconciliation|和解，协调，调解，调和，和谐一致|**[ˌrekənsɪliˈeɪʃ(ə)n]**|
+|portal|大门，门户，入口站点，传送门|**[ˈpɔrt(ə)l]**|
+|fragment|片段，小块，碎块，分割，使成碎片|
 
