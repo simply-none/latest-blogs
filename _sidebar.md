@@ -43,6 +43,8 @@
     - [基础知识](usage-frame/react/react.md)
     - [高级指引](usage-frame/react/高级指引.md)
     - [hooks](usage-frame/react/hooks.md)
+    - [api](usage-frame/react/api.md)
+    - [react生态](usage-frame/react/react生态.md)
   - 微前端
     - [qiankun](usage-frame/qiankun.md)
 

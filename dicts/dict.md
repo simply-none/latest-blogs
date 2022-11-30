@@ -1198,4 +1198,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |reconciliation|和解，协调，调解，调和，和谐一致|**[ˌrekənsɪliˈeɪʃ(ə)n]**|
 |portal|大门，门户，入口站点，传送门|**[ˈpɔrt(ə)l]**|
 |fragment|片段，小块，碎块，分割，使成碎片|
-
+|memo|备忘录，备注，便签|
+|memoized|带有记忆功能的，记住，背熟|
+|memoization|记住，暗记，背熟，记忆化|
+|patch up|拼凑，修补，结束，解决，制止，平息，匆忙处理|
