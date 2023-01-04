@@ -294,7 +294,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |inject|添加，投入，注入|
 |common|常见的，普通的，共有的，普遍的|
 |commonly|通常的，一般的|
-|legacy|遗留问题|**['leɡəsi]**|
+|legacy|遗留问题，遗产，后遗症，传统，传承|**['leɡəsi]**|
 |backward|向后（的），倒退的|
 |forwards-compatibility|向前兼容|
 |interpret|解释（型）|
@@ -1187,6 +1187,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |harness|治理，使做固定的工作，安全带，系带||
 |transpiler|转换编译器||
 |semver|语义版本，语义化版本号说明||
+|satisfy|使满意，使满足，达到（条件），符合（要求）；赔偿；履行（义务）；使确信，使相信||
 |satisfied|满意的，满足的，欣慰的，确信的，感到满意的，心满意足||
 |in place of|代替，取代，交换||
 |locally|在本地，局部地||
@@ -1202,3 +1203,4 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |memoized|带有记忆功能的，记住，背熟|
 |memoization|记住，暗记，背熟，记忆化|
 |patch up|拼凑，修补，结束，解决，制止，平息，匆忙处理|
+|

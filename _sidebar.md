@@ -31,9 +31,10 @@
     - [vue-router迁移指南](usage-frame/vue-router迁移指南.md)
   - [NodeJs知识点](usage-frame/nodejs知识点.md)
   - typescript
-    - [第一阶段知识点](usage-frame/typescript一期知识点.md)
-    - [第二阶段知识点](usage-frame/typescript二期知识点.md)
-    - [奇怪或有用的代码](usage-frame/typescript-code.md)
+    - [第一阶段知识点](usage-frame/typescript/typescript一期知识点.md)
+    - [第二阶段知识点](usage-frame/typescript/typescript二期知识点.md)
+    - [更新汇总](usage-frame/typescript/typescript更新汇总.md)
+    - [奇怪或有用的代码](usage-frame/typescript/typescript-code.md)
   - 小程序
     - 微信小程序
       - [内置组件](usage-frame/wechat-mini-program/组件.md)
