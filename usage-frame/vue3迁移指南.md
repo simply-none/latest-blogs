@@ -58,6 +58,12 @@ ref解包：
 只读的响应式对象：
 - 通过readonly函数包裹该响应式对象后，修改该对象将报错
 
+**readonly**:
+
+定义：
+- 接受一个对象（响应式/普通的），或者一个ref，返回一个原值的只读代理（深层只读代理，所有属性都不可修改）
+- 其返回值可以解包（和reactive类似），但是解包后的值是一个只读的
+
 **toRef和toRefs**：
 
 | API | 语法 | 作用 | 解释|
@@ -65,6 +71,25 @@ ref解包：
 | toRef | `toRef(obj, key)` | 创建一个新的ref变量，转换 reactive 对象的某个字段为ref变量；若对应的key不存在，值为undefined；若对不存在的key进行赋值，原ref变量也会同步增加这个变量 |只转换一个字段
 | toRefs | `toRefs(obj)` | 创建一个新的对象，它的每个字段都是 reactive 对象各个字段的ref变量 |转换所有字段
 
+**isRef**:
+
+定义：检查参数是否是一个ref值，返回一个类型判定（即返回值可用作类型守卫，可收窄为具体某一类型，比如放在if中）
+
+**unref**:
+
+定义：如果参数是一个ref值，则返回其.value的值，否则返回参数本身
+
+**shallowRef**
+
+定义：相当于ref的第一层级会响应式变更，不会引发深层次数据的变更。常用于对大型数据结构的性能优化（毕竟大量数据时深层次属性变更性能耗费大，所以使用该api，在每一次变更时均对其.value重新赋值）
+
+**triggerRef**
+
+定义：shallowRef的深层属性变更后，调用该api，会强制触发相应的watch/watchEffect监听器
+
+**toRaw**
+
+定义：返回响应式对象（reactive、readonly、shallowReactive）的原始对象，返回值再用对应的api包裹，又会返回响应式对象
 
 ## 组合式API
 
@@ -293,6 +318,11 @@ export default defineComponent {
 - 要访问组件实例属性，需要定义provide为一个返回对象的函数（和data选项用法一致）
 - 要想使provide和inject保持响应性（即provide的变化影响inject值的变化），需要传递一个响应式变量（ref或reactive）或computed给provide的属性
 
+**inject**
+
+- 语法：`const foo = inject('key', default)`
+- 若默认值是一个函数，需要添加第三个参数为false
+
 ```typescript
 // 基本用法
 // 父组件
@@ -329,8 +359,7 @@ export default {
 - inject方法参数依次为：`name`、`默认值`(可选，未复现😢😢😢)
 - 若provide和inject要保持响应性以同步变更，则需要对provide的值value使用ref或reactive包裹，（数组的长度不能监听变更😢😢😢）
 - 修改provide，可直接在父组件中，或通过provide一个方法在子孙组件中修改
-- 若想保持provide的值是可读（即在inject中修改不了），需要对provide的值value使用readonly包裹
-- 使用readonly时，若仅修改对象的属性（而非修改对象的引用，给对象重新赋值），这时的readonly是无效的，（注：整个readonly未复现😢😢😢）
+- 若想保持provide的值是可读（即在inject中修改不了），需要对provide的值value使用readonly包裹，使用readonly时，若仅修改对象的属性（而非修改对象的引用，给对象重新赋值），这时的readonly是无效的，（注：整个readonly未复现😢😢😢）
 
 ```typescript
 // 父组件
@@ -1349,6 +1378,34 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 - 可以对v-model增加参数，`v-modle:title="pageTitle"`等同于`:title="pageTitle" @update:title="pageTitle = $event" />`
 - 可以传入多个v-model
 - v-model支持自定义修饰符
+
+### v-once
+
+语法：`<div v-once>...</div>`
+
+作用：
+- 仅渲染元素/组件一次，跳过之后的更新，即使内部引用的内容发生变更
+
+### v-memo
+
+语法：`<div v-memo="[xxx, xxx, ....]">`，当传入空数组时，作用与v-once一致，表示只渲染一次
+
+作用：
+- 用于缓存一个模板的子树，在原生标签或组件标签上均可使用
+- 实现缓存的原理是，传入一个固定长度的依赖值数组，比较这个数组的项的值与最后一次渲染的值是否发生变化，若变化了则重新渲染该元素下的结构，否则跳过渲染，即使元素内部使用的变量已经发生变更（这时展示的还是之前的值）
+
+### v-cloak
+
+语法：
+```javascript
+// template
+<div v-cloak>{{ message }}</div>
+// style
+[v-cloak] { display: none; }
+```
+
+作用：
+- 用于隐藏尚未完成编译的DOM模板，即隐藏代码内容（比如还未编译时的内容`{{ message}}`，用户能看到该代码），当编译完成后，就展示编译后message的值
 
 ### v-if和v-for优先级问题
 
