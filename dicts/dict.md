@@ -1203,4 +1203,4 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |memoized|带有记忆功能的，记住，背熟|
 |memoization|记住，暗记，背熟，记忆化|
 |patch up|拼凑，修补，结束，解决，制止，平息，匆忙处理|
-|
+|implicitly|暗含，暗中的，含蓄的，隐式|**[ɪm'plɪsɪtlɪ]**|
