@@ -57,11 +57,6 @@ let [first, second] = input;
 console.log(first, second)
 ```
 
-### 元组解构
-
-注意：
-- 解构元组时，超过元组索引范围会报错
-
 ## 基础知识
 
 1. 脚本编译 ts 文件，使用命令`tsc xxx.ts xxx.js`
@@ -74,7 +69,10 @@ console.log(first, second)
 1. `unknown`类型
 定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 使用：
-- 若想缩小改类型的范围，可以使用条件语句+逻辑判断（typeof、比较符、类型检查），之后就只能使用范围下类型的方法/属性
+- 若想缩小改类型的范围（类型收窄），可以使用条件语句+逻辑判断（typeof、比较符、类型检查、类型断言），之后就只能使用范围下类型的方法/属性
+
+注意：
+-unknown只能赋值给unknown和any
 
 2. `any`类型
 定义：表示一个当前时刻不清楚类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
@@ -95,7 +93,7 @@ a.concat([])
 定义：表示没有任何类型，与any相反
 
 场景：
-- 当函数无返回值时
+- 当函数无返回值或显式返回undefined时，此时可以给函数返回值设置为void类型，而非undefined类型（只有显式返回undefined才可设置undefined）
 
 赋值：
 - null
@@ -123,7 +121,7 @@ a.concat([])
 
 场景：
 - 用于表示抛出异常的函数的函数返回值类型
-- 用于无返回值的函数（表达式）的函数返回值类型，比如函数执行过程中，出现了死循环
+- 用于无返回值（连undefined都没有的那种）的函数（表达式）的函数返回值类型，比如函数执行过程中，出现了死循环
 
 使用：
 - never类型是任何类型的子类型，可以赋值给任何类型的变量
@@ -174,11 +172,21 @@ interface IArguments {
 
 表示形式如下：
 ```typescript
-const tuple: [string, number, boolean] = ['1', 1, true]
-const tuple2: [a: string, b: number, c: boolean] = ['1', 1, true]
+// 非具名元素，可选参数
+const tuple: [string, number, boolean?] = ['1', 1, true]
+// 非具名元素，可选参数，剩余参数
+const tuple1: [string, number?, any[]] = ['1', 1, 2, {}]
+// 具名元素，可选参数
+const tuple2: [a: string, b: number, c?: boolean] = ['1', 1, true]
+// 只读元素，不能修改元素的值
+const tuple3: readonly [...any[]] = [1, 2, 3]
 ```
 
-13. `enum`类型
+**注意**：
+- 解构元组时，超过元组定义时的索引范围（元组的总长度，包括可选的）会报错，若含剩余参数，则不会报错（值为undefined）
+- 当无具名元素名称时，若可选，则在类型后面加上?，比如`boolean?`（这个只有所有的元素都是非具名的时候才行）
+
+13.  `enum`类型
 
 定义：
 - 枚举类型表示可以有特殊名字的一组值
@@ -223,10 +231,15 @@ let a: enumChildType = 23
 - 数字枚举成员具有反向映射，例如`enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`
 
 
-14.    `object`类型
+14. `object`类型
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
-15.   构造函数类型
+**object vs Object vs {}**：
+- 只有非原始类型（null、undefined、boolean、number、string、symbol、bigint）才能赋给object类型
+- 所有类型都能够赋值给Object和{}类型
+- Object是object的父类型，也是object的子类型
+
+15. 构造函数类型
 
 定义：使用大写字母开头，与相对应的小写版本类型一致
 
@@ -418,6 +431,8 @@ console.log(c[getClassNameSymbol](), 'get c')
 
 使用：
 - 交叉类型常用来定义公共的部分
+- 原子类型合并成交叉类型，得到的类型是never，因为不能同时满足这些原子类型
+- 交叉类型常用于将多个接口类型合并为一个类型，等同于接口继承（合并接口类型）
 
 ```typescript
 // 普通类型交叉，无交集，类型为never
@@ -819,7 +834,7 @@ type TitleGreeting = Uncapitalize<Greeting>
 定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
 
 ### 类型推断
-定义：typescript 会在无明确类型时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性     
+定义：typescript 会在无明确类型（比如初始化赋值、有默认值的函数参数、函数返回值的类型）时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性     
 上下文归类：类型推断的反方向，通常会在包含函数的参数、赋值表达式右侧、类型断言、对象成员和数组字面量、返回值语句中用到
 
 ### 类型断言
@@ -828,16 +843,21 @@ type TitleGreeting = Uncapitalize<Greeting>
 语法：
 - `value as type`
 - `<type>value`
+- `value!`：后缀表达式操作符`!`，用于①排除该值可能是null、undefined，以及②表明value会被明确的赋值
 
 ```typescript
-// <type>value
+// 第一种方式：<type>value
 let someValue: any = "this is a string"
 // any类型断言成了string类型
 let strLength: number = (<string>someValue).length
 
-// value as type(**推荐**，jsx语法特有)
+// 第二种方式：value as type(**推荐**，jsx语法特有)
 // any类型断言成了string类型
 let strLength: number = (someValue as string).length
+
+// 其他形式的断言，对值进行断言，而非操作的对象；当然这个也可以看作是对操作的对象进行断言
+// 下面的内容在设置了非空检查为false时不许断言也不会报错
+const greaterThan2: number = arrayNumber.find(num => num > 2) as number
 ```
 
 场景（常用类型断言）：
@@ -868,6 +888,31 @@ if ((pet as Fish).swim) {
 } else if ((pet as Bird).fly) {
   (pet as Bird).fly()
 }
+```
+
+**扩展**：
+- 类型拓宽：在var、let定义的变量中，若未显式声明类型，该变量的类型会被自动推断并拓宽，比如`let a = 1`，则a的类型会扩宽为number，同时值为null/undefined，会被拓宽为any（即使是严格空值模式下，可能有些老浏览器不支持）。所以这将可能导致一些错误，即将这种未显式声明类型的变量赋值给某些特定的类型时，会发生错误（比如扩宽为string的变量，就不能赋值给具体类型`'1' | '2'`的变量
+- 类型缩小：使用类型守卫、`===`、其他控制流语句（if、三目运算符、switch）将宽泛的类型收敛为更具体的类型
+
+```typescript
+// 类型拓宽
+// Type is { x: number; y: number; }
+const obj1 = { 
+  x: 1, 
+  y: 2 
+}; 
+
+// Type is { x: 1; y: number; }
+const obj2 = {
+  x: 1 as const,
+  y: 2,
+}; 
+
+// Type is { readonly x: 1; readonly y: 2; }
+const obj3 = {
+  x: 1, 
+  y: 2 
+} as const;
 ```
 
 ### 类型兼容

@@ -33,6 +33,7 @@
   - typescript
     - [第一阶段知识点](usage-frame/typescript/typescript一期知识点.md)
     - [第二阶段知识点](usage-frame/typescript/typescript二期知识点.md)
+    - [tsconfig选项解释](usage-frame/typescript/tsconfig.md)
     - [更新汇总](usage-frame/typescript/typescript更新汇总.md)
     - [奇怪或有用的代码](usage-frame/typescript/typescript-code.md)
   - 小程序
