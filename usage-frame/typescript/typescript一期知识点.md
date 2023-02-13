@@ -548,7 +548,7 @@ function assertNever (x: never): never {
 定义：使用索引类型后，编译器就能够检查使用了动态属性名（即属性不确定的类对象）的代码
 
 索引类型查询操作符：
-- 使用方式：`keyof T`，其结果为T上已知的公共*属性名*的联合，当T的属性自动增减时，其结果也会自动增减
+- 使用方式：`keyof T`，其结果为T上已知的公共*属性名*（键名）的联合，当T的属性自动增减时，其结果也会自动增减
 
 索引访问操作符：
 - 使用方式：`T[K]`或者`T[K1 | K2]`，表示T的属性K的值，表示一种类型，其中需满足`K extends keyof T`，并且K是一个类型，而非一个值
@@ -665,6 +665,9 @@ type Record<K extends keyof any, T> = {
 18. `Lowercase<StringType>`：将字符串的每个字符转为小写字母
 19. `Capitalize<StringType>`：将字符串的首字母转换为大写字母
 20. `Uncapitalize<StringType>`：将字符串的首字母转为小写字母
+
+注意：
+- `[P in keyof T]-? : T[P]`，其中的`-?`表示移除可选标识符，表示必填；同样`+?`表示加上可选标识符，表示可选
 
 <!-- tabs:start -->
 <!-- tab:Partial -->
@@ -829,6 +832,55 @@ type TitleGreeting = Uncapitalize<Greeting>
 <!-- tabs:end -->
 
 ## 类型相关
+
+### 基础知识
+
+**typeof**:
+
+定义：获取变量或属性的类型
+
+语法：
+- `type DivType = typeof document.createElement('div')`：获取dom元素div的类型
+
+**infer**：
+
+> 参考：https://www.jianshu.com/p/707a304d7752
+
+定义：用于条件语句中，获取推断的类型，基本类似`T extends U ? X : Y`，其中：
+- infer只能在条件类型的extends字句中使用
+- infer得到的类型只能在true（即X）语句中使用
+
+```typescript
+// 推断数组/元组的类型，infer U获取的就是数组的元素类型联合
+type InferArray<T> = T extends (infer U)[] ? U : never;
+type I0 = InferArray<[number, string]>; // infer U : string | number;
+
+// 推断第一个元素的类型，反过来就是推断最后一个元素类型
+type InferFirst<T extends unknown[]> = T extends [infer P, ...infer _] ? P : never;
+type I1 = InferFirst<[3, 2, 1]> // infer P: 3
+
+// 推断函数类型的参数(元组类型)
+type InferParam<T extends Function> = T extends (...args: infer R) => any ? R : never
+type I2 = InferParam<((string, number) => any)>;  // infer R: [string, number]
+
+// 推断函数类型的返回值
+type InferReturn<T extends Function> = T extends (...args: any) => infer R ? R : never;
+type I3 = InferReturn<((string, number) => string)>;  // infer R: string
+
+// 推断Promise成功值的类型
+type InferPromise<T> = T extends Promise<infer U> ? U: never;
+type I4 = InferPromise<Promise<string>>;  // infer U: string
+
+// 推断字符串字面量类型的第一个字符对应的字面量类型
+type InferString<T extends string> = T extends `${infer First}${infer _}` ? First : [];
+type I5 = InferString<'Hello, jade'>; // infer First: 'H'
+```
+
+**extends**：
+
+定义：用于添加泛型约束
+
+语法：`T extends Itf`，表示T的类型必须符合接口Itf中定义的字段
 
 ### 类型声明
 定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
@@ -1036,7 +1088,7 @@ y = x;
 
 类型守卫使用方式：
 - 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
-- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型；条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
+- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型，用于遍历属性，生成对象的key；也可以表条件，条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
 - typeof类型守卫：typescript会将`typeof v === 'typename'`和`typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
 - instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为`n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
 
@@ -1087,7 +1139,7 @@ if (padder instanceof StringPadder) {
 
 ### 类型别名
 
-定义：类型别名会给一个类型起一个新名字，有时和接口很像，除此之外，他还可以用于原始值、联合类型、元组、以及其他手写类型
+定义：类型别名会给一个类型起一个新名字（来引用那个类型），有时和接口很像，除此之外，他还可以用于原始值、联合类型、元组、以及其他手写类型
 
 用法：`type typeName = typexxx`
 
@@ -1111,10 +1163,16 @@ type LinkedList<T> = T & { next: LinkedList<T> }
 type Yikes = Array<Yikes>
 ```
 
-类型别名与接口的不同点：
-- 接口创建了一个新的名字，可以在其他任何地方使用；而类型别名并非创建一个新名字，且错误信息不会使用别名
-- 从v2.7开始，类型别名可以被继承并生成新的交叉类型
+**类型别名 vs 接口**：
+- 两者都能描述对象/函数的类型：
+  - 接口：`interface Itf = { (n: number): void }
+  - 类型别名：`type Itf = (n: number) => void
 - 接口无法描述一个原始值、联合类型、元组类型，但类型别名可以
+- 接口可以定义多次并自动合并为单个接口，类型别名不可以
+- 两者都能进行扩展，且能相互扩展，比如`interface Itf {x: number }`：
+  - 接口的扩展是继承：通过extends实现，`interface Itf2 extends Itf { y: number}`
+  - 类型别名的扩展是交叉类型，通过&实现，`type Itf2 = Itf & {y: number}`
+- 接口创建了一个新的名字，可以在其他任何地方使用；而类型别名并非创建一个新名字，且错误信息不会使用别名
 - 由于软件中的对象应该对于扩展是开放的，对于修改是封闭的，应该尽量使用接口代替类型别名
 
 ### 多态的this类型
@@ -1164,7 +1222,7 @@ let v = new ScientificCalculator(2)
 使用：
 - 接口 interface 可用于定义对象的类型，且对象的属性个数必须完全和接口的属性个数相同（不能增加、减少属性），除非：
   1. 接口属性是可选属性`name?:string;`（减少）。
-  2. 若接口包括一个任意类型的属性`[propName: string]: string | number;`，则对象属性可以有无限多个（增加），此时接口中与任意类型属性的 key`propName`同类型`string`的属性，必须是那个任意类型的子类型`string`或`number`
+  2. 若接口包括一个任意类型的属性`[propName: string]: string | number;`，则对象属性可以有无限多个（增加），此时接口中与任意类型属性的 key`propName`同类型`string`的属性，必须是那个任意类型`string | number`的子类型`string`或`number`
   3. 特例，使用变量的方式，将变量传给参数，而不是直接在参数定义一个变量字面量
 - 接口可用于描述JavaScript各种类型，不管是普通的对象，也可以是函数
 
@@ -1192,15 +1250,27 @@ function createSquare(config: SquareConfig): any {
   // ...
 }
 
-// 声明一个变量，然后将该变量传递给函数调用参数，不会报错，因为squareOptions不会经过额外的属性检查
+// 声明一个变量，然后将该变量传递给函数调用参数，不会报错，因为squareOptions不会经过额外的属性检查（通过类型推论、类型兼容绕开检查）
+// 类型推论：
+// 即：let squareOptions: { colour: string, width: number } = { colour: 'red', width：100 }
+// 类型兼容：因为squareOptions具备config的最小结构（即{}， { width}等），所以它能够赋值给config
 // 前提是：
-// 变量squareOptions的结构，要符合接口SquareConfig的最小结构即可，可以有多余的参数
+// 变量squareOptions的结构，要符合接口SquareConfig的最小结构即可（鸭子辩型法），可以有多余的参数
 // 毕竟SquareConfig的结构可以是：{}，{color}，{width}，{color，width}；如果是空值，则不能有多余的参数
+// 但是：
+// 不能够直接将变量对应的值写在参数中，这样会报类型错误，比如直接createSquare({colour: 'red', width: 100})，这个会报错
 let squareOptions = { colour: "red", width: 100 };
 let mySquare = createSquare(squareOptions);
 ```
 
 <!-- tabs:end -->
+
+**鸭子辩型法**：像鸭子一样走路，并且嘎嘎叫的就是鸭子，即具有鸭子特征（具备最小结构）的认为它就是鸭子
+
+**绕过类型检查的方式**：
+- 鸭子辨型法
+- 类型断言`obj as SquareConfig`
+- 索引签名`[key: string]: any`
 
 
 ### 内部结构解释
@@ -1866,7 +1936,7 @@ myGenericNumber.add = function(x, y) { return x + y; };
 ```
 <!-- tabs:end -->
 
-泛型约束：定义一个接口来描述约束条件，让泛型继承这个接口实现约束。在定义了约束的泛型之后，传入的值必须要兼容这个约束类型
+泛型约束：定义一个接口来描述约束条件，让泛型继承（extends）这个接口实现约束。在定义了约束的泛型之后，传入的值必须要兼容这个约束类型
 
 在泛型约束中使用类型参数：声明一个类型参数，其被另一个类型参数所约束
 
