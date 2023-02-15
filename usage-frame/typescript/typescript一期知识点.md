@@ -1,6 +1,9 @@
 # TypeScript 知识点（第一期）
 
-> 参考文档：http://www.patrickzhong.com/TypeScript/   
+> 参考文档：
+>   http://www.patrickzhong.com/TypeScript/
+>   https://juejin.cn/post/7018805943710253086
+>   https://juejin.cn/post/7058868160706904078
 > 注意：可能有些过时内容    
 > 😢😢😢表示文中不明白的，未记录的内容
 
@@ -62,7 +65,49 @@ console.log(first, second)
 1. 脚本编译 ts 文件，使用命令`tsc xxx.ts xxx.js`
 2. 初始化tsconfig文件，使用命令`tsc --init`
 3. 使用创造函数 new 创建的对象`new Boolean()`，是对象类型`Boolean`，而非某些特定的原始类型`boolean`
-4. 声明文件：当使用第三方库时，需引用对应的声明文件，才能获得对应的代码补全、接口提示等功能
+
+### 声明文件
+
+> 参考文档：https://zhuanlan.zhihu.com/p/542379032
+
+定义：
+- 声明文件以`.d.ts`结尾
+
+要点：
+- ts编译器会根据tsconfig.json中的file、include、exclude三个字段去处理过滤后包含的所有的ts、tsx、d.ts文件，默认情况下是加载和tsconfig同级目录下的所有上述文件
+- d.ts声明文件禁止定义具体的实现
+- 当使用第三方库时，需引用对应的声明文件，才能获得对应的代码补全、接口提示等功能
+
+<!-- tabs:start -->
+<!-- tab:声明全局变量 -->
+```typescript
+declare var Xxx;
+declare function () {}
+declare class {}
+declare enum {}
+declare namespace {}
+interface A {}
+type A = {}
+```
+
+<!-- tab:导入资源 -->
+```typescript
+// 加载图片：
+// 定义图片声明：image.d.ts
+declare module '*.png' {
+  const src: string;
+  export default src;
+}
+// 加载
+import logo from './assets/logo.png'
+```
+
+<!-- tabs:end -->
+
+
+
+
+
 
 ## 基础类型概述
 
@@ -548,7 +593,7 @@ function assertNever (x: never): never {
 定义：使用索引类型后，编译器就能够检查使用了动态属性名（即属性不确定的类对象）的代码
 
 索引类型查询操作符：
-- 使用方式：`keyof T`，其结果为T上已知的公共*属性名*（键名）的联合，当T的属性自动增减时，其结果也会自动增减
+- 使用方式：`keyof T`，其结果为T上已知的公共*属性名*（键名）的联合（若含有索引签名时，则表示索引签名的类型的联合），当T的属性自动增减时，其结果也会自动增减
 
 索引访问操作符：
 - 使用方式：`T[K]`或者`T[K1 | K2]`，表示T的属性K的值，表示一种类型，其中需满足`K extends keyof T`，并且K是一个类型，而非一个值
@@ -581,6 +626,21 @@ let carProps: keyof Car
 let makeAndModel: string[] = pluck(taxi, ['manufacturer', 'model'])
 ```
 
+<!-- tab:keyof的妙用 -->
+```typescript
+function getValue(o: object, k: string) {
+  // Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  // No index signature with a parameter of type 'string' was found on type '{}'.
+  // 我们的期望是获取元素存在的键的值，而不是随便的键，毕竟对象上可能不存在该键
+  return o[k]
+}
+
+// 优化
+function getValue<T extends object, K extends keyof T>(o: T, k: K) {
+  return o[k]
+}
+```
+
 <!-- tab:字符串索引签名与其的使用 -->
 ```typescript
 interface Dictionary<T> {
@@ -610,7 +670,7 @@ let value: Disctionary<number>[42]
 
 ## 映射类型😢😢😢
 
-定义：从旧类型中创建新类型的一种方式，新类型以相同的方式去转换旧类型里的每个属性
+定义：从旧类型中创建新类型的一种方式，新类型以相同的方式去转换旧类型里的每个属性，内置类型就是映射类型来的
 
 注意：
 - 若想给映射类型添加新成员，需要结合交叉类型一起使用
@@ -670,6 +730,56 @@ type Record<K extends keyof any, T> = {
 - `[P in keyof T]-? : T[P]`，其中的`-?`表示移除可选标识符，表示必填；同样`+?`表示加上可选标识符，表示可选
 
 <!-- tabs:start -->
+<!-- tab:内置工具类型的映射 -->
+```typescript
+// partial:可选
+type Partial<T> = {
+  [K in keyof T]?: T[K];
+}
+
+// required: 必填
+type Required<T> = {
+  [K in keyof T]-?: T[K];
+}
+
+// Readonly：只读
+type Readonly<T> = {
+  readonly [K in keyof T]: T[K];
+}
+
+// pick：挑选
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+}
+
+// record: 录制，将T类型赋值给K中的每个键
+type Record<K extends keyof any, T> = {
+  [P in K]: T;
+}
+
+// returnType: 返回值类型
+type ReturnType<T extends (...args: any[]) => any> = T extends ( ...args: any[] ) => infer R ? R : any;
+
+// Parameters： 参数类型
+type Parameters<T extends (...args: any[]) => any> = T extends (...args: infer R) => any ? R : any;
+
+// exclude: 排除，排除t中和u一样的类型，返回筛选后的T
+type Exclude<T, U> = T extends U ? never : T;
+
+// extract：提取，提取t中和u一样的类型，返回筛选后的t
+type Extract<T, U> = T extends U ? T: never;
+
+// omit: 忽略，忽略t中和u类型一样的属性，返回筛选后的t
+type Omit<T, U extends keyof any> = Pick<T, Exclude<keyof T, U>> = {
+  [P in Exclude<keyof T, U>]: T[P];
+} = {
+  [P in (keyof T extends U ? never : T)]: T[P];
+}
+
+// NonNullable：非空类型
+type NonNullable<T> = T extends null | undefined ? never : T;
+```
+
 <!-- tab:Partial -->
 ```typescript
 interface Todo {
@@ -882,6 +992,17 @@ type I5 = InferString<'Hello, jade'>; // infer First: 'H'
 
 语法：`T extends Itf`，表示T的类型必须符合接口Itf中定义的字段
 
+### 类型注释
+
+作用：在鼠标悬浮在使用该类型的变量的时候，会显示出该类型的描述信息
+
+语法：在类型之前使用`/** */`形式的注释
+
+```typescript
+/** User包括name和age两个属性 */
+type User = { name: string, age: number }
+```
+
 ### 类型声明
 定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
 
@@ -896,6 +1017,7 @@ type I5 = InferString<'Hello, jade'>; // infer First: 'H'
 - `value as type`
 - `<type>value`
 - `value!`：后缀表达式操作符`!`，用于①排除该值可能是null、undefined，以及②表明value会被明确的赋值
+- `value as Type1 as OtherType`：双重断言，先将value断言为type1（比如any，因为any可以断言为任何类型，同时任何类型都可以断言为any），然后又将type1的类型断言为OtherType
 
 ```typescript
 // 第一种方式：<type>value
@@ -1088,7 +1210,7 @@ y = x;
 
 类型守卫使用方式：
 - 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
-- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型，用于遍历属性，生成对象的key；也可以表条件，条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
+- in操作符：用法为`n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型，用于遍历可枚举类型的属性，生成对象的key，常用于对象的索引签名中（对象的键不确定的情况）；也可以表条件，条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
 - typeof类型守卫：typescript会将`typeof v === 'typename'`和`typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
 - instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为`n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
 
