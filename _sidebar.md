@@ -89,4 +89,7 @@
   - [在任何地方使用沙拉查词](usage-work-tool/沙拉查词.md)
   - [工作技巧](usage-work-tool/工作技巧.md)
 
+- 速记
+  - [随心所欲](usage-interview/quick-look.md)
+
 - [突发灵感](usage-inspiration/inspiration.md)
