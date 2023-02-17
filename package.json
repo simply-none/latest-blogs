@@ -6,7 +6,7 @@
   },
   "scripts": {
     "dev": "node ./time.js & docsify serve",
-    "pub": "node ./time.js & docsify serve"
+    "pub": "node ./time.js"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
