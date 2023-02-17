@@ -5,7 +5,8 @@
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
-    "addtime": "node ./time.js"
+    "dev": "node ./time.js & docsify serve",
+    "pub": "node ./time.js & docsify serve"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
