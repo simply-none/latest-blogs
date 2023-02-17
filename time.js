@@ -8,7 +8,9 @@ function getLog() {
   let mds = [];
 	let filesLatestLog = {};
   
-	shell.ls(['*.md', 'usage-*/*.md', 'usage-*/*/*.md', 'usage-*/*/*/*.md']).forEach(md => {
+  let lss = ['*', '*/*.md', 'code-*/', 'usage-*/*/*.md', 'usage-*/*/*/*.md']
+  lss = ['^!node*/']
+  shell.ls('-R', lss).forEach(md => {
 		mds.push(md);
 	});
 
