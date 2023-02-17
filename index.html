@@ -365,11 +365,15 @@
       function setAttr () {
         const currentUrl = decodeURI(location.href) + '.md'
           const find = Object.keys(logs).find(path => {
+            console.log(currentUrl, path)
             return currentUrl.includes(path)
           })
-          const isAddTime = document.querySelector(`.jade_${logs[find].id}`)
-          if (isAddTime) {
-            return false
+          console.log(find)
+          if (find) {
+            const isAddTime = document.querySelector(`.jade_${logs[find].id}`)
+            if (isAddTime) {
+              return false
+            }
           }
           if (find) {
             const h1 = document.querySelector(".content #main h1")
