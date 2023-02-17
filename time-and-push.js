@@ -48,6 +48,9 @@ function getLog() {
         console.log(err + '写入失败的');
       }
       console.log('成绩写入成功');
+      shell.exec('git add .')
+      shell.exec('git commit -m "update: 更新git日志；"')
+      shell.exec('git push')
     });
 	}, 2000);
 
