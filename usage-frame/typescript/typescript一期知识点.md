@@ -518,7 +518,9 @@ interface B { x: E; }
 interface C { x: F; }
 // 交叉类型结果为：{ x: { d: boolean, e: string, f: number } }
 /**
- * 若改成下面类型：则结果为：{ x: { d: boolean & string } }😢😢😢
+ * 若改成下面类型：则结果为：{ x: { d: boolean & string } }，解释：
+ *      对象obj某个属性x的类型为never，则该对象obj可以是never类型，或该对象obj的属性x类型为never类型
+ *      对象obj某个属性x若也是一个对象，该属性对象x下的某个属性d类型为never，则该属性对象x并不是对象类型，而是never类型
 interface D { d: boolean; }
 interface E { d: string; }
 interface F { f: number; }
@@ -670,7 +672,10 @@ let value: Disctionary<number>[42]
 
 ## 映射类型😢😢😢
 
-定义：从旧类型中创建新类型的一种方式，新类型以相同的方式去转换旧类型里的每个属性，内置类型就是映射类型来的
+定义：
+- 从旧类型中创建新类型的一种方式，新类型以相同的方式去转换旧类型里的每个属性，内置类型就是映射类型来的
+- 映射类型类似一个函数，将一个类型，通过该函数（映射类型）转换成新的类型
+- 映射类型基于索引签名`[ xxx ]: type;`
 
 注意：
 - 若想给映射类型添加新成员，需要结合交叉类型一起使用
@@ -1126,14 +1131,14 @@ interface Named {
 }
 let x: Named
 let y = { name: 'alice', location: 'beijing' }
-// x能够兼容y，因为y的结构包含x的结构
+// x能够兼容y，因为y的结构包含x的结构，对于对象，可以多不能少
 x = y
 ```
 <!-- tab:函数参数兼容 -->
 ```typescript
 let x = (a: number) => 0
 let y = (a: number, s: string) => 0
-// 兼容
+// 兼容，对于函数参数，可以少不能多
 y = x
 // 不兼容
 x = y
@@ -1142,7 +1147,7 @@ x = y
 ```typescript
 let x = (a: number) => ({ name: 'alice' })
 let y = (a: number) => ({ name: 'alice', location: 'beijing' })
-// 兼容
+// 兼容，对于返回值，可以多不能少
 x = y
 // 不兼容
 y = x
