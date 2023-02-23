@@ -165,3 +165,52 @@ instanceof：
   - ::first-letter, ::first-line(分别表示第一个字母和第一行)
 
 ## 11. 深拷贝和浅拷贝
+
+## 12. 原型链图
+
+原型：
+- 原型（prototype）是函数function对象的一个属性，它定义了构造函数制造出来的对象（new运算符调用的函数）的公共祖先
+- 通过构造函数产生的对象可以继承到该原型的属性和对象，原型也是对象。
+- 隐式原型(__proto__-->每个实例上都有的属性)和显式原型（prototype-->构造函数的属性）
+- 对象的原型（对象原型的最顶端是null）
+
+原型链：
+- 在原型上再加一个原型，再加一个原型..把原型连成链，访问顺序也是按照这个链的顺序跟作用域链一样，叫做原型链
+
+```mermaid
+flowchart
+  foo[const foo = new Foo]
+  Foo[function Foo]
+  obj[const obj = new Object]
+  Object[function Object]
+  foo--__proto__-->Foo.prototype--__proto__-->Object.prototype--__proto__-->null
+  Foo--prototype-->Foo.prototype--constructor-->Foo
+  obj--__proto__-->Object.prototype
+  Object.prototype--constructor-->Object
+  Object--prptotype-->Object.prototype
+  Object--__proto__-->Function.prototype
+  Function--prototype-->Function.prototype--constructor-->Function
+  Function.prototype--__proto__-->Function
+  Foo--__proto__-->Function.prototype--__proto__-->Object.prototype
+```
+
+## 13. css属性继承
+
+所有元素都可继承的：
+- visibility
+- cursor
+
+子元素可继承的：
+- letter-spacing、word-spacing、white-spacing
+- line-height
+- font、color
+- text-(decoration、transform、indent、align)、direction
+
+列表元素可继承的：
+- list-style
+
+表格元素可继承的：
+- border-collapse
+
+不可继承的属性，若想和父元素保持一致，可将该属性设置为inherit
+
