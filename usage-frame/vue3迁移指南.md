@@ -1037,12 +1037,51 @@ export default {
 - 这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值
 
 使用：
-- 可以通过向v-model传递参数，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
+- 可以通过向v-model传递参数，用于替代默认参数modelValue，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
 - 可以同时传递多个v-model给子组件，不同的v-model将同步到不同的prop
-- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。使用自定义修饰符，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
+- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。**使用自定义修饰符**，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
 - 对于有参数的修饰符（比如`v-model:title.custom`，对应的prop就要改成参数名+'Modifiers'，即上面的modelModifiers改成titleModifiers
 
 <!-- tabs:start -->
+<!-- tab:v-model简写 -->
+```vue
+// 1. 基础用法
+<My-Input v-model="value"/>
+<!-- 等同于下面 -->
+<My-Input :modelValue="value" @update:modelValue="val => value = val"></My-Input>
+
+<!-- 子组件 -->
+<input :value="modelValue" @input="e => $emit('update:modelValue', e.target.value)"/>
+
+const porps = defineProps({
+  modelValue: {
+    type: String
+  },
+  // modelValue对应的修饰符对象
+  modelValueModifiers: {
+    default: () => {}
+  }
+})
+
+// 2. 自定义参数名称
+<My-Input v-model:title="value">
+
+<!-- 子组件 -->
+<input :value="title" @input="e => $emit('update:title', e.target.value)"/>
+
+const porps = defineProps({
+  title: {
+    type: String
+  },
+  // title对应的修饰符对象
+  titleModifiers: {
+    default: () => {}
+  }
+})
+
+// 3. 自定义修饰符
+<My-Input v-model:title.toUpperCase="value"/>
+```
 <!-- tab:基本用法 -->
 ```typescript
 // 父组件Parent

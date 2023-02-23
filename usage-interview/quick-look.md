@@ -214,3 +214,139 @@ flowchart
 
 不可继承的属性，若想和父元素保持一致，可将该属性设置为inherit
 
+## 15. vue组件通信方式
+
+vue2：
+- 父子通信：
+  - props、emits
+  - slot
+  - `v-bind:val.sync`(父)和`emit('update:val', data)`(子)
+  - `v-model:obj='xxx'`(父)和`emit(updateValue, data)`，且子组件传入props obj，同时作用于input(子)
+  - `v-model="xxx"`(父)和`emit(input, data)`，且子组件传入props value，同时作用于input(子)
+- 祖孙通信：
+  - $attrs(传过来的非props的v-bind属性)、$listeners(接收所有绑定的事件)，可使用`v-bind="$attrs"`和`v-on="$listeners"`全部传递
+  - $refs、$children、$parent、$root
+  - provide`(void => {}`、inject(`arr`)
+- 跨组件通信：
+  - 全局事件总线
+  - mixin(mixin配置的内容都会混入到当前组件中)
+  - vuex
+  - [pubsubjs](https://www.npmjs.com/package/pubsub-js)(JavaScript的发布订阅库)
+
+vue3:
+- props、emits
+- v-model
+- refs
+- provide、inject
+- eventBus（通过第三方库：mitt、tiny-emitter）
+- vuex
+- pinia
+<!-- tabs:start -->
+
+<!-- tab:全局事件总线 -->
+```vue
+new Vue({
+  beforeCreate() {
+    Vue.prototype.$bus = this
+  }
+})
+// 1. 接收数据
+this.$bus.$on('receiveParams', data)
+
+// 2. 发送数据
+this.$bus.$emit('receiveParams', data)
+```
+<!-- tabs:end -->
+
+## 16. 重绘repaint和重排reflow(回流)
+
+重绘：结构未变化，只是改变了某个元素的外观风格，而不影响周围或内部的布局时，会发生重绘，情况有：
+- 改变背景属性
+- 改变字体颜色
+- visibility属性变化
+- box-shadow变更
+
+重排：结构、尺寸、排版发生了变化，或者说页面上元素的占位面积、定位方式、边距等发生了变化，会引起重排，情况有：
+- 网页初始化时
+- 增删dom节点时
+- 移动dom节点、给dom节点添加动画
+- 窗口大小发生变化时、页面滚动时
+- 元素内容发生变化时、元素尺寸发生变化时、元素字体大小种类变化时
+- 查询调用某些属性时（offsetxxx、scrollXXX、clientXXX、设置style属性、调用getComputedStyle）
+
+注意：
+- **重排一定会引发重绘**，因为得重新定义结构布局，然后渲染css样式
+
+优化技巧：
+- 不适应table布局，table布局的一个改动会造成整个table重新布局
+- 读、写操作不放在同一个语句
+- 不一条条修改dom样式（不如修改css class）
+- 复杂动画的元素使用绝对定位，脱离文档流，不影响其他节点
+- 使用虚拟dom
+- 避免使用css表达式
+
+## 17. 宏任务、微任务、同步任务
+
+事件循环的本质
+- 作为单线程js对异步事件的处理机制
+- 仅有一个主线程js的处理逻辑，保证主线程有序、高效、非阻塞的处理
+
+事件循环处理逻辑：
+- 同步任务、异步任务（又分为微任务、宏任务，且宏任务优先级高）分别进入不同的执行场所
+- 同步任务直接在主线程执行，异步任务则在事件队列event queue中等待
+- 当全部同步任务执行完毕后，再去event queue中执行异步回调的函数，异步回调的函数进入到主线程执行
+- 异步任务内部的内容，又依次进行上述步骤，这样的机制，叫做事件循环
+
+执行顺序：
+- 代码执行顺序：同步任务 -> 微任务 -> 宏任务
+- 微任务执行顺序：process.nextTick -> Promise
+- 宏任务执行顺序：setImmediate -> setTimeout -> setInterval -> I/O操作 -> ajax
+
+微任务：
+- Promise里面的(then、catch、finally)
+- async/await
+- process.nextTick
+- Object.observe(实时监测js对象的变化)
+- MutationObserver(监听DOM树的变化)
+
+宏任务：
+- 整体代码script
+- setTimeout、setInterval、setImmediate
+- I/O操作（输入输出，比如文件读取、网络请求）
+- ui render（dom渲染）
+- ajax
+
+注意：
+- vue.nextTick用于在下次dom更新（宏任务）循环结束后执行的延迟回调，在修改数据之后立即使用 nextTick 来获取更新后的 DOM。 nextTick主要使用了宏任务和微任务。 根据执行环境分别尝试采用Promise（微）、MutationObserver（微）、setImmediate（宏），如果以上都不行则采用setTimeout定义了一个异步方法，多次调用nextTick会将方法存入队列中，通过这个异步方法清空当前队列
+
+## 18. css样式隔离
+
+样式隔离方案：
+- scoped：例如vue中的`<style scoped>`
+- BEM：防止命名冲突，其中B(block)、E(element)、M(modifier)，例如`class="block-subblock__element--modifier"`
+  - 解决方式是通过namespace，可使用tailwind css、isolation（css isolation、angular component styles）
+- css-loader：css模块话，将css类名加上哈希值
+- css in js：使用js编写css，让css拥有独立的作用域，阻止代码泄露到外部，防止样式冲突
+- 预处理器
+- shadow DOM（比如微前端）
+
+## 19. 事件委托、事件冒泡、事件捕获
+
+事件委托（事件代理）：
+- 即事件（比如点击事件、鼠标移动事件等）本来是加在子元素上，却加在父祖元素上来监听，利用了事件冒泡的原理，因为事件最终都会加在父级上触发执行效果
+- 事件委托的好处是减少事件注册，节省内存占用，新增节点时，后续节点自动拥有之前绑定的事件
+- 事件委托的缺陷是逻辑变多时，可能会出现事件误判
+
+事件冒泡：
+- 事件会从目标节点流向文档根节点，途中会经过目标节点的各个父级节点，
+
+事件捕获：
+- 事件从文档根节点流向目标节点，途中会经过目标节点的各个父级节点
+
+注意：
+- 事件的处理过程：先捕获，后冒泡
+- 事件处理过程中，若某个节点定义了多个同类型事件，某个事件使用了`event.stopImmediatePropagation()`，其他同类型事件不会执行
+- 阻止事件的默认操作（比如点击a标签会跳转，点击提交按钮会将数据提交到服务器等）可以用`event.preventDefault();`来阻止
+- 阻止事件冒泡和事件捕获：`e.stopPropagation()`
+- `addEventListener(event,fn,useCapture)`：第三个参数表示是否触发事件捕获过程
+- addEventListener和on的区别：on事件会被后面的on事件覆盖，前者不会
