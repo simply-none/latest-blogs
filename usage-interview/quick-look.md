@@ -102,13 +102,13 @@ valueOf:
 
 ## 7. 闭包
 
-> 参考：
-> https://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html
-> https://zh.javascript.info/closure
+> 参考：  
+> https://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html   
+> https://zh.javascript.info/closure  
 
-> 闭包使用场景：
-> https://juejin.cn/post/6844903619595075592
-> https://segmentfault.com/a/1190000023425946
+> 闭包使用场景：  
+> https://juejin.cn/post/6844903619595075592  
+> https://segmentfault.com/a/1190000023425946 
 
 定义：
 - 闭包是能够读取其他函数内部变量的函数
@@ -362,3 +362,11 @@ this.$bus.$emit('receiveParams', data)
 
 注意：
 - 遵循star法则回答
+
+## 21. 前端模块化
+
+> 参考：  
+> https://juejin.cn/post/7193887403570888765  
+> https://juejin.cn/post/6844903744518389768  
+> https://juejin.cn/post/7166046272300777508  
+
