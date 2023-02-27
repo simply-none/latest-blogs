@@ -370,3 +370,29 @@ this.$bus.$emit('receiveParams', data)
 > https://juejin.cn/post/6844903744518389768  
 > https://juejin.cn/post/7166046272300777508  
 
+## 22. 前端性能优化
+
+> 参考：  
+> https://juejin.cn/post/7188894691356573754  
+> https://juejin.cn/post/7080066104613142559  
+
+
+## 23. token刷新
+
+解决方案：
+- 后端返回过期时间，前端判断token过期时间，去调用刷新token接口
+- 后端拦截请求，验证token是否过期，过期则重新生成token将其放在响应头中，前端在响应拦截器中判断是否有无新token，有则进行替换（请求后）
+- 使用定时器定时刷新token接口
+- 在请求拦截器(比如`axios.interceptors.request.use`)中拦截，判断token是否将要过期，调用刷新token接口（请求前）
+
+
+关键词解析：
+- 认证(authentication)：验证当前用户的身份
+- 授权(authorization)：用户授予第三方应用访问该用户某些资源的权限
+- 凭证(credentials)：实现认证和授权的前提是需要一种媒介（证书）来标记访问者的身份，而凭证就是这个媒介
+- JWT(JSON Web Token)：跨域认证解决方案，一种认证授权机制
+- access token：访问资源接口时所需要的资源凭证
+- refresh token：用于刷新access token的token
+- cookie：本地存储，会在浏览器下次向同一服务器再次发起请求时被携带并发送到服务器上，顶级域名下共享cookie
+
+> 参考：https://juejin.cn/post/6844904034181070861
