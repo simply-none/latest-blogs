@@ -5,6 +5,7 @@
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
+    "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "dev": "node ./time.js & docsify serve",
     "pub": "node ./time-and-push.js"
   },

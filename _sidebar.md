@@ -1,6 +1,7 @@
 - 单词表
   - [英语单词表](dicts/dict.md)
   - [养生](dicts/养生.md)
+  - [技能提升](dicts/技能提升.md)
 
 - 项目相关
   - [项目版本依赖升级](usage-project/项目版本升级.md)
