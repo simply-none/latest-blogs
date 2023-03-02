@@ -2,7 +2,9 @@
 
 ## 核心概念
 
-> 参考：https://webpack.docschina.org/concepts/why-webpack/
+> 参考：
+> https://webpack.docschina.org/concepts/why-webpack/   
+> https://juejin.cn/post/6844904031240863758   
 
 ***webpack是什么***：
 - webpack是一个用于现代JavaScript应用程序的静态模块打包工具
@@ -32,6 +34,8 @@ loader的属性：
 - test：告诉webpack，当碰到`require()`或`import`语句时，如果该文件符合test的正则表达式，则在打包之前，会使用use属性的loader进行转换
 - use：对应符合文件需使用的loader
 
+<!-- tabs:start -->
+<!-- tab:常规 -->
 ```js
 module.exports = {
   module: {
@@ -44,6 +48,31 @@ module.exports = {
   }
 }
 ```
+<!-- tab:plugin和loader一起使用 -->
+```js
+// webpack.config.js
+// 第一种方式
+module.exports = {
+  //...省略其他配置
+  module:{
+    rules:[{
+      test:/\.less$/,
+      use:['style-loader','css-loader',{
+        loader:'postcss-loader',
+        options:{
+          plugins:[require('autoprefixer')]
+        }
+      },'less-loader'] // 从右向左解析原则
+    }]
+  }
+}
+
+// 第二种方式,plugin写在loader的外部
+module.exports = {
+  plugins: [require('autoprefixer')]  // 引用该插件即可了
+}
+```
+<!-- tabs:end -->
 
 ***插件(plugin)***:
 
