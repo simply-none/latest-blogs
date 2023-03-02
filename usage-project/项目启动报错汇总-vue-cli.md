@@ -90,3 +90,73 @@ module.exports = {
 原因：主函数main.js中引入的`default-passive-events`npm包导致的
 
 解决方法：注释即可
+
+## 报错12：terser-webpack-plugin drop_console未生效
+
+问题：按照文档进行相关配置之后，重启项目，控制台依然会存在console.log日志，查找网上教程，依然出问题
+
+原因：未进行`devtool: source-map`的配置，因为该插件是通过`eval(string)`函数进行处理项目代码的，而minimizer不会处理字符串
+
+解决方法:
+
+<!-- tabs:start -->
+
+<!-- tab:terser-webpack-plugin配置 -->
+```js
+// 方法一：
+// vue.config.js
+import TerserPlugin from 'terser-webpack-plugin'
+module.exports = {
+  configureWebpack: config => {
+    if (!isProd) {
+      // 必须配置该选项，值可以是：source-map，inline-source-map，hidden-source-map 和 nosources-source-map
+      config.devtool = 'source-map'
+      config.optimization = {
+        minimize: true,
+        minimizer: [new TerserPlugin({
+          parallel: true,
+          terserOptions: {
+            compress: {
+              warnings: true,
+              drop_console: true,
+              drop_debugger: true,
+              pure_funcs: ['console.log']
+            }
+          }
+        })]
+      }
+    }
+  }
+}
+```
+
+<!-- tab:babel-plugin-transform-remove-console配置 -->
+```js
+// 安装
+npm install babel-plugin-transform-remove-console --save-dev
+
+// babel.config.js
+// 项目发布阶段需要用到的babel插件
+const prodPlugins = []
+if (process.env.NODE_ENV === 'production') {
+  prodPlugins.push('transform-remove-console')
+}
+module.exports = {
+  presets: ['@vue/cli-plugin-babel/preset'],
+  plugins: [
+    [
+      'component',
+      {
+        libraryName: 'element-ui',
+        styleLibraryName: 'theme-chalk'
+      }
+    ],
+    // 非生产环境，直接使用：
+    // 'transform-remove-console',
+    // 发布产品时候的插件数组
+    ...prodPlugins
+  ]
+}
+```
+<!-- tabs:end -->
+
