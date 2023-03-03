@@ -244,6 +244,7 @@ vue3:
 - eventBus（通过第三方库：mitt、tiny-emitter）
 - vuex
 - pinia
+
 <!-- tabs:start -->
 
 <!-- tab:全局事件总线 -->
