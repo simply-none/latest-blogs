@@ -49,6 +49,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |inheritance|继承（物）|
 |nifty|极好的，绝妙的，漂亮的，整洁的，实用的|
 |goodies|诱人的东西，好东西，糖果|
+|goods|商品，货品，货物，物品|
+|good|令人满意的，合意的，好的，出色的，优质的，成功的，能干的，精通的，擅长的，有益的，有用的，守规矩的，温顺的，合适的，可信赖的，有趣的，健康的，货物，商品，私人财产，好处，益处|
 |tinkering|摆弄，修补|
 |direct|直接（的），笔直的，指导，命令，指向|
 |directly|直接地，立刻，马上，紧跟着|
@@ -168,7 +170,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |superset|超集|
 |indented|缩进（式）|**[ɪn'dentɪd]**|
 |origin|起源，源头|
-|original|原始的，最初的，首创的|
+|original|原始的，最初的，首创的，原来的，最早的，原件，原稿|
 |originally|原来，最初|
 |counts|数量，认为，包括|
 |curly|卷曲的，绻缩的|
@@ -244,7 +246,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |usual|通常的，普通的，常见的|
 |meaning|含义|
 |meaningless|毫无意义的，无价值的，不相关的|
-|match|与..相配，使..一致|
+|match|与..相配，使..一致，比得上，匹配，配对，比赛，火柴，满足，适应，配对，婚姻|
+|matching|相同的，相配的，和...相似，把...联系起来|
 |scientific|科学的，严谨的|
 |unit|单位，单元|
 |consider|认为，考虑，思考，留意，顾及|
@@ -507,6 +510,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |format|格式（化），形式，设计，计划|
 |get rid of|摆脱，除去，去掉|
 |exclude|排除，拒绝，把...除外|
+|exclusive|不包括，排除...在外，相互排斥的，排他性，专有权，专用的，独有的，独家专访/新闻，昂贵的，高档的，豪华的|
+|inclusive|包括一切的，包括首尾两天的，可以包容各种人的|
 |beyond|除了，除...之外，超出，影响，包括|**[bɪˈjɑnd]**|
 |variation|变化，变动|**[.veri'eɪʃ(ə)n]**|
 |pair|一对，一副，一套|
@@ -805,12 +810,16 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |besides|此外，而且，再说|
 |originate|起源，发源，来自，产生|**[ə'rɪdʒə.neɪt]**|
 |orient|适应，使面对，使朝向|**['ɔri.ent]**|
+|orientation|方向，定位，目标，态度，兴趣，取向|**[ˌɔriənˈteɪʃ(ə)n]**|
+|landscape|景色，风景，横向打印的|
+|portrait|肖像，画像，描述，表现，竖向打印的|**[ˈpɔrtrət]**|
 |object-oriented|面向对象的，对象式的|
 |awkward|难处理的，难使用的，笨拙的|
 |platform|平台，纲领，机会|
 |fundamental|最基本的，最重要的，必须的|
 |drived|衍生的，派生的，源于，导出|**[dɪ'raɪvd]**|
 |prior|在先的，先前的，在..之前，更重要的，优先的|**['praɪr]**|
+|priority|优先，优先权，优先事项，优先级，重点|**[praɪˈɔrəti]**|
 |accomplish|实现，完成，达到|
 |label|标记，标签，用标签说明|
 |play out|发生，出现，展开，做完|
@@ -851,6 +860,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |notoriously|非常，众所周知地|**[noʊˈtɔrɪəslɪ]**|
 |arrow|箭头|**['æroʊ]**|
 |implicit|隐式的，不言明的，含蓄的，内含的，固有的|**[ɪm'plɪsɪt]**|
+|implicitly|暗含，暗中的，含蓄的，隐式|**[ɪm'plɪsɪtlɪ]**|
 |fake|假货，伪造（的）|
 |unusable|无法使用的，不可用的|
 |standalone|独立的|
@@ -928,6 +938,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |diagnose|诊断，判断，分析|**[ˌdaɪəgˈnoʊs]**|
 |consequence|结果，影响，后果，重要性|
 |stick|粘贴|
+|sticky|粘（性）的，胶粘的，湿热的，闷热的，困难的，棘手的，持有异议的|**[ˈstɪki]**|
 |outline|概述，概要，大纲，略图|
 |potentially|潜在的，可能的，大概的|
 |quota|配额，定额，指标|
@@ -1065,7 +1076,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |in the meantime|在这期间，与此同时|
 |naked|裸露的，无遮盖的，明显的|**['neɪkəd]**|
 |therefore|因此，所以|
-|extract|取出，提取，摘录，推断出|**[ɪkˈstrækt]**|
 |presumably|大概，很可能，也许，据推测|**[prɪˈzuməbli]**|
 |exclude|不包括，排除|
 |furthermore|此外，而且，再者|
@@ -1203,4 +1213,38 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |memoized|带有记忆功能的，记住，背熟|
 |memoization|记住，暗记，背熟，记忆化|
 |patch up|拼凑，修补，结束，解决，制止，平息，匆忙处理|
-|implicitly|暗含，暗中的，含蓄的，隐式|**[ɪm'plɪsɪtlɪ]**|
+|pull down|下拉式菜单，下拉选项屏，拉下，压低，推翻，降低|
+|partial|部分的，局部的，不完整的，片面的，有偏见的，不公平的|**[ˈpɑːrʃ(ə)l]**|
+|record|录制，录音/像，记录，记载，显示，标明|
+|pick|选择，挑选，采摘，弹奏|
+|omit|忽略，省略，排除，遗漏，删除，漏掉|
+|exclude|不包括，排除，不考虑，阻止...进入，把...排斥在外|
+|extract|取出，拔出，提取，提出物，精华，摘录，引文|**[ˈekˌstrækt]**|
+|capitalize|把...首字母大写，给企业提供资金|**[ˈkæpɪt(ə)lˌaɪz]**|
+|lower|降低，减少，低下，压低，使下降|
+|lowercase|小写字母，用小写字母书写|
+|upper|较高的，较上的，上层的，鞋帮，靴面，内陆的|
+|uppercase|大写字母，用大写字母书写|
+|distance|距离，（从）远处，远方，间隔，路程|
+|reach|达到，提升到，抵达，达成（协议），得出结论，收到，和...联系，与...取得联系，与...交流|
+|strategy|战略，策略，计谋，行动计划，策划，部署|**[ˈstrætədʒi]**|
+|strategic|战略性的，策略上的，有用的，重要的|**[strəˈtidʒɪk]**|
+|sitemap|网站地图，站点地图，网站导览|
+|launch|启动，发起，推出，发射，发行，投出，发布会|
+|thread|线程，线，线状物，螺纹，思路，贯穿的主线，帖子，穿线于，使穿过|**[θred]**|
+|notify|通知，告知|
+|action|行动，行为，战斗，动作，操作，作用，发生的事情|
+|sheet|工作表，简要记录，纪要，纸片，薄片，一大片，床/被单|
+|sign|签名，签署，标记，记号，预示，表示，信号，警告，符号，示意动作，手势，迹象，征兆|
+|nonce|只使用一次的，随机数，目前，当前|**[nɑns]**|
+|timeline|时间线，大事年表，时间轴|
+|subscribe|预定，申请，签署，认购，订购，订阅，捐助|
+|skeleton|骨架，骨干，框架，纲要|**[ˈskelɪt(ə)n]**|
+|swipe|滑动，击打，打击，批评，偷窃|
+|overlay|覆盖，叠加，重叠，在...上铺，涂层|
+|collapse|折叠，崩溃，倒塌，暴跌，病倒，瓦解，失败|**[kəˈlæps]**|
+|dropdown|下拉，下拉菜单，倒下，突然停止，沿河而下|
+|countdown|倒计时，倒计时阶段|
+|aspect|方面，层面，外表，外观，屏幕比例，长宽比|
+original
+
