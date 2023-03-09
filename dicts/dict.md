@@ -363,6 +363,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |additional|额外的，附加的，追加的|
 |selector|选择器，选择符|
 |suppose|假定，设想，认为|
+|thumb|拇指，示意请求搭便车，用拇指摸|**[θʌm]**|
 |as a rule of thumb(**[θʌm]**)|一般来说，根据经验|
 |clutter|乱堆在，凌乱的塞满|
 |mandate|授权，委托|**['mæn.deɪt]**|
@@ -1246,5 +1247,13 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |dropdown|下拉，下拉菜单，倒下，突然停止，沿河而下|
 |countdown|倒计时，倒计时阶段|
 |aspect|方面，层面，外表，外观，屏幕比例，长宽比|
-original
+|tap|轻拍，轻打，轻叩，轻触，开发，开辟，窃听，水龙头，阀门|
+|shake|摇动，抖动，动摇，摆脱，克服，甩掉，抖掉，抖出，晃动，震动，使震惊，使摒弃|
+|bundler|打包工人，打包机，包装机，中间人|
+|bundle|（软件）包，捆，束，一批，匆匆送走，赶|
+|elimination|排除，消除，清除，淘汰|**[ɪˌlɪmɪˈneɪʃ(ə)n]**|
+|side effect|副作用，意外结果|
+|optimization|优化，完善|**[ˌɑːptɪməˈzeɪʃ(ə)n]**|
+|minimize|使降到最低限度，使减到最少，使...最小化|**[ˈmɪnɪˌmaɪz]**|
+
 

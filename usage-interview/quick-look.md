@@ -1,6 +1,6 @@
 # 速记手册
 
-> 网站集合：
+> 网站集合：  
 > https://fe.ecool.fun/
 
 ## 1. 对象的数据属性和访问器属性
@@ -397,3 +397,94 @@ this.$bus.$emit('receiveParams', data)
 - cookie：本地存储，会在浏览器下次向同一服务器再次发起请求时被携带并发送到服务器上，顶级域名下共享cookie
 
 > 参考：https://juejin.cn/post/6844904034181070861
+
+## 24. Tree-shaking
+
+> 参考:   
+> https://juejin.cn/post/7109296712526594085    
+> https://juejin.cn/post/7002410645316436004    
+
+**dead code**定义：
+- 代码不会被执行，代码不可到达（它所处的位置）
+- 代码执行的结果不会被用到
+- 代码只会影响死变量（只写不读的变量，即该变量不会对其他内容产生影响）
+
+定义：
+- tree shaking是一种基于es module规范的dead code elimination技术，它会在运行过程中静态分析模块之间的导入导出，确定ESM模块中哪些导出值未被其他模块使用，并将其删除，以此来实现打包产物的优化
+- tree shaking是一个通常用于描述移除JavaScript上下文中未引用代码dead code行为的术语
+
+作用：
+- 减少最终的构建体积
+
+**在webpack中启动tree shaking的三个条件**：
+1. 使用ESM编写代码
+2. 配置`optimization.usedExports = true`，启动标记功能
+3. 启动代码优化功能，有下列三种方式：
+   - 配置`mode = production`
+   - 配置`optimization.minimize = true`
+   - 提供`optimization.minimizer`数组
+
+```js
+// webpack.config.js
+module.exports = {
+  mode: 'production',
+  optimization: {
+    usedExports: true
+  }
+}
+
+```
+
+**关闭tree shaking**：
+- 在package.json中设置一级字段`sideEffects: false`，表示所有代码都不包含副作用，这时所有代码都会按照插件默认规则进行tree shaking
+- 在package.json中设置一级字段`sideEffects`为一个数组，数组值表示会产生副作用的文件，此时数组内匹配到的文件将不会被tree shaking
+- 在webpack.config.js的rules字段中对应规则下设置sideEffects字段选择是否进行tree shaking
+
+<!-- tabs:start -->
+<!-- tab:package.json -->
+```json
+// package.json
+{
+  // 所有的代码都不会被tree shaking
+  "sideEffects": true,
+  // 数组内匹配到的文件不会被tree shaking
+  "sideEffects": ["./src/app.js", "*.css"]
+}
+```
+
+<!-- tab:webpack.config.json -->
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader'
+        },
+        sideEffects: false || []
+      }
+    ]
+  }
+}
+```
+<!-- tabs:end -->
+
+**tree shaking最佳实践**:
+- 避免无意义的赋值或引用,即被赋值的变量后续未被使用到
+- 在调用前使用`/*#__PURE__*/`备注,告诉webpack该次函数调用不会对上下文环境产生副作用,可以进行tree shaking
+- 禁止Babel转译模块的导入导出语句,因为会导致webpack无法对转义后的模块导入导出内容做静态分析,使得tree shaking失效
+- 优化导出值的粒度,在exports中,不能进行赋值/初始化操作,应该初始化赋值完毕后,再用exports将该变量导出
+- 使用支持tree shaking的包,比如使用lodash-es替代lodash
+
+## 25. 虚拟dom和真实dom的区别
+
+背景:
+- DOM的缺陷:dom节点的操作会影响到渲染流程,同时Dom节点的增删改都会触发样式计算、布局、绘制等任务（重排的过程），同时还会触发重绘
+- 一个复杂的页面中，重排和重绘非常消耗资源，也非常费时
+
+虚拟DOM做的事情：
+1. 将页面改变的内容应用到虚拟DOM（一个JS对象）上
+2. 调整虚拟DOM的内部状态
+3. 虚拟DOM收集到足够多改变时，再将变化一次性应用到真实的DOM上（也是调用dom操作的一步，若直接操作真实dom，就没有前面2步，会发生频繁的重排重绘操作）

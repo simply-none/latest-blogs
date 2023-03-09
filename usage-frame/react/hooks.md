@@ -71,6 +71,9 @@ function Example () {
 - 可以一次性声明多个useEffect函数
 - 每次渲染时，useEffect的箭头函数都是不相同的，这保证了每次获取的都是最新的值
 
+附录：
+- 副作用：一个函数（可能）会对函数外部变量产生影响的行为
+
 ```js
 // 使用多个effect，按逻辑（用途）将不同的功能分离到不同的effect中
 function FriendStatusWithCounter (props) {
