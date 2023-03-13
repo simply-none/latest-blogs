@@ -1,11 +1,41 @@
-# vscode代码格式化
+# vscode技巧
 
-## 安装代码格式化插件
+## 创建运行任务
+
+- 创建运行任务（ctrl+shift+B），会得到一个.vscode文件夹，包含tasks.json和launch.json俩个文件
+
+```json
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "typescript",
+			"tsconfig": "Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build",
+			"label": "tsc: 构建 - Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json"
+		}
+	]
+}
+```
+
+## vscode代码片段
+
+代码片段：可直接键入相对应的名称（html:5）就生成一个原始代码
+  1. 在file-preference-user snippet中创建对应后缀的类型片段（类似一个模板，json对象形式）
+  2. 在[generator snippet](https://snippet-generator.app)中可生成对应的json对象
+  3. 粘贴到json文件中
+
+## vscode代码格式化
+
+### 安装代码格式化插件
 
 1. prettier
 2. vetur
 
-## 格式化设置
+### 格式化设置
 
 - 第一种：搜索vetur，然后将主要的后缀（js、vue）等的格式化设置成prettier
 - 第二种：直接在setting.json中进行设置
@@ -235,11 +265,11 @@
 ```
 <!-- tabs:end -->
 
-## 代码格式化操作
+### 代码格式化操作
 
 1. 设置默认格式化程序为prettier
 2. 全局格式化，可在package.json添加脚本：`"prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
 
-## 注意事项
+### 注意事项
 
 1. 在setting.json设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置

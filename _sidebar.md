@@ -76,11 +76,13 @@
   - [eslintrc.js](usage-config/eslintrc.js.md)
 
 - 其他工作相关
-  - [vscode代码格式化](usage-other/vscode代码格式化.md)
+  - [vscode技巧](usage-other/vscode代码格式化.md)
   - [前端渲染pdf](usage-other/前端渲染pdf.md)
   - [pdfjs本地化部署](usage-other/pdfjs本地部署.md)
   - [docker打包electron](usage-other/Linux-docker打包electron.md)
   - [git提交脚本](usage-other/gitCommit.md)
+  - [nginx基础](usage-tool/nginx基础.md)
+  - [前端缓存](usage-tool/前端缓存.md)
 
 - 使用docsify plugin
   - [使用docsify plugin](usage-tool/usage-docsify-plugin.md)
@@ -117,4 +119,7 @@
   - [18.async函数.md](usage-ECMAScript/18.async函数.md)
   - [19.class语法.md](usage-ECMAScript/19.class语法.md)
   - [20.Module.md](usage-ECMAScript/20.Module.md)
+
+- usage-books
+  - [写给大家看的设计书](usage-books/写给大家看的设计书.md)
 
