@@ -1,7 +1,9 @@
 # 速记手册
 
-> 网站集合：  
+> 网站集合：
 > https://fe.ecool.fun/
+> 参考：
+> https://juejin.cn/post/7204594495996198968
 
 ## 1. 对象的数据属性和访问器属性
 
@@ -497,3 +499,109 @@ module.exports = {
 4. 组件注册自定义属性的时候，在自定义组件内部使用props时，需验证属性的类型，以及默认值等信息。同时在使用该组件时，不一定必须使用`v-bind`对属性进行绑定，因为默认情况下是字符串，同时对于一些显示隐藏的属性，可根据是否有值来判定/设置相应的class。
 5. 输入框组件封装重点：`v-model`的使用技巧。使用组件时：`v-model="value"`，自定义组件内部：`:value="value" @input="handleInput" handleInput (e) { this.$emit('input', e.target.value) }`，这样才能实现数据的双绑定。
 6. 输入框组件密码显隐：展示密码和展示右侧的图标。密码的显隐切换是由type类型来控制的，故当传入密码显示属性`password`时，type应进行判断，有password则通过password来判断是否在password和text之间切换，无password属性则直接为password。控制password的变化需要在自定义组件内部加一个passwordVisible属性来切换
+
+## 27. 防抖和节流
+
+定义：
+- **防抖**：在规定的时间内，若上一次的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则取消上一次内容的执行（比如清除定时器），转而执行当前次的操作*
+- **节流**：在规定的时间内，若上一个的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则不做任何操作（即退出函数，忽略当前次操作），而上一次操作正常执行*
+
+**应用场景**：
+- 防抖：输入框输入内容后请求api获取结果
+- 节流：输入联想、内容拖动、滚动条滚动、计算鼠标移动的距离，此时需要在一段时间内触发操作，节流比较适合，使用防抖时会一直取消上一次操作，可能在这段时间内不会返回任何内容，影响用户观感
+
+<!-- tabs:start -->
+
+<!-- tab:防抖 -->
+```js
+function debounce (fn, delay = 200) {
+  let timer = 0
+  return function () {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, arguments)
+      timer = 0
+    }, delay)
+  }
+}
+```
+
+<!-- tab:节流 -->
+```js
+function throttle (fn, delay = 200) {
+  let timer = 0
+  return function () {
+    if (timer) {
+      return false
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, arguments)
+      timer = 0
+    }, delay)
+  }
+}
+```
+<!-- tabs:end -->
+
+## 28. Object.defineProperty和Proxy的区别
+
+**Object.defineProperty(obj, prop, desc)**:
+
+定义：
+- 直接在一个对象上定义一个新属性，或者修改对象的已有属性，返回该对象
+
+作用：
+- 在vue2中，对于未初始化的对象属性，不能进行直接赋值，可通过$set或Object.assign进行赋值
+- 不能监听数组变化：在vue2中，不能直接对数组下标进行赋值，不能直接修改数组长度，可通过$set（赋值）、splice（赋值，修改长度）正常操作
+- 必须（深层）遍历（嵌套）对象：只能劫持对象的属性，所以需要对每个属性进行遍历，而属性若是对象，则需深度遍历
+- 兼容性好，能够兼容ie
+
+**new Proxy(target, handler)**：
+
+定义：
+- 创建一个对象的代理，实现对对象基本操作的拦截和自定义（属性查找、赋值、枚举、函数调用等）
+
+作用：
+- 能够针对整个对象，而非对象的某个属性
+- 拦截处理函数handler有13种之多
+- 返回一个新对象，而不是原有对象
+
+
+## 29. vue diff算法原理
+
+> https://juejin.cn/post/7204594495996198968#heading-14
+
+## 30. vue中key的作用和原理
+
+- key作为vue中vnode标记的唯一id，在patch过程中通过key判断两个vnode是否相同，使diff操作更准确快速
+- 不加key，vue可能会根据就地更新的策略选择复用节点，导致保留了之前节点的状态
+- 尽量不要使用索引作为key
+
+## 31. vuex中actions和mutations的区别
+
+**mutations**：
+- 能够直接修改state
+- 同步
+
+**actions**：
+- 需调用mutations，间接修改state
+- 能够执行异步操作
+
+## 32. Vue SSR的理解
+
+概念：
+- SSR（服务端渲染），将vue在客户端把标签渲染成html的工作放在服务端完成，然后再把html直接返回给客户端
+
+优点：
+- SSR有着更好的SEO，直接返回的就是渲染好的页面，搜索引擎能直接爬取到，而SPA的内容是通过ajax请求获取到的文件（比如js等），搜索引擎爬取不到
+- 首屏加载速度更快，直接返回渲染后的html结构（直接就是完整的html页面），而SPA需要等待所有vue编译后的js文件都下载完成后，才开始进行页面的渲染（页面的渲染是通过js文件进行的）
+
+缺点：
+- 需要足够的服务器负载，因为渲染操作是在服务器上进行的，可使用缓存策略
+- 部分vue api不支持
+
+## 33. Composition API和Options API的区别
+
+> https://juejin.cn/post/7204594495996198968#heading-24

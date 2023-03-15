@@ -1097,7 +1097,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |stress|强调，着重指出|
 |region|区域，范围|
 |polygon|多边形|
-|bounce|弹跳，跳动，弹性，反射|**[baʊns]**|
 |assets|资源，资产|**['æset]**|
 |serve|服务，提供|
 |payload|负载，装载量|
@@ -1255,5 +1254,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |side effect|副作用，意外结果|
 |optimization|优化，完善|**[ˌɑːptɪməˈzeɪʃ(ə)n]**|
 |minimize|使降到最低限度，使减到最少，使...最小化|**[ˈmɪnɪˌmaɪz]**|
+|bounce|弹跳，跳动，弹性，反弹，弹起，反射，活力，拒付，解雇|**[baʊns]**|
+|debounce|去抖动，消除抖动|
+|throttle|节流阀，掐（喉咙），使窒息，阻挡，压制，扼杀|**[ˈθrɑt(ə)l]**|
 
 
