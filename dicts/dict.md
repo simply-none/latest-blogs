@@ -260,7 +260,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |called|称呼，被叫做|
 |callee|被调用函数|
 |function call|函数调用|
-|library|程序库，函数库，图书馆|
+|library(lib)|程序库，函数库，图书馆|
 |hex|十六进制|
 |hexadecimal|十六进制的|
 |decimal|十进制，小数|
@@ -1257,5 +1257,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |bounce|弹跳，跳动，弹性，反弹，弹起，反射，活力，拒付，解雇|**[baʊns]**|
 |debounce|去抖动，消除抖动|
 |throttle|节流阀，掐（喉咙），使窒息，阻挡，压制，扼杀|**[ˈθrɑt(ə)l]**|
+|isolated|分离，偏远的，孤立的，隔离的，孤独的|**[ˈaɪsəˌleɪtəd]**|
 
 
