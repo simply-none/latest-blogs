@@ -605,3 +605,12 @@ function throttle (fn, delay = 200) {
 ## 33. Composition API和Options API的区别
 
 > https://juejin.cn/post/7204594495996198968#heading-24
+
+## 34. for...in和for...of
+
+**for...in**：
+- 以任意顺序遍历一个对象的除Symbol以外的（包括继承的）可枚举的属性（指的是对象属性描述符enumerable设置为true的）
+- 该结构主要用于对象，为了对象而构建的
+
+**for...of**：
+- 在可迭代对象（具有iterator接口的）上创建一个迭代循环，遍历他的值
