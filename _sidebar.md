@@ -39,9 +39,9 @@
     - [奇怪或有用的代码](usage-frame/typescript/typescript-code.md)
   - 小程序
     - 微信小程序
-      - [内置组件](usage-frame/wechat-mini-program/组件.md)
-      - [自定义组件](usage-frame/wechat-mini-program/自定义组件.md)
       - [基础能力](usage-frame/wechat-mini-program/基础能力.md)
+      - [自定义组件](usage-frame/wechat-mini-program/自定义组件.md)
+      - [内置组件](usage-frame/wechat-mini-program/组件.md)
   - react
     - [基础知识](usage-frame/react/react.md)
     - [高级指引](usage-frame/react/高级指引.md)

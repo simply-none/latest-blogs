@@ -21,6 +21,32 @@
 
 - 对当前提交打标签：`git tag <version_name>`
 
+## 拉取项目作为初始化模板
+
+拉取项目作为初始化模板: 使用degit命令
+
+degit命令功能：
+- 对git仓库进行复制
+- 只会复制最新的提交，比git clone快得多
+
+```bash
+npm install -g degit
+
+# 使用
+degit user/repo
+degit github:user/repo
+degit git@github.com:user/repo
+degit https://github.com/user/repo
+
+degit gitlab:user/repo
+degit url
+
+# 分别指定branch、tag、commit
+degit user/repo#dev
+degit user/repo#v1.2.3
+degit user/repo#1fd41saf4
+```
+
 ### 基本配置（config）
 
 - git查看配置信息：`git config <--system | --global | --local> --list`

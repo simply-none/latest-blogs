@@ -16,7 +16,6 @@ function getLog() {
 	mds.forEach(path => {
     const bash = `git log -1 -- ./${path}`
 		shell.exec(bash.toString(), (code, stdout, stderr) => {
-			console.log(stdout, 'test');
 			let arr = stdout.split('commit');
 			arr = arr.filter(a => a);
 			arr = arr.map(arr => {
