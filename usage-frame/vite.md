@@ -1,5 +1,8 @@
 # vite
 
+> 参考：    
+> https://cn.vitejs.dev/guide/why.html  
+
 ## 为什么选择Vite
 
 **现实问题**：构建很多模块的大型应用时，工具（将源码转成浏览器能支持的文件）需要处理的js代码量呈指数级增长，基于JavaScript开发的工具遭遇了性能瓶颈，导致严重影响开发者体验和开发效率，比如：
@@ -170,6 +173,75 @@ degit anncwb/vue-vben-admin project-name
   - 预加载指令生成
   - 异步chunk加载优化
 
+### 依赖预构建
+
+项目首次启动vite时，可能会打印如pre-building dependencies的信息，这就是vite执行时做的**依赖预构建，这个过程的目的**有下列两个：
+- commonjs和umd模块兼容性：开发阶段vite将所有代码视为原生esm，故而需将commonjs和umd发布的依赖项转为esm，在转换时vite会进行智能导入分析使导入（具名导入和默认导入）符合预期效果
+- 性能：vite将含有多个内部模块的esm依赖关系转为单个模块，以提高后续页面加载性能。一些包（比如loadash-es）将他们的es模块构建作为许多单独的文件互相导入，当执行导入（`import { xxx } from xxx`）时，浏览器会同时发出很多http请求，大量的请求会在浏览器端造成网络堵塞，拖慢页面加载速度，通过预构建使其成为一个模块，就只需要一个http请求
+
+注意：
+- 依赖预构建仅会在开发模式下应用，使用esbuild将依赖转为esm，生产构建中使用的是@rollup/plugin-commonjs
+
+**自动依赖搜寻**：
+- 若找不到相应的缓存，vite将抓取源码，自动寻找（比如从node_modules）引入的依赖项，并将这些依赖项作为预构建包的入口点
+- 在服务器启动后，若遇到一个新的不在缓存中的依赖关系导入，vite将重新运行依赖构建进程并重加载页面
+
+**monorepo和链接依赖**：
+- 在monorepo启动中，该仓库的某个包可能会成为另一个包的依赖，vite会自动侦测没有从node_modules解析的依赖项，并将链接的依赖视为源码，他不会尝试打包被链接的依赖，而是会分析被链接依赖的依赖列表
+- 这需要被链接的依赖被导出为esm，如果不是该格式，可以在配置里将依赖添加到`optimizeDeps.include`和`build.commonjsOptions.include`这两项中，当这个被链接的依赖发生变更后，重启开发服务器时在命令中带上`--force`让所有更改生效
+- 由于对链接依赖的解析方式不同，传递性的依赖项可能会不正确的进行重复数据删除，而造成运行时的问题，出现这个问题可用npm pack修复
+
+**自定义行为**：
+- 如果想显式从列表中包含/排除依赖项，应使用`optimizeDeps`配置选项
+- 当vite在源码中无法直接发现import的时候，可以使用`optimezeDeps.include`或`optimizeDeps.exclude`处理，若依赖项很大（包含很多内部模块）或是commonjs，应使用include；若依赖项很小且是有效的esm，应使用exclude，让浏览器去加载它
+
+**文件系统缓存**：
+- vite会将预构建的依赖缓存到node_modules/.vite里，它根据下面某项改变时去重新预构建：
+  - 包管理器的lockfile（比如package-lock.json,yarn.lock,pnpm-lock.yaml）
+  - 补丁文件夹的修改时间
+  - 在vite.config.js某字段配置过的
+  - NODE_ENV的值
+- 若想强制vite重构建依赖，应使用`--force`命令行选项或手动删除`node_modules/.vite`
+
+**浏览器缓存**：
+- 解析后的依赖请求会以http头`max-age=31536000,immutable`强缓存，以提高开发时页面重载性能
+- 一旦被缓存，这些请求将不会再到达开发服务器
+- 如果想通过本地编辑来调试依赖项，可以通过下列三个步骤：
+  1. 浏览器调试工具的network选项卡禁用缓存
+  2. 重启vite dev server，添加`--force`
+  3. 重载页面
+
+### 静态资源处理
+
+使用：
+- 引入一个静态资源（可以是相对路径和绝对路径）会返回解析后的公共路径`import imgurl from './img.png'`，imgurl在开发时是`/img.png`，在生产时是`/assets/img.sadfa3f.png`，行为类似webpack的file-loader
+- css中的`url()`引用处理方式同上
+- vite使用vue插件时，vue sfc模板的资源引用将自动转为导入
+- 常见的图像、媒体、字体文件类型会被自动检测为资源，可使用`assetsInclude`选项自行扩展其他类型
+- 未被包含在内部列表或`assetsInclude`中的资源，可在路径后添加`?url`后缀显式导入为一个url，比如`import url from 'extra-scalloped-border/worklet.js?url`
+- 资源可以使用`?raw`后缀声明作为字符串引入
+- 脚本可以使用`?worker`或`?shareworker`后缀导入为web worker
+- 引用的资源作为构建资源图的一部分包括在内，将生成散列文件名，可以由插件处理优化
+- 较小的资源（小于`assetsInlineLimit`选项配置的）会被内联为base64
+- git lfs占位符会自动排除在内联之外，因为他们不包含他们所表示的文件的内容，要获得内联，需确保在构建之前通过git lfs下载文件内容
+- 默认typescript不会将静态资源导入视为有效的模块，解决这个问题，需添加`vite/client`
+
+**public目录**：
+- 若有下列资源，可以将他们放在public目录中：
+  - 不会被源码引用的，比如robots.txt
+  - 必须保持原有文件名的
+  - 不想引入资源，仅是得到他的url的
+- 该目录的资源在开发时能通过`/`根路径访问，打包时会被完整复制到目标目录的根目录下
+- 目录默认是`<root>/public`，可通过`publicDir`选项配置
+- 引入public的资源应使用根绝对路径，以`/`开头，比如`public/icon.png`，使用`/icon.png`引入
+- public的资源不应被js文件引用
+
+**new URL**：
+- `import.meta.url`是esm原生功能，会暴露当前模块的url，和原生url构造器一起使用，可得到一个完整解析的静态资源url，比如`const imgurl = new URL('./img.png', import.meta.url).href`，这能在现代浏览器中直接使用，不需vite处理
+- 还支持动态url，通过模板字符串引入动态变量路径
+- 不支持完全的变量名作为路径
+- 无法在ssr中使用
+
 ## 使用插件
 
 前置信息：
@@ -204,3 +276,44 @@ export default defineConfig({
 })
 ```
 
+## 环境变量和模式
+
+**环境变量**：
+- vite在一个特殊的`import.meta.env`对象上暴露环境变量，下列是在所有情形下都能使用的内建变量：
+  - `import.meta.env.MODE`：应用运行的模式
+  - `import.meta.env.BASE_URL`：部署应用时的基本url，由base配置项决定
+  - `import.meta.env.PROD`：是否运行在生产环境
+  - `import.meta.env.DEV`：是否运行在开发环境
+  - `import.meta.env.SSR`：是否运行在server环境
+- 在生产环境中，
+  - 上述环境变量会在构建时被静态替换，所以引用时应使用完全静态的字符串，动态的key无法生效，比如`import.meta.env[key]`
+  - 他还将替换出现在js和vue模板中的字符串，比如将`process.env.NODE_ENV`替换为development，可能出现missing semicolon或unexpected token的错误，避免这种情况可以用：
+    - 对于js字符串，使用`import.meta\u200b.env.MODE`替换
+    - 对于vue或其他编译到js字符串的html，可以使用`<wbr>`标签，比如`import.meta.<wbr>env.MODE`
+
+**.env文件**：
+- vite使用dotenv从环境目录中的下列文件加载额外的环境变量：
+  - `.env`：所有情况都加载
+  - `.env.local`：所有情况都加载，被git忽略
+  - `.env.[mode]`：指定模式加载
+  - `.env.[mode].local`
+- 加载的环境变量通过`import.meta.env.xxx`的形式暴露给源码，只有以`VITE_`前缀的变量才能获取到它的值，可使用`envPrefix`自定义变量前缀
+- 若想在环境变量中使用$符，应用\对其转义
+- 默认情况下vite在vite/client.d.ts中为import.meta.env提供了类型定义，如果想在代码中获取以VITE_开头的环境变量的提示，应在src下创建一个env.d.ts文件声明env的类型
+- 如果代码依赖于浏览器类型，可以在tsconfig中修改lib字段，比如`lib: ['WebWorker']`
+
+```js
+// env的ts提示，env.d.ts
+/// <reference types="vite/client" />
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string;
+  // ....
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+```
+
+**模式**：
+- 在某些情况下，若想在vite build时运行不同的模式渲染不同内容，可传递`--mode`选项覆盖默认mode，比如`vite --mode staging`，这时需要env的值为staging

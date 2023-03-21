@@ -1252,11 +1252,14 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |bundle|（软件）包，捆，束，一批，匆匆送走，赶|
 |elimination|排除，消除，清除，淘汰|**[ɪˌlɪmɪˈneɪʃ(ə)n]**|
 |side effect|副作用，意外结果|
+|optimize|（使）优化，完善，充分利用|**[ˈɑptɪˌmaɪz]**|
 |optimization|优化，完善|**[ˌɑːptɪməˈzeɪʃ(ə)n]**|
 |minimize|使降到最低限度，使减到最少，使...最小化|**[ˈmɪnɪˌmaɪz]**|
 |bounce|弹跳，跳动，弹性，反弹，弹起，反射，活力，拒付，解雇|**[baʊns]**|
 |debounce|去抖动，消除抖动|
 |throttle|节流阀，掐（喉咙），使窒息，阻挡，压制，扼杀|**[ˈθrɑt(ə)l]**|
 |isolated|分离，偏远的，孤立的，隔离的，孤独的|**[ˈaɪsəˌleɪtəd]**|
+|mono|单声道的，单一，单|**[ˈmɑnoʊ]**|
+|blame|责备，责任，指责，责怪，过失|**[bleɪm]**|
 
 
