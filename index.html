@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="./3rdParty/css/buble.css" title="buble" disabled />
   <link rel="stylesheet" href="./3rdParty/css/pure.css" title="pure" disabled />
   <link rel="stylesheet" href="./_style/global.css" />
-  <link rel="stylesheet" href="./markdown-theme.css" />
+  <link rel="stylesheet" id="themeCssLink" href="./markdown-theme.css" />
   <style>
     nav.app-nav li ul {
       min-width: 100px;
@@ -357,6 +357,15 @@
   <!-- <script src="//cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script> -->
   <script type="module">
     window.onload = () => {
+      function changeTheme () {
+        const themeSkin = document.querySelector('#themeSkins')
+        const themeCssLink = document.querySelector('#themeCssLink')
+        console.log(themeSkin, 'tst')
+        themeSkin.onchange = (e) => {
+          console.log(e.target.value, 'test')
+          themeCssLink.href = e.target.value || themeCssLink.href
+        }
+      }
       let logs = {}
 
       function setAttr () {
@@ -386,6 +395,7 @@
       }
 
       addEventListener('hashchange', () => {
+        changeTheme()
         setTimeout(() => {
           setAttr()
         }, 500)
@@ -419,6 +429,7 @@
 						// 获取异步返回的json数据
             logs = JSON.parse(xhr.responseText)
             setAttr()
+            changeTheme()
 					}
 				};
 
