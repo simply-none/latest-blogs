@@ -36,7 +36,7 @@ loader的属性：
 
 <!-- tabs:start -->
 <!-- tab:常规 -->
-```js
+```javascript
 module.exports = {
   module: {
     rules: [
@@ -49,7 +49,7 @@ module.exports = {
 }
 ```
 <!-- tab:plugin和loader一起使用 -->
-```js
+```javascript
 // webpack.config.js
 // 第一种方式
 module.exports = {

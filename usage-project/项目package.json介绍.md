@@ -276,7 +276,7 @@ commonJS包规格使用`directories`表明包的结构，例如在[npm package.j
 
 `config`对象用于设置配置一个类环境变量参数，该参数可在程序代码中使用`npm_package_config_<name>`来引用
 
-```js
+```javascript
 // package.json
 {
   "config": {

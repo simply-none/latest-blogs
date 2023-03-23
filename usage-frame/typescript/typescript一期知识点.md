@@ -183,14 +183,14 @@ a.concat([])
 10. `string`类型
 
 语法：
-```ts
+```typescript
 const str: string = `这是一个模板字符串，当前时间：${new Date()}`;
 ```
 
 11.  `array`类型
 
 数组类型的定义方式，如下：
-```ts
+```typescript
 // 类型 + 方括号
 let a: (number | string)[] = [1, "2"];
 // 数组泛型
@@ -202,7 +202,7 @@ let c: {
 ```
 
 常用的类数组类型都有自己的接口定义，分别有`IArguments`, `NodeList`, `HTMLCollection`等，其中
-```ts
+```typescript
 // IArguments的接口类型如下
 interface IArguments {
   // [index: number]: any;
@@ -1355,7 +1355,7 @@ let v = new ScientificCalculator(2)
 
 <!-- tabs:start -->
 <!-- tab:任意个接口属性 -->
-```ts
+```typescript
 interface Int {
   // 普通属性，这些都不会报错，因为propName`『接口的key可以是任意类型』`是一个number，所以不会进行匹配
   name: string;

@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./3rdParty/css/buble.css" title="buble" disabled />
   <link rel="stylesheet" href="./3rdParty/css/pure.css" title="pure" disabled />
   <link rel="stylesheet" href="./_style/global.css" />
+  <link rel="stylesheet" href="./markdown-theme.css" />
   <style>
     nav.app-nav li ul {
       min-width: 100px;
@@ -104,84 +105,84 @@
           className: 'note',
         },
       },
-      // pdf
-      markdown: {
-        code: function (code, lang) {
-          var renderer_func = function (code, lang, base = null) {
-            var pdf_renderer = function (code, lang, verify) {
-              function unique_id_generator() {
-                function rand_gen() {
-                  return Math.floor((Math.random() + 1) * 65536)
-                    .toString(16)
-                    .substring(1);
-                }
-                return (
-                  rand_gen() +
-                  rand_gen() +
-                  '-' +
-                  rand_gen() +
-                  '-' +
-                  rand_gen() +
-                  '-' +
-                  rand_gen() +
-                  '-' +
-                  rand_gen() +
-                  rand_gen() +
-                  rand_gen()
-                );
-              }
-              if (
-                lang &&
-                !lang.localeCompare('pdf', 'en', {
-                  sensitivity: 'base',
-                })
-              ) {
-                if (verify) {
-                  return true;
-                } else {
-                  var divId =
-                    'markdown_code_pdf_container_' +
-                    unique_id_generator().toString();
-                  var container_list = new Array();
-                  if (localStorage.getItem('pdf_container_list')) {
-                    container_list = JSON.parse(
-                      localStorage.getItem('pdf_container_list')
-                    );
-                  }
-                  container_list.push({
-                    pdf_location: code,
-                    div_id: divId,
-                  });
-                  localStorage.setItem(
-                    'pdf_container_list',
-                    JSON.stringify(container_list)
-                  );
-                  return (
-                    '<div style="margin-top:' +
-                    PDF_MARGIN_TOP +
-                    '; margin-bottom:' +
-                    PDF_MARGIN_BOTTOM +
-                    ';" id="' +
-                    divId +
-                    '">' +
-                    '<a href="' +
-                    code +
-                    '"> Link </a> to ' +
-                    code +
-                    '</div>'
-                  );
-                }
-              }
-              return false;
-            };
-            if (pdf_renderer(code, lang, true)) {
-              return pdf_renderer(code, lang, false);
-            }
-            return base ? base : this.origin.code.apply(this, arguments);
-          };
-        },
-      },
-      // 绘制uml图：https://plantuml.com/zh/
+      // // pdf
+      // markdown: {
+      //   code: function (code, lang) {
+      //     var renderer_func = function (code, lang, base = null) {
+      //       var pdf_renderer = function (code, lang, verify) {
+      //         function unique_id_generator() {
+      //           function rand_gen() {
+      //             return Math.floor((Math.random() + 1) * 65536)
+      //               .toString(16)
+      //               .substring(1);
+      //           }
+      //           return (
+      //             rand_gen() +
+      //             rand_gen() +
+      //             '-' +
+      //             rand_gen() +
+      //             '-' +
+      //             rand_gen() +
+      //             '-' +
+      //             rand_gen() +
+      //             '-' +
+      //             rand_gen() +
+      //             rand_gen() +
+      //             rand_gen()
+      //           );
+      //         }
+      //         if (
+      //           lang &&
+      //           !lang.localeCompare('pdf', 'en', {
+      //             sensitivity: 'base',
+      //           })
+      //         ) {
+      //           if (verify) {
+      //             return true;
+      //           } else {
+      //             var divId =
+      //               'markdown_code_pdf_container_' +
+      //               unique_id_generator().toString();
+      //             var container_list = new Array();
+      //             if (localStorage.getItem('pdf_container_list')) {
+      //               container_list = JSON.parse(
+      //                 localStorage.getItem('pdf_container_list')
+      //               );
+      //             }
+      //             container_list.push({
+      //               pdf_location: code,
+      //               div_id: divId,
+      //             });
+      //             localStorage.setItem(
+      //               'pdf_container_list',
+      //               JSON.stringify(container_list)
+      //             );
+      //             return (
+      //               '<div style="margin-top:' +
+      //               PDF_MARGIN_TOP +
+      //               '; margin-bottom:' +
+      //               PDF_MARGIN_BOTTOM +
+      //               ';" id="' +
+      //               divId +
+      //               '">' +
+      //               '<a href="' +
+      //               code +
+      //               '"> Link </a> to ' +
+      //               code +
+      //               '</div>'
+      //             );
+      //           }
+      //         }
+      //         return false;
+      //       };
+      //       if (pdf_renderer(code, lang, true)) {
+      //         return pdf_renderer(code, lang, false);
+      //       }
+      //       return base ? base : this.origin.code.apply(this, arguments);
+      //     };
+      //   },
+      // },
+      // // 绘制uml图：https://plantuml.com/zh/
       plantuml: {
         skin: 'default',
         renderSvgAsObject: true,
@@ -432,27 +433,16 @@
     <script>
       mermaid.initialize({ startOnLoad: true });
     </script>
+    <script src="./3rdParty/code-light/prism-tsx.js"></script>
+    <script src="./3rdParty/code-light/prism-typescript.js"></script>
+    <script src="./3rdParty/code-light/prism-bash.js"></script>
+    <script src="./3rdParty/code-light/prism-json.js"></script>
+    <script src="./3rdParty/code-light/prism-json5.js"></script>
+    <script src="./3rdParty/code-light/prism-javascript.js"></script>
+
 </body>
 <style>
-  .docsify-copy-code-button {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    overflow: visible;
-    padding: 0.15em 0.38em;
-    border: 0;
-    border-radius: 0;
-    outline: 0;
-    font-size: 0.6em;
-    background: #767676;
-    color: #fff;
-    opacity: 0;
-  }
-  blockquote * *,
-  .alert.callout.note * {
-    display: block;
-  }
+
 </style>
 
 </html>

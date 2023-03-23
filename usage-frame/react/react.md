@@ -28,7 +28,7 @@
 注意：
 - JSX为了防止注入攻击（比如XSS），会在渲染内容之前对其进行转义成字符串形式
 
-```js
+```javascript
 // 基本语法
 const element = <h1>hello react!</h1>
 
@@ -90,7 +90,7 @@ const element = {
   - 根节点内的所有内容都由react dom管理
   - 使用React.createRoot创建根节点，使用render函数渲染根节点内部的内容
 
-```js
+```javascript
 // 获取根节点
 const root = React.createRoot(document.querySelector('#root'))
 
@@ -122,7 +122,7 @@ setInterval(hello, 1000)
 
 <!-- tabs:start -->
 <!-- tab:组件的定义和使用 -->
-```js
+```javascript
 // 函数组件
 function Hello (props) {
   return <h1>hello, {props.name}</h1>
@@ -150,7 +150,7 @@ root.render(element)
 ```
 
 <!-- tab:组件拆分和组合 -->
-```js
+```javascript
 // 定义一个评论组件：包含头像、用户名、评论内容、评论时间
 // 其结构为
 <div className="Comment">
@@ -210,7 +210,7 @@ function Comment (props) {
 ```
 
 <!-- tab:状态提升 -->
-```js
+```javascript
 // 父组件
 import { Link } from 'react-router-dom'
 import React from 'react'
@@ -321,7 +321,7 @@ export default class JqForm extends React.Component {
   - state的更新会合并，所以多次调用setState和一次性调用setState的效果是一样的
 - react中的数据都是向下流动的，通常叫做自上而下（单向）的数据流
 
-```js
+```javascript
 // 获取时间组件优化
 class Clock extends React.Component {
   // 1. 
@@ -406,7 +406,7 @@ root.render(<Clock/>)
 
 <!-- tabs:start -->
 <!-- tab:创建refs -->
-```js
+```javascript
 // 方式一：使用React.createRef的方式
 Class MyComp extends React.Component {
   constructor(props) {
@@ -455,7 +455,7 @@ Class MyComp extends React.Component {
 ```
 
 <!-- tab:refs转发 -->
-```js
+```javascript
 // 第一种方式：转发到dom组件上
 // 使用forwardRef函数构建组件FancyButton，这时FancyButton组件内部可以得到调用`<FancyButton ref={ref}/>`中的ref变量，并将其赋值给元素或转为其他命名（非ref）的prop传递给子组件
 const FancyButton = React.forwardRef((props, ref) => (
@@ -472,7 +472,7 @@ const ref = React.createRef()
 ```
 
 <!-- tab:在高阶函数中使用refs转发（透传） -->
-```js
+```javascript
 // 若想将操作更深结构下的组件，可将ref透传
 class FancyButton extends React.Component {
   constructor (props) {
@@ -583,7 +583,7 @@ class UseHoc extends React.Component {
   1. 属性值使用箭头函数，参数即为事件对象event，这种形式必须显式传入event
   2. 属性值使用bind绑定，第一个参数为this
 
-```js
+```javascript
 // 事件处理
 function Form () {
   function handleSubmit (e) {
@@ -657,7 +657,7 @@ class From extends React.Component {
   - 三元运算符
 - 阻止组件渲染，可以在渲染函数中返回null，此时不会返回组件A内容，但当调用该组件A的组件B操作之后又展示该组件A，此时该组件A的componentDidUpdate会被执行（即组件更新钩子会被调用）
 
-```js
+```javascript
 // 在外部计算
 function Greeting (props) {
   if (!props.isLogin) {
@@ -712,7 +712,7 @@ class Greeting extends React.Component {
   - 列表的key必须是在map函数的子级中
   - 列表的key，不会传递给子组件，若需要使用key的值，需要用其他变量代替
 
-```js
+```javascript
 // 第一种形式，写在外面，然后渲染数组变量
 const numbers = [1, 2, 3, 4, 5]
 const sideBar = numbers.map(num => 
@@ -747,7 +747,7 @@ root.render(
 - 原生表单元素有：input（默认文本类型、checkbox等）、select、textarea
 - 处理表单事件时，需要阻止默认行为`e.preventDefault`
 
-```js
+```javascript
 import { Link } from 'react-router-dom'
 import React  from 'react'
 class JqForm extends React.Component {

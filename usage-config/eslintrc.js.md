@@ -19,7 +19,7 @@
 <!-- tabs:start -->
 
 <!-- tab:.eslintrc.js -->
-```js
+```javascript
 module.exports = {
 
   //此项是用来告诉eslint找当前配置文件不能往父级查找
@@ -157,7 +157,7 @@ module.exports = {
 
 <!-- tab:常用规则 -->
 
-```js
+```javascript
 'rules': {
   // vue/eslint
   // 根据官方风格指南，自定义组件名称应该由多单词构成，防止和html标签冲突，所以会报错

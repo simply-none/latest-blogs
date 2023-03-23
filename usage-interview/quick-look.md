@@ -426,7 +426,7 @@ this.$bus.$emit('receiveParams', data)
    - 配置`optimization.minimize = true`
    - 提供`optimization.minimizer`数组
 
-```js
+```javascript
 // webpack.config.js
 module.exports = {
   mode: 'production',
@@ -455,7 +455,7 @@ module.exports = {
 ```
 
 <!-- tab:webpack.config.json -->
-```js
+```javascript
 module.exports = {
   module: {
     rules: [
@@ -513,7 +513,7 @@ module.exports = {
 <!-- tabs:start -->
 
 <!-- tab:防抖 -->
-```js
+```javascript
 function debounce (fn, delay = 200) {
   let timer = 0
   return function () {
@@ -529,7 +529,7 @@ function debounce (fn, delay = 200) {
 ```
 
 <!-- tab:节流 -->
-```js
+```javascript
 function throttle (fn, delay = 200) {
   let timer = 0
   return function () {
@@ -614,3 +614,20 @@ function throttle (fn, delay = 200) {
 
 **for...of**：
 - 在可迭代对象（具有iterator接口的）上创建一个迭代循环，遍历他的值
+
+## 35. process.cwd()和__dirname的区别
+
+**process.cwd()**: 返回当前工作目录，比如调用node命令执行脚本时的目录
+
+**__dirname**：返回源代码所在的目录
+
+```javascript
+// 比如在d:\\process/index.js中
+console.log(process.cwd())
+console.log(__dirname)
+```
+
+| 命令 | process.cwd() | \_\_dirname |
+| --- | --- | --- |
+| node index.js | d:\\process | d:\\process |
+| node process\\index.js | d: | d:\\process |

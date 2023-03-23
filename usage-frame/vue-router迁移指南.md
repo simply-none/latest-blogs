@@ -6,7 +6,7 @@
 - 不支持base属性，通过路由模式函数的第一个参数替代
 - 不支持fallback属性，可以直接使用[html5 history api](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)进行历史会话访问
 
-```javaScript
+```javascript
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
@@ -51,7 +51,7 @@ const router = createRouter({
 **跳转的参数设置**：
 - to和push等方法的参数可以是一个字符串（可以是带变量的反斜杠字符串）、一个描述地址的对象（路径对象）
 
-```javaScript
+```javascript
 <router-link :to="'/user/123'" />
 router.push('/user/123')
 router.push(`/user/${id}`)
@@ -111,7 +111,7 @@ router.go(-100)
 <!-- tabs:start -->
 
 <!-- tab:路由捕获示例1 -->
-```javaScript
+```javascript
 // 路径对象
 const routes = [
   // 表示可重复patchmatch 0次以上，同时patchMatch的值可以是任意值，例如匹配/, /12ad, /23/fda/f等，可通过$route.params.patchMatch获取
@@ -150,7 +150,7 @@ router.resolve({
 - 嵌套路由的跳转，可通过name属性进行跳转，也可通过path属性进行跳转
 - 当通过name属性跳转到父路由（上级路由）时，重新刷新加载页面时将会显示嵌套的空子路由(`path: ''`)，而非父路由
 
-```javaScript
+```javascript
 const routes = [
   {
     path: '/user/:id',
@@ -179,7 +179,7 @@ const routes = [
 - 想在同一个界面中同时显示多个视图，比如常规的布局（header、aside、main），不仅可以使用组件的方式，还可以使用嵌套视图的方式使用
 - 命名视图通过`<router-view name>`结合components对象（和path同级）一起使用，对象的属性名即name的值，对象的属性值是一个组件
 
-```javaScript
+```javascript
 // html
 <div>
   <h1>user setting</h1>
@@ -230,7 +230,7 @@ const routes = [
 - 路由配置别名之后，匹配别名的路由的url将不会变化，而匹配的路由组件将是component中定义的
 - alias的值可以是：字符串（带/，路径path）、字符串（不带/，表相对路由）、字符串数组
 
-```javaScript
+```javascript
 // 路由别名
 const routes = [
   {
@@ -256,7 +256,7 @@ const routes = [
 - 当props是一个参数为route对象的函数时，其返回值作为props传入到组件中，此时属性值由函数返回值决定
 
 
-```javaScript
+```javascript
 const routes = [
   // 动态的props，此时组件xxx中props包含id
   {
@@ -433,7 +433,7 @@ onBeforeRouteLeave((to, from) => {
 - 在导航完成之后获取，即在created生命周期钩子中通过watch监听$route.params进行
 - 在导航完成之前获取，即在beforeRouteEnter和beforeRouteUpdate中获取
 
-```js
+```javascript
 // 在导航完成之前获取
 export default {
   data () {},
@@ -464,7 +464,7 @@ export default {
 <!-- tabs:start -->
 
 <!-- tab:动态过渡 -->
-```js
+```javascript
 // 添加v-slot api，获取Component，route等内容
 <router-view v-slot="{ Component, route }">
   // 设置过渡动画类型
@@ -549,7 +549,7 @@ const router = createRouter({
 <!-- tabs:start -->
 
 <!-- tab:动态导入 -->
-```js
+```javascript
 // component属性接收一个返回Promise的函数，所以可以使用更复杂的函数，只要他们返回promise
 // 1. 
 const User = () => import('./views/user.vue')
@@ -564,12 +564,12 @@ const routes = [{
 ```
 
 <!-- tab:webpack的动态导入 -->
-```js
+```javascript
 const User = () => import(/* webpackChunkName: 'group-user' */ './views/user.vue')
 ```
 
 <!-- tab:vite的动态导入 -->
-```js
+```javascript
 // vite.config.js
 export default defineConfig({
   build: {
@@ -611,7 +611,7 @@ export default defineConfig({
 <!-- tabs:start -->
 
 <!-- tab:导航故障检测1 -->
-```js
+```javascript
 const result = await router.push('/user')
 if (result) {
   // 导航被阻止
@@ -621,7 +621,7 @@ if (result) {
 ```
 
 <!-- tab:导航故障检测2 -->
-```js
+```javascript
 import { NavigationFailureType, isNavigationFailure } from 'vue-router'
 
 const result = await router.push('/user')
@@ -635,7 +635,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 **导航故障的属性**：
 - 所有导航失败，都会暴露to、from属性，以反映导航的当前位置和目标位置
 
-```js
+```javascript
 router.push('/user').then(failure => {
   if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
     failure.to.path
@@ -647,7 +647,7 @@ router.push('/user').then(failure => {
 **检测是否重定向**：
 - 通过读取路由地址的redirectedFrom属性
 
-```js
+```javascript
 await router.push('/user')
 // redirectedFrom类似to和from
 if (router.currentRoute.value.redirectedFrom) {}

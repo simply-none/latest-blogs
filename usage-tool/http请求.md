@@ -2,7 +2,7 @@
 
 <!-- tabs:start -->
 <!-- tab:get请求 -->
-```JavaScript
+```javascript
 // get请求参数带数组
 // 假设后端需要传入请求参数为ids：[1, 2, 3]
 // 浏览器实际需传入类似效果：idList: 1  idList: 2  idList: 3
@@ -38,7 +38,7 @@ axios.get(url, {
 ```
 
 <!-- tab:post请求 -->
-```JavaScript
+```javascript
 // post请求类型为form数据格式
 let formUrlencodedData = new URLSearchParams()
 Object.keys(upload).forEach(key => {

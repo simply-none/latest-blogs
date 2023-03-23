@@ -3,6 +3,9 @@
   - [养生](dicts/养生.md)
   - [技能提升](dicts/技能提升.md)
 
+- 文章集锦
+  - [导引](usage-article/导引.md)
+
 - 项目相关
   - [项目版本依赖升级](usage-project/项目版本升级.md)
   - [项目启动时依赖安装失败问题汇总](usage-project/项目启动安装依赖失败问题汇总.md)

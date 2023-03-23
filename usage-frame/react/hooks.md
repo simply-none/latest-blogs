@@ -14,7 +14,7 @@ Hook基本概念：
 - 只能在react的函数组件和自定义的hook中调用hook，不能在其他js函数中调用
 - 可以安装`npm install -D eslint-plugin-react-hooks`插件强制执行上面两条规则
 
-```js
+```javascript
 // eslint配置
 {
   "plugins": [
@@ -39,7 +39,7 @@ Hook基本概念：
 - 返回当前state以及更新state（如age）的函数setState（如setAge）
 - 可以一次性声明多个state变量，重复使用多次useState即可
 
-```js
+```javascript
 import React, {useState} from 'react'
 
 function Example () {
@@ -74,7 +74,7 @@ function Example () {
 附录：
 - 副作用：一个函数（可能）会对函数外部变量产生影响的行为
 
-```js
+```javascript
 // 使用多个effect，按逻辑（用途）将不同的功能分离到不同的effect中
 function FriendStatusWithCounter (props) {
   const [count, setCount] = useState(0)
@@ -129,7 +129,7 @@ function FriendStatusWithCounter (props) {
 注意：
 - 避免过早的增加抽象逻辑，即在项目的一定阶段，将公有的函数抽象成自定义的hook
 
-```js
+```javascript
 // 定义一个自定义hook
 import {useState, useEffect} from 'react'
 
@@ -196,7 +196,7 @@ function ChatRecipientPicker() {
 - 接收一个context对象（即React.createContext`的返回值），并返回该context的当前值（由上层组件中距离当前组件最近的`<Mycontext.Provider>`的value决定
 - 上层组件的context更新，会触发该hook，即使祖先使用React.memo或shouldComponentUpdate，也会在组件本身使用useContext时重新渲染
 
-```js
+```javascript
 const themes = {
   light: {
     background: '#000000',
@@ -253,7 +253,7 @@ function ThemedButton () {
 - 若reducer的返回值和state的值一致，则会跳过子组件的渲染和对应的执行操作
 - 若在渲染期间执行了高开销的操作，可以使用useMemo优化
 
-```js
+```javascript
 import { useReducer } from "react"
 const initialState = { count: 1 }
 

@@ -5,7 +5,7 @@
 1. provide、inject
 
 语法：
-```js
+```javascript
 provide: Object | () => Object
 inject: Array<string> | { [key: string]: string | Symbol | Object }
 ```

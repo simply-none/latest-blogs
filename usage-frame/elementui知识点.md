@@ -4,7 +4,7 @@
 <!-- tabs:start -->
 
 <!-- tab:验证单个字段 -->
-```js
+```javascript
 // validateField方法
 this.$refs.formContainer.validateField('filed1', errorInfo => {
   // 根据是否有errorInfo进行对应操作
@@ -12,7 +12,7 @@ this.$refs.formContainer.validateField('filed1', errorInfo => {
 ```
 
 <!-- tab:验证整个表单 -->
-```js
+```javascript
 // validate方法
 this.$refs.formContainer.validate(valid => {
   // 根据valid的布尔值判断
@@ -25,7 +25,7 @@ this.$refs.formContainer.validate(valid => {
 
 1. el-input回车事件用法
 
-```js
+```javascript
 <el-input @keyup.enter.native="handleEnter"/>
 ```
 

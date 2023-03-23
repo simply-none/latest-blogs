@@ -7,7 +7,7 @@
 原因：新版的webpack-dev-server出于安全考虑，默认检查hostname，如果hostname不是配置内的，将中断访问。
 
 解决方案：
-```js
+```javascript
 // webpack v3
 module.exports = {
   devServer: {
@@ -102,7 +102,7 @@ module.exports = {
 <!-- tabs:start -->
 
 <!-- tab:terser-webpack-plugin配置 -->
-```js
+```javascript
 // 方法一：
 // vue.config.js
 import TerserPlugin from 'terser-webpack-plugin'
@@ -131,7 +131,7 @@ module.exports = {
 ```
 
 <!-- tab:babel-plugin-transform-remove-console配置 -->
-```js
+```javascript
 // 安装
 npm install babel-plugin-transform-remove-console --save-dev
 

@@ -47,7 +47,7 @@
   </template>
 </pdf>
 ```
-```js
+```javascript
 import pdf from 'pdfvuer'
 
 computed: {

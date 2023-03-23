@@ -11,7 +11,7 @@
 使用：当需要拼接一个路径的时候，有时会使用`path.join(__dirname, 'xxx')`进行拼接，也可以使用`require.resolve('xxx')`获取文件路径。它能够检查该路径是否存在，不存在则会抛出`cannot find xxx`的异常
 
 三种方式：
-```js
+```javascript
 // 绝对路径 -> /Users/enhanced-resolve/lib/node.js
 require.resolve('/Users/enhanced-resolve/')
 // 相对路径 -> /Users/enhanced-resolve/index.js
@@ -21,7 +21,7 @@ require.resolve('diff')
 ```
 
 例子：
-```js
+```javascript
 // 读取文件
 // 使用path.join
 fs.readFileSync(path.join(__dirname, './assets/some-file.txt'));

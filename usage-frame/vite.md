@@ -255,7 +255,7 @@ degit anncwb/vue-vben-admin project-name
 
 **按需应用**：默认情况下插件会在开发和生产模式下都调用，若想仅在某种模式下调用，可声明apply字段
 
-```js
+```javascript
 // vite.config.js
 import image from '@rollup/plugin-image'
 import { defineConfig } from 'vite'
@@ -302,7 +302,7 @@ export default defineConfig({
 - 默认情况下vite在vite/client.d.ts中为import.meta.env提供了类型定义，如果想在代码中获取以VITE_开头的环境变量的提示，应在src下创建一个env.d.ts文件声明env的类型
 - 如果代码依赖于浏览器类型，可以在tsconfig中修改lib字段，比如`lib: ['WebWorker']`
 
-```js
+```javascript
 // env的ts提示，env.d.ts
 /// <reference types="vite/client" />
 interface ImportMetaEnv {
@@ -317,3 +317,13 @@ interface ImportMeta {
 
 **模式**：
 - 在某些情况下，若想在vite build时运行不同的模式渲染不同内容，可传递`--mode`选项覆盖默认mode，比如`vite --mode staging`，这时需要env的值为staging
+
+## vite config
+
+> 参考：
+> - https://github.com/vbenjs/vue-vben-admin
+> - https://github.com/pure-admin/vue-pure-admin
+
+```typescript
+
+```
