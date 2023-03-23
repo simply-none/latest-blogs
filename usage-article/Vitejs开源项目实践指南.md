@@ -229,11 +229,33 @@ const alias = [{
 // 最后将别名对象alias添加到上述userConfig的alias的值的位置即可
 ```
 
+在设置了路径别名之后，为了让编辑器更好的识别包含别名的导入语句 *（即在编辑器中点击`import url from '/@/test/index.ts'`中的`url`和`'/@/test/index.ts'`时，自动的跳到对应的文件或函数上）* ，需要在`jsconfig.json`或`tsconfig.json`文件的`compilerOptions.paths`字段下配置和`vite.config.ts`类似的内容，如下所示：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // 配置1，对应上面的内容
+      "@/*": ["src/*"],
+      "@build/*": ["build/*"],
+      // 配置2，对应上面的内容
+      "/@/*": ["src/*"],
+      "/#/*": ["types/*"]
+    }
+  }
+}
+```
+
 **附录知识**：
 
 `path.resolve`函数：将一系列的字符串拼接成一个url路径，函数参数是一系列的列表，注意事项：
 - 当某项字符串是一个绝对路径时，则自动放弃前面的字符串，从这里开始拼接。比如，若第二项是__dirname，因为它是一个绝对路径，则第一项无效自动废弃
 - 当某项字符串是一个带有相对路径的内容时，则会根据前面的字符串，获取当前项字符串所在的路径。比如，若第一项是__dirname, 第二项是'../'时，则第二项具体的路径是__dirname父级路径
+
+`jsconfig.json`文档：[地址](https://code.visualstudio.com/docs/languages/jsconfig)
+
+`tsconfig.json`文档：[地址](https://www.typescriptlang.org/tsconfig)
 
 ### 本地开发server配置
 
