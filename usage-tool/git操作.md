@@ -14,6 +14,7 @@
 6. 登录github -> setting -> SSH and GPG keys -> New SSH key -> 输入名称（可随便命名），填入key（生成的公钥内容）
 7. 克隆项目，使用`git clone git@github.com:<github_name>/<github_repo>.git`
 8. 之后git push提交就不需要github密码了
+9. 验证是否连接到github：`ssh -T git@github.com`
 
 ## 常用操作
 
