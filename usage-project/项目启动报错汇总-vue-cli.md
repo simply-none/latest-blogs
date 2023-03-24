@@ -172,3 +172,4 @@ module.exports = {
 解决：
 - 在固定vue和vue-template-compilier的版本后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失
 - 在取消上述两个的版本固定后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失（莫名奇妙哦，错误就没了，hhhh）
+
