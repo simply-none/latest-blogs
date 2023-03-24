@@ -160,3 +160,15 @@ module.exports = {
 ```
 <!-- tabs:end -->
 
+## 报错13：Error: PostCSS plugin autoprefixer requires PostCSS 8.
+
+问题：一个之前运行过的项目，再次运行时报Error: PostCSS plugin autoprefixer requires PostCSS 8.
+
+排错思路：
+- 查看错误看错误发生的位置，错误标红提示是否涉及到某些关键词，本次排查时发现跟sass相关的loader有关系，在降低或固定版本后，发现错误仍然发生
+- 查看package-lock.json中搜索postcss这个插件，查看哪些依赖使用了这个插件，然后进行该依赖版本的降级或固定
+- 查看package.json，一个个排查项目中使用的依赖，看看哪个依赖和其关联性更大，然后进行该依赖版本的降级或固定
+
+解决：
+- 在固定vue和vue-template-compilier的版本后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失
+- 在取消上述两个的版本固定后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失（莫名奇妙哦，错误就没了，hhhh）

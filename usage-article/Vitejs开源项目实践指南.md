@@ -247,6 +247,10 @@ const alias = [{
 }
 ```
 
+注意：
+- 当vscode编辑器出现了initializing js/ts language features的提示时，别名路径点击后不会跳转的，除非initializing js/ts language features已经完成。
+- 当配置完成后，若点击别名路径不生效，应重启vscode
+
 **附录知识**：
 
 `path.resolve`函数：将一系列的字符串拼接成一个url路径，函数参数是一系列的列表，注意事项：
@@ -520,6 +524,121 @@ export interface OutputOptions {
 ```
 
 </details>
+
+### esbuild
+
+附录知识：
+
+`ESBuildOptions`类型说明：
+
+```typescript
+export declare interface ESBuildOptions extends EsbuildTransformOptions {
+  include?: string | RegExp | string[] | RegExp[];
+  exclude?: string | RegExp | string[] | RegExp[];
+  jsxInject?: string;
+  /**
+   * This option is not respected. Use `build.minify` instead.
+   */
+  minify?: never;
+}
+
+export interface TransformOptions extends CommonOptions {
+  tsconfigRaw?: string | {
+    compilerOptions?: {
+      alwaysStrict?: boolean,
+      importsNotUsedAsValues?: 'remove' | 'preserve' | 'error',
+      jsx?: 'react' | 'react-jsx' | 'react-jsxdev' | 'preserve',
+      jsxFactory?: string,
+      jsxFragmentFactory?: string,
+      jsxImportSource?: string,
+      preserveValueImports?: boolean,
+      target?: string,
+      useDefineForClassFields?: boolean,
+    },
+  };
+
+  sourcefile?: string;
+  loader?: Loader;
+  banner?: string;
+  footer?: string;
+}
+
+interface CommonOptions {
+  /** Documentation: https://esbuild.github.io/api/#sourcemap */
+  sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both';
+  /** Documentation: https://esbuild.github.io/api/#legal-comments */
+  legalComments?: 'none' | 'inline' | 'eof' | 'linked' | 'external';
+  /** Documentation: https://esbuild.github.io/api/#source-root */
+  sourceRoot?: string;
+  /** Documentation: https://esbuild.github.io/api/#sources-content */
+  sourcesContent?: boolean;
+
+  /** Documentation: https://esbuild.github.io/api/#format */
+  format?: Format;
+  /** Documentation: https://esbuild.github.io/api/#global-name */
+  globalName?: string;
+  /** Documentation: https://esbuild.github.io/api/#target */
+  target?: string | string[];
+  /** Documentation: https://esbuild.github.io/api/#supported */
+  supported?: Record<string, boolean>;
+  /** Documentation: https://esbuild.github.io/api/#platform */
+  platform?: Platform;
+
+  /** Documentation: https://esbuild.github.io/api/#mangle-props */
+  mangleProps?: RegExp;
+  /** Documentation: https://esbuild.github.io/api/#mangle-props */
+  reserveProps?: RegExp;
+  /** Documentation: https://esbuild.github.io/api/#mangle-props */
+  mangleQuoted?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#mangle-props */
+  mangleCache?: Record<string, string | false>;
+  /** Documentation: https://esbuild.github.io/api/#drop */
+  drop?: Drop[];
+  /** Documentation: https://esbuild.github.io/api/#minify */
+  minify?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#minify */
+  minifyWhitespace?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#minify */
+  minifyIdentifiers?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#minify */
+  minifySyntax?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#charset */
+  charset?: Charset;
+  /** Documentation: https://esbuild.github.io/api/#tree-shaking */
+  treeShaking?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#ignore-annotations */
+  ignoreAnnotations?: boolean;
+
+  /** Documentation: https://esbuild.github.io/api/#jsx */
+  jsx?: 'transform' | 'preserve' | 'automatic';
+  /** Documentation: https://esbuild.github.io/api/#jsx-factory */
+  jsxFactory?: string;
+  /** Documentation: https://esbuild.github.io/api/#jsx-fragment */
+  jsxFragment?: string;
+  /** Documentation: https://esbuild.github.io/api/#jsx-import-source */
+  jsxImportSource?: string;
+  /** Documentation: https://esbuild.github.io/api/#jsx-development */
+  jsxDev?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#jsx-side-effects */
+  jsxSideEffects?: boolean;
+
+  /** Documentation: https://esbuild.github.io/api/#define */
+  define?: { [key: string]: string };
+  /** Documentation: https://esbuild.github.io/api/#pure */
+  pure?: string[];
+  /** Documentation: https://esbuild.github.io/api/#keep-names */
+  keepNames?: boolean;
+
+  /** Documentation: https://esbuild.github.io/api/#color */
+  color?: boolean;
+  /** Documentation: https://esbuild.github.io/api/#log-level */
+  logLevel?: LogLevel;
+  /** Documentation: https://esbuild.github.io/api/#log-limit */
+  logLimit?: number;
+  /** Documentation: https://esbuild.github.io/api/#log-override */
+  logOverride?: Record<string, LogLevel>;
+}
+```
 
 ## 结尾
 
