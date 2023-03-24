@@ -230,7 +230,7 @@ const alias = [{
 ```
 
 在设置了路径别名之后，为了让编辑器更好的识别包含别名的导入语句 *（即在编辑器中点击`import url from '/@/test/index.ts'`中的`url`和`'/@/test/index.ts'`时，自动的跳到对应的文件或函数上）* ，需要在`jsconfig.json`或`tsconfig.json`文件的`compilerOptions.paths`字段下配置和`vite.config.ts`类似的内容，如下所示：
-
+ 
 ```json
 {
   "compilerOptions": {
