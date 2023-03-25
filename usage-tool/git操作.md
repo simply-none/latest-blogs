@@ -14,12 +14,39 @@
 6. 登录github -> setting -> SSH and GPG keys -> New SSH key -> 输入名称（可随便命名），填入key（生成的公钥内容）
 7. 克隆项目，使用`git clone git@github.com:<github_name>/<github_repo>.git`
 8. 之后git push提交就不需要github密码了
+9. 验证是否连接到github：`ssh -T git@github.com`
 
 ## 常用操作
 
 ### 零散的
 
 - 对当前提交打标签：`git tag <version_name>`
+
+## 拉取项目作为初始化模板
+
+拉取项目作为初始化模板: 使用degit命令
+
+degit命令功能：
+- 对git仓库进行复制
+- 只会复制最新的提交，比git clone快得多
+
+```bash
+npm install -g degit
+
+# 使用
+degit user/repo
+degit github:user/repo
+degit git@github.com:user/repo
+degit https://github.com/user/repo
+
+degit gitlab:user/repo
+degit url
+
+# 分别指定branch、tag、commit
+degit user/repo#dev
+degit user/repo#v1.2.3
+degit user/repo#1fd41saf4
+```
 
 ### 基本配置（config）
 

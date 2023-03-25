@@ -1,6 +1,18 @@
 #### 每日十五谏
 
-> 本博客运行依赖：`npm i docsify-cli -g --registry=https://registry.npmmirror.com`        
+> 本博客运行依赖：`npm i docsify-cli -g --registry=https://registry.npmmirror.com`     
+
+##### 主题切换
+
+<select id="themeSkins">
+  <option value="./_theme/markdown-theme.css">切换主题</option>
+  <option value="./_theme/fancy.css">fancy</option>
+  <option value="./_theme/nico.css">nico</option>
+  <option value="./_theme/awesome-green.css">awesome-green</option>
+  <option value="./_theme/channing-cyan.css">channing-cyan</option>
+  <option value="./_theme/scrolls.css">scrolls</option>
+  <option value="./_theme/v-green.css">v-green</option>
+</select>
 
 ##### 害怕改变，没有勇气及时止损。
 

@@ -34,6 +34,11 @@ typescript用法：
 - 例如，定义ref节点，`const formRef = ref<HTMLElement | null>(null)`
 - 例如，定义组件，`const child = ref<Child | null>(null)`
 
+在组件中使用：
+- `<input ref="input"/>`结合`const input = ref(null)`一起使用
+- `<input :ref="el => {// 组件每次更新都会被调用，用于元素赋值}"/>`
+- ref也可直接作用在组件上，用于调用子组件expose（即`defineExpose({})`导出的方法（只在使用了script setup时）
+
 定义：
 - 创建一个响应式的引用，然后可以在任何地方起作用（通过value属性访问）
 - 它接收一个参数并将其包裹在一个带有value属性的对象中，使用时需要从vue中导入
@@ -58,6 +63,12 @@ ref解包：
 只读的响应式对象：
 - 通过readonly函数包裹该响应式对象后，修改该对象将报错
 
+**readonly**:
+
+定义：
+- 接受一个对象（响应式/普通的），或者一个ref，返回一个原值的只读代理（深层只读代理，所有属性都不可修改）
+- 其返回值可以解包（和reactive类似），但是解包后的值是一个只读的
+
 **toRef和toRefs**：
 
 | API | 语法 | 作用 | 解释|
@@ -65,12 +76,42 @@ ref解包：
 | toRef | `toRef(obj, key)` | 创建一个新的ref变量，转换 reactive 对象的某个字段为ref变量；若对应的key不存在，值为undefined；若对不存在的key进行赋值，原ref变量也会同步增加这个变量 |只转换一个字段
 | toRefs | `toRefs(obj)` | 创建一个新的对象，它的每个字段都是 reactive 对象各个字段的ref变量 |转换所有字段
 
+**isRef**:
+
+定义：检查参数是否是一个ref值，返回一个类型判定（即返回值可用作类型守卫，可收窄为具体某一类型，比如放在if中）
+
+**unref**:
+
+定义：如果参数是一个ref值，则返回其.value的值，否则返回参数本身
+
+**shallowRef**
+
+定义：相当于ref的第一层级会响应式变更，不会引发深层次数据的变更。常用于对大型数据结构的性能优化（毕竟大量数据时深层次属性变更性能耗费大，所以使用该api，在每一次变更时均对其.value重新赋值）
+
+**triggerRef**
+
+定义：shallowRef的深层属性变更后，调用该api，会强制触发相应的watch/watchEffect监听器
+
+**toRaw**
+
+定义：返回响应式对象（reactive、readonly、shallowReactive）的原始对象，返回值再用对应的api包裹，又会返回响应式对象
 
 ## 组合式API
 
 使用场景：
 - 将零散分布的逻辑组合在一起来维护，还可以将单独的功能逻辑拆分成单独的文件
 - 将同一个功能所属逻辑抽离到函数组件当中（使用`export default function xxx () {}`的形式），在需要的时候进行导入即可
+
+### 组合式函数
+
+定义：
+- 利用vue的组合式api和生命周期钩子封装复用有状态逻辑的函数
+- 函数参数可接收ref，和非ref值（unref：将ref变为非ref）
+- 通常以`useFn`开头
+
+注意：
+- 组合式函数在script setup中需要同步调用，这是为了将生命周期钩子等api注册在当前的组件上
+- 组合式函数可随意封装
 
 ### setup组件选项
 
@@ -291,7 +332,12 @@ export default defineComponent {
 定义：
 - 无论组件结构层次有多深，父组件都可以作为其所有子孙组件的依赖提供者。此时需要父组件有一个provide选项提供数据，子孙组件使用一个inject选项来接收这些数据
 - 要访问组件实例属性，需要定义provide为一个返回对象的函数（和data选项用法一致）
-- 要想使provide和inject保持响应性（即provide的变化影响inject值的变化），需要传递一个响应式变量（ref或reactive）或computed给provide的属性
+- 要想使provide和inject保持响应性（即provide的变化影响inject值的变化），需要传递一个响应式变量（ref或reactive）或computed给provide的属性，同时响应式变量的变更也应该放在provide中，在使用inject的组件中调用变更函数进行provide的变更
+
+**inject**
+
+- 语法：`const foo = inject('key', default)`
+- 若默认值是一个函数，需要添加第三个参数为false
 
 ```typescript
 // 基本用法
@@ -329,8 +375,7 @@ export default {
 - inject方法参数依次为：`name`、`默认值`(可选，未复现😢😢😢)
 - 若provide和inject要保持响应性以同步变更，则需要对provide的值value使用ref或reactive包裹，（数组的长度不能监听变更😢😢😢）
 - 修改provide，可直接在父组件中，或通过provide一个方法在子孙组件中修改
-- 若想保持provide的值是可读（即在inject中修改不了），需要对provide的值value使用readonly包裹
-- 使用readonly时，若仅修改对象的属性（而非修改对象的引用，给对象重新赋值），这时的readonly是无效的，（注：整个readonly未复现😢😢😢）
+- 若想保持provide的值是可读（即在inject中修改不了），需要对provide的值value使用readonly包裹，使用readonly时，若仅修改对象的属性（而非修改对象的引用，给对象重新赋值），这时的readonly是无效的，（注：整个readonly未复现😢😢😢）
 
 ```typescript
 // 父组件
@@ -387,11 +432,19 @@ export default {
 
 #### watch
 
-语法：
+语法，其中source的值可以是：
+- ref变量
+- getters，即箭头函数、对象的属性值，返回值应当是`.value`的形式
+- 响应式对象，比如reactive
+- 前三者的对象组合形式
+
+停止监听：直接调用watch的返回值（是一个函数）就行
+
+
 ```typescript
 import { watch } from 'vue'
 
-watch(
+const watchVal = watch(
   // 要监听的数据源
   source,
   // 监听到变化后要执行的回调函数
@@ -399,6 +452,9 @@ watch(
   // 监听选项，比如deep
   options
 )
+
+// 停止监听
+watchVal()
 
 // 批量监听
 watch(
@@ -416,12 +472,15 @@ watch(
 | 选项 | 类型 | 默认值 | 可选值 | 作用 |
 | --- | --- | --- | --- | --- |
 | deep | boolean | false | true | false | 是否进行深度监听 |
-| immediate | boolean | false | true | false | 是否立即执行监听回调 |
-| flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机 |
+| immediate | boolean | false | true | false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化 |
+| flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机，其中post可以访问更新后的dom，或使用`watchPostEffect`函数 |
 | onTrack | (e) => void |  |  | 在数据源被追踪时调用（开发模式有效） |
 | onTrigger | (e) => void |  |  | 在监听回调被触发时调用（开发模式有效） |
 
 #### watchEffect
+
+解释：
+- 参数直接是一个回调函数，当响应式变量变化时，会直接执行回调函数
 
 ```typescript
 
@@ -521,6 +580,18 @@ export default {
 
 ## 组件
 
+注册组件：
+- `app.component('name', {})`
+- 上述内容返回app，可链式调用
+
+### 动态组件
+
+语法：`<component :is="xxx">`，其中xxx可以是：
+- 组件名称
+- 被导入的组件对象，含有template的对象
+
+元素位置限制：特定的元素只能在特殊位置显式，比如li只能在ul等、tr只能在table内、option只能在select内，所以在使用动态组件时，应该使用`<table><tr is="vue:compName"></tr></table>`
+
 ### 异步组件
 
 defineAsyncComponent：创建一个只有在需要时才会加载的异步组件，
@@ -530,7 +601,17 @@ defineAsyncComponent：创建一个只有在需要时才会加载的异步组件
 <!-- tab:基本用法 -->
 ```typescript
 import { defineAsyncComponent } from 'vue'
+
+// 第一种
 const AsyncComp = defineAsyncComponent(() => import('./AsyncComponent.vue'))
+// 第二种
+const AsyncComp =defineAsyncComponent(() => {
+  return new Promise((res, rej) => {
+    // resolve参数是组件对象
+    resolve({})
+  })
+})
+
 app.component('async-component', AsyncComp)
 ```
 <!-- tab:对象格式参数 -->
@@ -1001,6 +1082,50 @@ export default {
 ```
 <!-- tabs:end -->
 
+### props
+
+定义：使用defineProps定义，参数和vue2类似
+
+使用：
+- 绑定多个props，使用`v-bind="props"`的形式
+- 获取props，可直接使用defineProps结合ref、computed的形式获取
+
+<!-- tabs:start -->
+
+<!-- tab:props定义 -->
+```typescript
+const props = defineProps(['title'])
+const props = defineProps({ title: String })
+const props = defineProps({
+  title: {
+    type: String,
+    default (props) {},
+    validator(v) {}
+  }
+})
+```
+<!-- tab:获取props -->
+```typescript
+const props = defineProps(['title'])
+
+const newProp = ref(props.title)
+const newProps = computed(() => props.title)
+```
+
+<!-- tabs:end -->
+
+### 属性透传
+
+透传属性`$attrs`：即没有被props接收的属性（v-bind），以及尚未被监听emits的监听器（v-on）
+
+解释：
+- 在单根节点中，会自动传递给组件内部的根元素（未直接指明的情况下），若想传递给其他元素，需设置`inheritAttrs:false`，以及在需要的元素或组件上使用`v-bind="$attrs"`
+  - 当在元素上绑定attrs时，监听器和属性都会作用在该元素上
+  - 当在组件上绑定attrs时，监听器和属性会传递给组件内部使用，此时组件内部应该通过props和emit进行获取
+- 在多根节点中，必须显式指明绑定的元素
+
+访问透传属性：使用`useAttrs()`内置函数
+
 ### v-model用法
 
 定义：
@@ -1008,12 +1133,52 @@ export default {
 - 这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值
 
 使用：
-- 可以通过向v-model传递参数，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
+- 可以通过向v-model传递参数，用于替代默认参数modelValue，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
 - 可以同时传递多个v-model给子组件，不同的v-model将同步到不同的prop
-- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。使用自定义修饰符，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
+- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。**使用自定义修饰符**，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
 - 对于有参数的修饰符（比如`v-model:title.custom`，对应的prop就要改成参数名+'Modifiers'，即上面的modelModifiers改成titleModifiers
 
 <!-- tabs:start -->
+<!-- tab:v-model简写 -->
+```typescript
+// 1. 基础用法
+<My-Input v-model="value"/>
+<!-- 等同于下面 -->
+<My-Input :modelValue="value" @update:modelValue="val => value = val"></My-Input>
+
+<!-- 子组件 -->
+<input :value="modelValue" @input="e => $emit('update:modelValue', e.target.value)"/>
+
+const porps = defineProps({
+  modelValue: {
+    type: String
+  },
+  // modelValue对应的修饰符对象
+  modelValueModifiers: {
+    default: () => {}
+  }
+})
+
+// 2. 自定义参数名称
+<My-Input v-model:title="value">
+
+<!-- 子组件 -->
+<input :value="title" @input="e => $emit('update:title', e.target.value)"/>
+
+const porps = defineProps({
+  title: {
+    type: String
+  },
+  // title对应的修饰符对象
+  titleModifiers: {
+    default: () => {}
+  }
+})
+
+// 3. 自定义修饰符
+<My-Input v-model:title.toUpperCase="value"/>
+```
+
 <!-- tab:基本用法 -->
 ```typescript
 // 父组件Parent
@@ -1042,6 +1207,7 @@ export default {
   `
 }
 ```
+
 <!-- tab:带修饰符的v-model -->
 ```typescript
 <template>
@@ -1200,14 +1366,29 @@ const border = {
 
 ### 自定义指令
 
+定义：
+- 在setup script中，以v开头的变量，可当作自定义指令使用在template中（用v-）
+- 在script中的directives钩子中定义属性x，然后可在template中（用v-）使用
+- 全局注册，使用`app.directives('name', {})`
+
+解释：
+- 当只需要在mounted和updated执行相同的行为时，可使用简化形式，即自定义钩子对象换成`(el, binding) => {}`函数形式即可
+
 改动：
 - 修改了一些属性表述，其声明周期钩子和组件的保持类似（更容易记住）；
 - 使用`binding.instance`访问组件实例
 - 当作用域多根组件（片段）时，自定义组件会被忽略并抛出警告
 
+<!-- tabs:start -->
+
+<!-- tab:自定义钩子对象 -->
 ```typescript
+// 自定义钩子对象
 const MyDirective = {
   // 新增
+  // el: 绑定的元素
+  // binding：一个对象，具有value、oldValue、arg、modifiers、instance、dir属性
+  // vnode：绑定元素的底层VNODE
   created (el, binding, vnode, preVnode) {}
   beforeMount () {},
   mounted () {},
@@ -1219,6 +1400,13 @@ const MyDirective = {
   unMounted () {}
 }
 ```
+
+<!-- tab:使用自定义钩子 -->
+```typescript
+<div v-name:arg.modifiers1.modifiers2="value">
+```
+
+<!-- tabs:end -->
 
 ### 自定义元素
 
@@ -1332,6 +1520,29 @@ export default {
 
 引用作用域插槽使用`this.$slots.header()`的形式，而非`this.$scopedSlots.header`
 
+```typescript
+// 插槽的语法
+// 内部
+<slot name="header"/>
+// 使用
+<template v-slot:header></template>
+<template #header></template>
+
+// 支持动态插槽，进行动态匹配
+<template v-slot:[dyncName]></template>
+
+// 内部
+<slot :text="xxx"/>
+// 使用
+<template v-slot="{text}"></template>
+
+// 内部
+<slot name="title" :text="xxx"/>
+// 使用
+<template #title="{text}"></template>
+
+```
+
 ### 过渡的类名修改
 
 改动：使其更加清晰易读
@@ -1349,6 +1560,34 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 - 可以对v-model增加参数，`v-modle:title="pageTitle"`等同于`:title="pageTitle" @update:title="pageTitle = $event" />`
 - 可以传入多个v-model
 - v-model支持自定义修饰符
+
+### v-once
+
+语法：`<div v-once>...</div>`
+
+作用：
+- 仅渲染元素/组件一次，跳过之后的更新，即使内部引用的内容发生变更
+
+### v-memo
+
+语法：`<div v-memo="[xxx, xxx, ....]">`，当传入空数组时，作用与v-once一致，表示只渲染一次
+
+作用：
+- 用于缓存一个模板的子树，在原生标签或组件标签上均可使用
+- 实现缓存的原理是，传入一个固定长度的依赖值数组，比较这个数组的项的值与最后一次渲染的值是否发生变化，若变化了则重新渲染该元素下的结构，否则跳过渲染，即使元素内部使用的变量已经发生变更（这时展示的还是之前的值）
+
+### v-cloak
+
+语法：
+```javascript
+// template
+<div v-cloak>{{ message }}</div>
+// style
+[v-cloak] { display: none; }
+```
+
+作用：
+- 用于隐藏尚未完成编译的DOM模板，即隐藏代码内容（比如还未编译时的内容`{{ message}}`，用户能看到该代码），当编译完成后，就展示编译后message的值
 
 ### v-if和v-for优先级问题
 

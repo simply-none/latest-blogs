@@ -2,7 +2,7 @@
 
 ## 对象去重
 
-```js
+```javascript
 // 对象去重：支持普通数组、对象数组；不支持混合数组（普通数组和对象数组一起）
 function unique (arr, key) {
   if (!arr) return arr

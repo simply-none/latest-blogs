@@ -49,6 +49,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |inheritance|继承（物）|
 |nifty|极好的，绝妙的，漂亮的，整洁的，实用的|
 |goodies|诱人的东西，好东西，糖果|
+|goods|商品，货品，货物，物品|
+|good|令人满意的，合意的，好的，出色的，优质的，成功的，能干的，精通的，擅长的，有益的，有用的，守规矩的，温顺的，合适的，可信赖的，有趣的，健康的，货物，商品，私人财产，好处，益处|
 |tinkering|摆弄，修补|
 |direct|直接（的），笔直的，指导，命令，指向|
 |directly|直接地，立刻，马上，紧跟着|
@@ -168,7 +170,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |superset|超集|
 |indented|缩进（式）|**[ɪn'dentɪd]**|
 |origin|起源，源头|
-|original|原始的，最初的，首创的|
+|original|原始的，最初的，首创的，原来的，最早的，原件，原稿|
 |originally|原来，最初|
 |counts|数量，认为，包括|
 |curly|卷曲的，绻缩的|
@@ -244,7 +246,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |usual|通常的，普通的，常见的|
 |meaning|含义|
 |meaningless|毫无意义的，无价值的，不相关的|
-|match|与..相配，使..一致|
+|match|与..相配，使..一致，比得上，匹配，配对，比赛，火柴，满足，适应，配对，婚姻|
+|matching|相同的，相配的，和...相似，把...联系起来|
 |scientific|科学的，严谨的|
 |unit|单位，单元|
 |consider|认为，考虑，思考，留意，顾及|
@@ -257,7 +260,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |called|称呼，被叫做|
 |callee|被调用函数|
 |function call|函数调用|
-|library|程序库，函数库，图书馆|
+|library(lib)|程序库，函数库，图书馆|
 |hex|十六进制|
 |hexadecimal|十六进制的|
 |decimal|十进制，小数|
@@ -294,7 +297,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |inject|添加，投入，注入|
 |common|常见的，普通的，共有的，普遍的|
 |commonly|通常的，一般的|
-|legacy|遗留问题|**['leɡəsi]**|
+|legacy|遗留问题，遗产，后遗症，传统，传承|**['leɡəsi]**|
 |backward|向后（的），倒退的|
 |forwards-compatibility|向前兼容|
 |interpret|解释（型）|
@@ -360,6 +363,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |additional|额外的，附加的，追加的|
 |selector|选择器，选择符|
 |suppose|假定，设想，认为|
+|thumb|拇指，示意请求搭便车，用拇指摸|**[θʌm]**|
 |as a rule of thumb(**[θʌm]**)|一般来说，根据经验|
 |clutter|乱堆在，凌乱的塞满|
 |mandate|授权，委托|**['mæn.deɪt]**|
@@ -507,6 +511,8 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |format|格式（化），形式，设计，计划|
 |get rid of|摆脱，除去，去掉|
 |exclude|排除，拒绝，把...除外|
+|exclusive|不包括，排除...在外，相互排斥的，排他性，专有权，专用的，独有的，独家专访/新闻，昂贵的，高档的，豪华的|
+|inclusive|包括一切的，包括首尾两天的，可以包容各种人的|
 |beyond|除了，除...之外，超出，影响，包括|**[bɪˈjɑnd]**|
 |variation|变化，变动|**[.veri'eɪʃ(ə)n]**|
 |pair|一对，一副，一套|
@@ -805,12 +811,16 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |besides|此外，而且，再说|
 |originate|起源，发源，来自，产生|**[ə'rɪdʒə.neɪt]**|
 |orient|适应，使面对，使朝向|**['ɔri.ent]**|
+|orientation|方向，定位，目标，态度，兴趣，取向|**[ˌɔriənˈteɪʃ(ə)n]**|
+|landscape|景色，风景，横向打印的|
+|portrait|肖像，画像，描述，表现，竖向打印的|**[ˈpɔrtrət]**|
 |object-oriented|面向对象的，对象式的|
 |awkward|难处理的，难使用的，笨拙的|
 |platform|平台，纲领，机会|
 |fundamental|最基本的，最重要的，必须的|
 |drived|衍生的，派生的，源于，导出|**[dɪ'raɪvd]**|
 |prior|在先的，先前的，在..之前，更重要的，优先的|**['praɪr]**|
+|priority|优先，优先权，优先事项，优先级，重点|**[praɪˈɔrəti]**|
 |accomplish|实现，完成，达到|
 |label|标记，标签，用标签说明|
 |play out|发生，出现，展开，做完|
@@ -851,6 +861,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |notoriously|非常，众所周知地|**[noʊˈtɔrɪəslɪ]**|
 |arrow|箭头|**['æroʊ]**|
 |implicit|隐式的，不言明的，含蓄的，内含的，固有的|**[ɪm'plɪsɪt]**|
+|implicitly|暗含，暗中的，含蓄的，隐式|**[ɪm'plɪsɪtlɪ]**|
 |fake|假货，伪造（的）|
 |unusable|无法使用的，不可用的|
 |standalone|独立的|
@@ -928,6 +939,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |diagnose|诊断，判断，分析|**[ˌdaɪəgˈnoʊs]**|
 |consequence|结果，影响，后果，重要性|
 |stick|粘贴|
+|sticky|粘（性）的，胶粘的，湿热的，闷热的，困难的，棘手的，持有异议的|**[ˈstɪki]**|
 |outline|概述，概要，大纲，略图|
 |potentially|潜在的，可能的，大概的|
 |quota|配额，定额，指标|
@@ -1065,7 +1077,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |in the meantime|在这期间，与此同时|
 |naked|裸露的，无遮盖的，明显的|**['neɪkəd]**|
 |therefore|因此，所以|
-|extract|取出，提取，摘录，推断出|**[ɪkˈstrækt]**|
 |presumably|大概，很可能，也许，据推测|**[prɪˈzuməbli]**|
 |exclude|不包括，排除|
 |furthermore|此外，而且，再者|
@@ -1086,7 +1097,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |stress|强调，着重指出|
 |region|区域，范围|
 |polygon|多边形|
-|bounce|弹跳，跳动，弹性，反射|**[baʊns]**|
 |assets|资源，资产|**['æset]**|
 |serve|服务，提供|
 |payload|负载，装载量|
@@ -1187,6 +1197,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |harness|治理，使做固定的工作，安全带，系带||
 |transpiler|转换编译器||
 |semver|语义版本，语义化版本号说明||
+|satisfy|使满意，使满足，达到（条件），符合（要求）；赔偿；履行（义务）；使确信，使相信||
 |satisfied|满意的，满足的，欣慰的，确信的，感到满意的，心满意足||
 |in place of|代替，取代，交换||
 |locally|在本地，局部地||
@@ -1195,4 +1206,60 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |flush|（人的皮肤、脸）发红，冲洗，冲走；赶出隐藏地，使暴露；使发光，使流露；齐平地，正好地；刷新|
 |emit|发出，射出，散发|
 |propagation|传播，散播，扩展，宣传，培养，繁殖|**[ˌprɒpə'ɡeɪʃ(ə)n]**|
+|reconciliation|和解，协调，调解，调和，和谐一致|**[ˌrekənsɪliˈeɪʃ(ə)n]**|
+|portal|大门，门户，入口站点，传送门|**[ˈpɔrt(ə)l]**|
+|fragment|片段，小块，碎块，分割，使成碎片|
+|memo|备忘录，备注，便签|
+|memoized|带有记忆功能的，记住，背熟|
+|memoization|记住，暗记，背熟，记忆化|
+|patch up|拼凑，修补，结束，解决，制止，平息，匆忙处理|
+|pull down|下拉式菜单，下拉选项屏，拉下，压低，推翻，降低|
+|partial|部分的，局部的，不完整的，片面的，有偏见的，不公平的|**[ˈpɑːrʃ(ə)l]**|
+|record|录制，录音/像，记录，记载，显示，标明|
+|pick|选择，挑选，采摘，弹奏|
+|omit|忽略，省略，排除，遗漏，删除，漏掉|
+|exclude|不包括，排除，不考虑，阻止...进入，把...排斥在外|
+|extract|取出，拔出，提取，提出物，精华，摘录，引文|**[ˈekˌstrækt]**|
+|capitalize|把...首字母大写，给企业提供资金|**[ˈkæpɪt(ə)lˌaɪz]**|
+|lower|降低，减少，低下，压低，使下降|
+|lowercase|小写字母，用小写字母书写|
+|upper|较高的，较上的，上层的，鞋帮，靴面，内陆的|
+|uppercase|大写字母，用大写字母书写|
+|distance|距离，（从）远处，远方，间隔，路程|
+|reach|达到，提升到，抵达，达成（协议），得出结论，收到，和...联系，与...取得联系，与...交流|
+|strategy|战略，策略，计谋，行动计划，策划，部署|**[ˈstrætədʒi]**|
+|strategic|战略性的，策略上的，有用的，重要的|**[strəˈtidʒɪk]**|
+|sitemap|网站地图，站点地图，网站导览|
+|launch|启动，发起，推出，发射，发行，投出，发布会|
+|thread|线程，线，线状物，螺纹，思路，贯穿的主线，帖子，穿线于，使穿过|**[θred]**|
+|notify|通知，告知|
+|action|行动，行为，战斗，动作，操作，作用，发生的事情|
+|sheet|工作表，简要记录，纪要，纸片，薄片，一大片，床/被单|
+|sign|签名，签署，标记，记号，预示，表示，信号，警告，符号，示意动作，手势，迹象，征兆|
+|nonce|只使用一次的，随机数，目前，当前|**[nɑns]**|
+|timeline|时间线，大事年表，时间轴|
+|subscribe|预定，申请，签署，认购，订购，订阅，捐助|
+|skeleton|骨架，骨干，框架，纲要|**[ˈskelɪt(ə)n]**|
+|swipe|滑动，击打，打击，批评，偷窃|
+|overlay|覆盖，叠加，重叠，在...上铺，涂层|
+|collapse|折叠，崩溃，倒塌，暴跌，病倒，瓦解，失败|**[kəˈlæps]**|
+|dropdown|下拉，下拉菜单，倒下，突然停止，沿河而下|
+|countdown|倒计时，倒计时阶段|
+|aspect|方面，层面，外表，外观，屏幕比例，长宽比|
+|tap|轻拍，轻打，轻叩，轻触，开发，开辟，窃听，水龙头，阀门|
+|shake|摇动，抖动，动摇，摆脱，克服，甩掉，抖掉，抖出，晃动，震动，使震惊，使摒弃|
+|bundler|打包工人，打包机，包装机，中间人|
+|bundle|（软件）包，捆，束，一批，匆匆送走，赶|
+|elimination|排除，消除，清除，淘汰|**[ɪˌlɪmɪˈneɪʃ(ə)n]**|
+|side effect|副作用，意外结果|
+|optimize|（使）优化，完善，充分利用|**[ˈɑptɪˌmaɪz]**|
+|optimization|优化，完善|**[ˌɑːptɪməˈzeɪʃ(ə)n]**|
+|minimize|使降到最低限度，使减到最少，使...最小化|**[ˈmɪnɪˌmaɪz]**|
+|bounce|弹跳，跳动，弹性，反弹，弹起，反射，活力，拒付，解雇|**[baʊns]**|
+|debounce|去抖动，消除抖动|
+|throttle|节流阀，掐（喉咙），使窒息，阻挡，压制，扼杀|**[ˈθrɑt(ə)l]**|
+|isolated|分离，偏远的，孤立的，隔离的，孤独的|**[ˈaɪsəˌleɪtəd]**|
+|mono|单声道的，单一，单|**[ˈmɑnoʊ]**|
+|blame|责备，责任，指责，责怪，过失|**[bleɪm]**|
+
 

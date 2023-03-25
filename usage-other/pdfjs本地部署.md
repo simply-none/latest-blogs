@@ -38,7 +38,7 @@ $ gulp generic-legacy
 
 1. 端口号自定义
 
-```js
+```javascript
 // 在gulpfile.js中
 function createServer() {
   console.log();
@@ -57,7 +57,7 @@ function createServer() {
 报错1：`Uncaught (in promise) Error: file origin does not match viewer's`
 
 解决：注释`web/app.js`中判断远程地址的代码
-```js
+```javascript
 try {
     const viewerOrigin = new URL(window.location.href).origin || "null";
     if (HOSTED_VIEWER_ORIGINS.includes(viewerOrigin)) {

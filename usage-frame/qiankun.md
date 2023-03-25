@@ -40,7 +40,7 @@
 npm install qiankun -S
 # yarn add qiankun
 ```
-```JavaScript
+```javascript
 // main.js
 import {
   registerMicroApps,
@@ -130,14 +130,14 @@ start({
 # 修改webpack打包配置，运行开发环境跨域和umd打包
 ```
 <!-- tab: public-path.js -->
-```JavaScript
+```javascript
 // src/public-path.js
 if (window.__POWERED_BY_QIANKUN__) {
   __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__
 }
 ```
 <!-- tab:微应用入口配置main.js -->
-```JavaScript
+```javascript
 // 微应用中不需要额外安装关于qiankun的依赖
 // main.js
 import './public-path.js'
@@ -189,7 +189,7 @@ export async function unmount () {
 /* 导出生命周期钩子：end */
 ```
 <!-- tab:微应用的webpack配置 -->
-```JavaScript
+```javascript
 // vue.config.js
 const packageName = require('./package.json').name
 
@@ -277,7 +277,7 @@ module.exports = {
       - beforeUnmount
       - afterUnmount
 
-```JavaScript
+```javascript
 import { registerMicroApps } from 'qiankun'
 
 registerMicroApps([
@@ -341,7 +341,7 @@ registerMicroApps([
       - 可选
       - 表示指定部分特殊的动态加载的微应用资源不被qiankun劫持处理
 
-```JavaScript
+```javascript
 import { start } from 'qiankun'
 
 start()
@@ -352,7 +352,7 @@ start()
 - 用法：设置主应用启动后默认进入的微应用
 - 参数为`applink: string`，必选
 
-```JavaScript
+```javascript
 import { srtDefaultMountApp } from 'qiankun'
 
 setDefaultMountApp('/homeApp')
@@ -364,7 +364,7 @@ setDefaultMountApp('/homeApp')
   - 第一个微应用mount后需要调用的方法，比如开启监控或埋点
 - 参数：`effect: () => void`，必选
 
-```JavaScript
+```javascript
 import { runAfterFirstMounted } from 'qiankun'
 
 runAfterFirstMounted(() => startMonitor())
@@ -406,7 +406,7 @@ runAfterFirstMounted(() => startMonitor())
     - mountPromise: Promise<null>
     - unmountPromise: Promise<null>
 
-```JavaScript
+```javascript
 // 微应用中：微应用的入口，一般是main.js
 export async function update (props) {
   renderPatch(props)
@@ -454,7 +454,7 @@ this.microApp.update({ xxx })
       - 必选
       - 表示微应用的entry地址
 
-```JavaScript
+```javascript
 import { prefetchApps } from 'qiankun'
 
 prefetchApps([
@@ -474,7 +474,7 @@ prefetchApps([
 - 用法：添加全局的未捕获的异常处理器
 - 参数：`handler: (...args: any[]) => void)`，必选
 
-```JavaScript
+```javascript
 import { addGlobalUncaughtErrorHandler } from 'qiankun'
 
 addGlobalUncaughtErrorHandler(event => console.log(event))
@@ -485,7 +485,7 @@ addGlobalUncaughtErrorHandler(event => console.log(event))
 - 用法：移除全局的未捕获的异常处理器
 - 参数：`handler: (...args: any[]) => void`，必选
 
-```JavaScript
+```javascript
 import { removeGlobalUncaughtErrorHandler } from 'qiankun'
 
 removeGlobalUncaughtErrorHandler(event => console.log(event))
@@ -507,7 +507,7 @@ removeGlobalUncaughtErrorHandler(event => console.log(event))
     - 类型为`() => boolean`
     - 表示移除当前应用的状态监听，微应用unmount时会默认调用
 
-```JavaScript
+```javascript
 // 主应用
 import { initGlobalState, MicroAppStateActions } from 'qiankun'
 
@@ -554,7 +554,7 @@ export function mount(props) {
 }
 ```
 <!-- tab:主应用注册微应用 -->
-```JavaScript
+```javascript
 registerMicroApps([
   {
     name: 'app1',
@@ -566,7 +566,7 @@ registerMicroApps([
 ])
 ```
 <!-- tab:vue.config.js配置 -->
-```JavaScript
+```javascript
 module.exports = {
   output: {
     // 此处必须和entry一致，否则微应用的资源路径(js, css)不会带上/app1/

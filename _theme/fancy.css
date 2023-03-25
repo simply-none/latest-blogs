@@ -1,0 +1,264 @@
+.markdown-section {
+  color: #383838;
+  font-size: 15px;
+  line-height: 30px;
+  letter-spacing: 2px;
+  word-break: break-word;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  scroll-behavior: smooth;
+  background-image: linear-gradient(0deg, transparent 24%, rgba(201, 195, 195, 0.329) 25%, rgba(209, 201, 201, 0.05) 26%, transparent 27%, transparent 74%, rgba(209, 204, 204, 0.185) 75%, rgba(180, 176, 176, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(204, 196, 196, 0.226) 25%, rgba(172, 165, 165, 0.05) 26%, transparent 27%, transparent 74%, rgba(209, 204, 204, 0.185) 75%, rgba(180, 176, 176, 0.05) 76%, transparent 77%, transparent);
+  background-color: #ffffff;
+  background-size: 50px 50px;
+  padding-bottom: 60px;
+}
+
+.markdown-section ::selection {
+  color: #fff;
+  background-color: #a862ea;
+}
+
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4,
+.markdown-section h5,
+.markdown-section h6 {
+  margin: 24px 0 12px 0;
+  color: #a862ea;
+}
+
+.markdown-section h1 {
+  line-height: 2;
+  font-size: 1.4em;
+}
+
+.markdown-section h1 ~ p:first-of-type::first-letter {
+  color: #a862ea;
+  float: left;
+  font-size: 2em;
+  margin-right: 0.4em;
+  font-weight: bolder;
+}
+
+.markdown-section h2 {
+  font-size: 1.2em;
+}
+
+.markdown-section h3 {
+  font-size: 1.1em;
+}
+
+.markdown-section ol,
+.markdown-section ul {
+  padding-left: 2em;
+}
+
+.markdown-section ol li,
+.markdown-section ul li {
+  margin-bottom: 0;
+  padding-left: 0.2em;
+}
+
+.markdown-section ol li::marker,
+.markdown-section ul li::marker {
+  color: #a862ea;
+}
+
+.markdown-section ol li.task-list-item,
+.markdown-section ul li.task-list-item {
+  list-style: none;
+}
+
+.markdown-section ol li.task-list-item ul,
+.markdown-section ol li.task-list-item ol,
+.markdown-section ul li.task-list-item ul,
+.markdown-section ul li.task-list-item ol {
+  margin-top: 0;
+}
+
+.markdown-section ol ul,
+.markdown-section ol ol,
+.markdown-section ul ul,
+.markdown-section ul ol {
+  margin-top: 10px;
+}
+
+.markdown-section p,
+.markdown-section li,
+.markdown-section code,
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4,
+.markdown-section h5,
+.markdown-section h6,
+.markdown-section a {
+  opacity: 0.85;
+  vertical-align: baseline;
+  transition: all 0.1s ease;
+}
+
+.markdown-section p:hover,
+.markdown-section li:hover,
+.markdown-section code:hover,
+.markdown-section h1:hover,
+.markdown-section h2:hover,
+.markdown-section h3:hover,
+.markdown-section h4:hover,
+.markdown-section h5:hover,
+.markdown-section h6:hover,
+.markdown-section a:hover {
+  opacity: 1;
+}
+
+.markdown-section a {
+  position: relative;
+  display: inline-block;
+  color: #a862ea;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+}
+
+.markdown-section a::after {
+  content: "";
+  position: absolute;
+  width: 98%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  transform: scaleX(0);
+  background-color: #a862ea;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-in-out;
+}
+
+.markdown-section a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.markdown-section a:active, .markdown-section a:link {
+  color: #a862ea;
+}
+
+.markdown-section img {
+  max-width: 100%;
+  user-select: none;
+  margin: 1em 0;
+  transition: transform 0.2s ease 0s;
+  background-color: #f8f5ff;
+  box-shadow: 0 0 10px #e7daff;
+}
+
+.markdown-section img:hover {
+  opacity: 1;
+  box-shadow: 0 0 20px #e7daff;
+  transform: translateY(-1px);
+}
+
+.markdown-section blockquote {
+  padding: 0.5em 1em;
+  margin: 12px 0;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  border-left: 3px solid #a862ea;
+  background-color: #f8f5ff;
+}
+
+.markdown-section blockquote > p {
+  margin: 0;
+}
+
+.markdown-section .math {
+  font-style: italic;
+  margin: 12px 0;
+  padding: 0.5em 1em;
+  background-color: #f8f5ff;
+}
+
+.markdown-section .math > p {
+  margin: 0;
+}
+
+.markdown-section code {
+  padding: 2px 0.4em;
+  overflow-x: auto;
+  color: #a862ea;
+  font-weight: bold;
+  word-break: break-word;
+  font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+  background-color: #f8f5ff;
+}
+
+.markdown-section pre {
+  margin: 2em 0;
+}
+
+.markdown-section pre > code {
+  display: block;
+  padding: 1.5em;
+  word-break: normal;
+  font-size: 0.9em;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+  line-height: 18px;
+  color: #383838;
+  border-radius: 2px;
+  scroll-behavior: smooth;
+  box-shadow: 0 0 10px #e7daff;
+}
+
+.markdown-section pre > code:hover {
+  box-shadow: 0 0 20px #e7daff;
+}
+
+.markdown-section pre > code::-webkit-scrollbar {
+  height: 6px;
+  background-color: #f8f5ff;
+}
+
+.markdown-section pre > code::-webkit-scrollbar-thumb {
+  background-color: #e7daff;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.markdown-section hr {
+  margin: 2em 0;
+  border-top: 1px solid #a862ea;
+}
+
+.markdown-section table {
+  width: 100%;
+  font-size: 12px;
+  max-width: 100%;
+  overflow: auto;
+  border-collapse: collapse;
+}
+
+.markdown-section thead {
+  color: #a862ea;
+  background: #f8f5ff;
+}
+
+.markdown-section td,
+.markdown-section th {
+  padding: 0.5em;
+  border: solid 1px #e7daff;
+}
+
+.markdown-section tr {
+  background-color: #f8f5ff;
+}
+
+@media (max-width: 720px) {
+  .markdown-section {
+    font-size: 12px;
+  }
+}
+/*# sourceMappingURL=fancy.css.map */
+/*# sourceMappingURL=fancy.css.map */
+
+/*# sourceMappingURL=fancy.css.map */

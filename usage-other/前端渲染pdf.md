@@ -2,6 +2,10 @@
 
 > 参考链接：https://www.i4k.xyz/article/m0_37903882/113320701
 
+### 前端打印pdf
+
+> vue-print-nb
+
 ### 渲染方式
 
 直接按照文档进行引入时，会发现有字体缺少的情况（pdfh5除外）
@@ -43,7 +47,7 @@
   </template>
 </pdf>
 ```
-```js
+```javascript
 import pdf from 'pdfvuer'
 
 computed: {
