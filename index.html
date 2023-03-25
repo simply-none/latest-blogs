@@ -284,8 +284,31 @@
         
         const themeSkin = document.querySelector('#themeSkins')
         const themeCssLink = document.querySelector('#themeCssLink')
-        const themeSkinCache = localStorage.getItem('themeSkinCache')
+        let themeSkinCache = localStorage.getItem('themeSkinCache')
         themeCssLink.href = themeSkinCache
+        removeEventListener('click', changeThemeInner, false)
+        addEventListener('click', changeThemeInner, false)
+        function changeThemeInner (e) {
+          themeSkinCache = localStorage.getItem('themeSkinCache')
+          const themePaths = ['', './_theme/fancy.css', './_theme/nico.css', './_theme/awesome-green.css', './_theme/channing-cyan.css', './_theme/scrolls.css', './_theme/v-green.css']
+          const currentIndex = themePaths.findIndex(t => {
+            return t === themeSkinCache
+          })
+          
+          const condation = e.target.innerHTML === '主题切换' && ['P', 'A'].includes(e.target.nodeName)
+
+          if (condation) {
+            let thref = ''
+
+            if (currentIndex === -1) {
+              thref = themePaths[0]
+            } else {
+              thref = themePaths[(currentIndex + 1) % 7]
+            }
+            themeCssLink.href = thref
+            localStorage.setItem('themeSkinCache', thref)
+          }
+        }
         themeSkin.onchange = (e) => {
           themeCssLink.href = e.target.value
           localStorage.setItem('themeSkinCache', e.target.value)
@@ -298,7 +321,6 @@
           const find = Object.keys(logs).find(path => {
             return currentUrl.includes(path)
           })
-          console.log(find)
           if (find) {
             const isAddTime = document.querySelector(`.jade_${logs[find].id}`)
             if (isAddTime) {

@@ -1,4 +1,6 @@
 - 目录导航
+  - 主题切换
+  
   - [单词表](dicts/dict.md)
 
   - [文章集锦](usage-article/导引.md)

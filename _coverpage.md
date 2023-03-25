@@ -7,5 +7,6 @@
 - 当初凌然非势境，不道未了轻松，旧字浮沉心绪浓
 - 佳期独怅惘，故梦已成空
 
+[主题切换](/)
 [GitHub](https://github.com/simply-none/latest-blogs/)
 [Getting Started](#每日十五谏)
