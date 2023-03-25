@@ -4,8 +4,10 @@
 
 ##### 主题切换
 
+<label>
+切换主题：
 <select id="themeSkins">
-  <option value="./_theme/markdown-theme.css">切换主题</option>
+  <option value="">默认主题</option>
   <option value="./_theme/fancy.css">fancy</option>
   <option value="./_theme/nico.css">nico</option>
   <option value="./_theme/awesome-green.css">awesome-green</option>
@@ -13,6 +15,7 @@
   <option value="./_theme/scrolls.css">scrolls</option>
   <option value="./_theme/v-green.css">v-green</option>
 </select>
+</label>
 
 ##### 害怕改变，没有勇气及时止损。
 

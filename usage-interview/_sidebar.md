@@ -1,0 +1,3 @@
+- 速记
+  - [随心所欲](usage-interview/quick-look.md)
+  - [零散的记录](usage-interview/零散的记录.md)
