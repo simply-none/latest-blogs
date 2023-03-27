@@ -1,4 +1,4 @@
-- [效率提升工具](docs/usage-work-tool/README.md)
+- 效率提升工具
   - [电脑常用软件列表](docs/usage-work-tool/电脑常用软件列表.md)
   - [在任何地方使用沙拉查词](docs/usage-work-tool/沙拉查词.md)
   - [工作技巧](docs/usage-work-tool/工作技巧.md)

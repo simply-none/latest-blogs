@@ -1,4 +1,4 @@
-- [工具使用](docs/usage-tool/README.md)
+- 工具使用
   - [术语解释](docs/usage-tool/术语解释.md)
   - [前端开发工具库](docs/usage-tool/前端开发工具库.md)
   - [JavaScript工具函数](docs/usage-tool/JavaScript工具函数.md)

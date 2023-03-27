@@ -3,26 +3,26 @@
 
   - [首页](README.md)
   
-  - [单词表](docs/dicts/dict.md)
+  - [单词表](docs/dicts/README.md)
 
   - [文章集锦](docs/usage-article/README.md)
 
-  - [项目相关](docs/usage-project/项目版本升级.md)
+  - [项目相关](docs/usage-project/README.md)
 
-  - [常用常新](docs/usage-frame/electron知识.md)
+  - [常用常新](docs/usage-frame/README.md)
 
-  - [代码片段](docs/code-frames/electron.md)
+  - [代码片段](docs/code-frames/README.md)
 
-  - [工具使用](docs/usage-tool/术语解释.md)
+  - [工具使用](docs/usage-tool/README.md)
 
-  - [配置文件](docs/usage-config/vue.config.js.md)
+  - [配置文件](docs/usage-config/README.md)
 
-  - [其他工作相关](docs/usage-other/vscode代码格式化.md)
+  - [其他工作相关](docs/usage-other/README.md)
 
-  - [效率提升工具](docs/usage-work-tool/电脑常用软件列表.md)
+  - [效率提升工具](docs/usage-work-tool/README.md)
 
-  - [速记](docs/usage-interview/quick-look.md)
+  - [速记](docs/usage-interview/README.md)
 
-  - [突发灵感](docs/usage-inspiration/inspiration.md)
+  - [突发灵感](docs/usage-inspiration/README.md)
 
   - [usage-books](docs/usage-books/README.md)

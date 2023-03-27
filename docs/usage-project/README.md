@@ -1,4 +1,4 @@
-- [项目相关](docs/usage-project/README.md)
+- 项目相关
   - [项目版本依赖升级](docs/usage-project/项目版本升级.md)
   - [项目启动时依赖安装失败问题汇总](docs/usage-project/项目启动安装依赖失败问题汇总.md)
   - [项目package.json介绍](docs/usage-project/项目package.json介绍.md)

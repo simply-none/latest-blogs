@@ -1,4 +1,4 @@
-- [代码片段](docs/code-frames/README.md)
+- 代码片段
   - [electron](docs/code-frames/electron.md)
   - [JavaScript](docs/code-frames/JavaScript.md)
   - [CSS](docs/code-frames/CSS.md)

@@ -1,2 +1,2 @@
-
-- [突发灵感](docs/usage-inspiration/inspiration.md)
+- [README](docs/usage-inspiration/README.md)
+  - [突发灵感](docs/usage-inspiration/inspiration.md)
