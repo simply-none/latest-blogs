@@ -1,34 +1,5 @@
 # usage-docsify-plugin
 
-## 绘制uml
-
-```plantuml
-@startuml
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
-@enduml
-```
-
-## 绘制流程图
-
-```mermaid
-graph LR
-    A --- B
-    B-->C[fa:fa-ban forbidden]
-    B-->D(fa:fa-spinner);
-```
-
-## 展示pdf
-
-```markdown
-# ```pdf
-# https://simply-none.github.io/latest-blogs/_media/1.pdf
-# ```
-```
-
 ## 展示提示样式
 
 > [!NOTE]

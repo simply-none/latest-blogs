@@ -182,22 +182,7 @@ instanceof：
 原型链：
 - 在原型上再加一个原型，再加一个原型..把原型连成链，访问顺序也是按照这个链的顺序跟作用域链一样，叫做原型链
 
-```mermaid
-flowchart
-  foo[const foo = new Foo]
-  Foo[function Foo]
-  obj[const obj = new Object]
-  Object[function Object]
-  foo--__proto__-->Foo.prototype--__proto__-->Object.prototype--__proto__-->null
-  Foo--prototype-->Foo.prototype--constructor-->Foo
-  obj--__proto__-->Object.prototype
-  Object.prototype--constructor-->Object
-  Object--prptotype-->Object.prototype
-  Object--__proto__-->Function.prototype
-  Function--prototype-->Function.prototype--constructor-->Function
-  Function.prototype--__proto__-->Function
-  Foo--__proto__-->Function.prototype--__proto__-->Object.prototype
-```
+![](images/原型链图.png)
 
 ## 13. css属性继承
 
