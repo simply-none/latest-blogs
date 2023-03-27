@@ -1,7 +1,7 @@
 - 目录导航
   - [单词表](docs/dicts/dict.md)
 
-  - [文章集锦](docs/usage-article/导引.md)
+  - [文章集锦](docs/usage-article/README.md)
 
   - [项目相关](docs/usage-project/项目版本升级.md)
 
