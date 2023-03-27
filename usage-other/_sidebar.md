@@ -1,8 +1,0 @@
-- 其他工作相关
-  - [vscode技巧](usage-other/vscode代码格式化.md)
-  - [前端渲染pdf](usage-other/前端渲染pdf.md)
-  - [pdfjs本地化部署](usage-other/pdfjs本地部署.md)
-  - [docker打包electron](usage-other/Linux-docker打包electron.md)
-  - [git提交脚本](usage-other/gitCommit.md)
-  - [nginx基础](usage-tool/nginx基础.md)
-  - [前端缓存](usage-tool/前端缓存.md)

@@ -281,8 +281,6 @@
   <script type="module">
     window.onload = () => {
       function changeTheme () {
-        
-        const themeSkin = document.querySelector('#themeSkins')
         const themeCssLink = document.querySelector('#themeCssLink')
         let themeSkinCache = localStorage.getItem('themeSkinCache')
         themeCssLink.href = themeSkinCache
@@ -298,6 +296,7 @@
           const condation = e.target.innerHTML === '主题切换' && ['P', 'A'].includes(e.target.nodeName)
 
           if (condation) {
+            console.log('hh')
             let thref = ''
 
             if (currentIndex === -1) {
@@ -308,10 +307,6 @@
             themeCssLink.href = thref
             localStorage.setItem('themeSkinCache', thref)
           }
-        }
-        themeSkin.onchange = (e) => {
-          themeCssLink.href = e.target.value
-          localStorage.setItem('themeSkinCache', e.target.value)
         }
       }
       let logs = {}
