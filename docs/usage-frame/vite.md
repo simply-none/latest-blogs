@@ -304,6 +304,7 @@ export default defineConfig({
 
 ```javascript
 // env的ts提示，env.d.ts
+// 在tsconfig.json下的compilerOptiosn.types字段下定义了"vite/client"，就不要写下列三斜线注释了
 /// <reference types="vite/client" />
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
