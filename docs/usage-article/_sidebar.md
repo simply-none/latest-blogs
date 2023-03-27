@@ -1,3 +1,2 @@
 - 文章集锦
-  - [导引](docs/usage-article/导引.md)
   - [Vitejs开源项目实践指南](docs/usage-article/Vitejs开源项目实践指南.md)
