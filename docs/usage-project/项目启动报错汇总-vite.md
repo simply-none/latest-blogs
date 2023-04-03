@@ -42,3 +42,9 @@
   }
 }
 ```
+
+## 报错6：子应用接入qiankun出现Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.和Uncaught (in promise) TypeError: Failed to fetch dynamically imported module:xxx的错误
+
+出现原因：网上的答案基本上大都不相同，后解决的根本还是按照qiankun官网进行严格的配置。
+
+解决方案：严格按照官网文档进行配置，比如主应用子应用挂载节点必须一致，不然有可能出现上述问题。在进行了严格相同的配置之后，若出现问题，再去寻找解决之道。
