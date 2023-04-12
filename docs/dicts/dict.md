@@ -1261,5 +1261,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |isolated|分离，偏远的，孤立的，隔离的，孤独的|**[ˈaɪsəˌleɪtəd]**|
 |mono|单声道的，单一，单|**[ˈmɑnoʊ]**|
 |blame|责备，责任，指责，责怪，过失|**[bleɪm]**|
+|vary|使不同，使呈现差异，改变，更改|**[ˈveri]**|
 
 
