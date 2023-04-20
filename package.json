@@ -1,12 +1,12 @@
 {
   "name": "latest-blogs",
-  "version": "5.1.10",
+  "version": "5.1.11",
   "repository": {
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
-    "rer": "node ./t.js",
+    "rer": "node ./t.js && git push -u origin --tags && npm publish",
     "re": "standard-version --release-as patch",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "dev": "node ./time.js & docsify serve",
