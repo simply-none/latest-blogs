@@ -1,15 +1,26 @@
 {
   "name": "latest-blogs",
+  "version": "2.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
+    "re": "standard-version",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "dev": "node ./time.js & docsify serve",
     "pub": "node ./time-and-push.js"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  },
+  "standard-version": {
+    "skip": {
+      "changelog": true,
+      "tag": true
+    }
   }
 }
