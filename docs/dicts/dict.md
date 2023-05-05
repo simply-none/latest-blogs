@@ -126,7 +126,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |flexible|灵活的，有弹性的|
 |pass|通过，传递，经过|
 |directive|指示（符），命令|
-|extend|扩展，延申，包括|
+|extend|扩展，扩大，延长，使延期，伸出，展开，延申，延续，提供，给予，包括，影响到，适用于，继承|
 |set|一组，一套，集合|
 |series of|一系列，一连串|
 |hand in hand|联合，携手|
@@ -376,6 +376,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |repetition|重复|**[ˌrɛpɪˈtɪʃən]**|
 |totally|完全的，彻底的，绝对的，总共|
 |imperative|命令式，祈使句|**[ˌrɛpɪˈtɪʃən]**|
+|identify|识别，识出，确定，发现，找到，显示，标识|
 |declarative|声明式，陈述句|**[dɪ'klerətɪv]**|
 |identifier|标识符|**[aɪ'dentɪ'faɪəz]**|
 |identical|完全相同的，同样的|
@@ -393,7 +394,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |deprecate|不赞成，已过时，被废弃|**['deprə.keɪt]**|
 |deprecation|反对，不赞成，强烈批评|
 |make sure|确保，确信，查明，证实|
-|no matter how|不管怎样，无论怎样|
 |execute|执行，实施，完成|**['eksə.kjut]**|
 |shadow|遮蔽，影子|
 |condition|条件，情况，状况|
@@ -448,8 +448,6 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |contrary|相反的，相对的|**[ˈkɒntrərɪ]**|
 |specification|规范，规格，说明书|**[.spesɪfɪ'keɪʃ(ə)n]**|
 |indicate|象征，指示，表示，表明|
-|integrate|使融入，使加入，合并，成为一体|
-|integration|一体化，集成，整合|**[ˌɪntəˈɡreɪʃ(ə)n]**|
 |seamlessly|无缝的|
 |transitive|传递性，传递的|
 |transition|过渡，转变|**[træn'zɪʃ(ə)n]**|
@@ -459,6 +457,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |collection|集合，收集|
 |distribute|分发，分配，分送|
 |distributive|分发的，分配的|
+|distribution|分发，散发，分配，分销，配送，发行，上映|
 |encapsulate|封装，压缩，概括|**[ɪn'kæpsjə.leɪt]**|
 |trailing|结尾|**['treɪlɪŋ]**|
 |refactor|重构（代码）|
@@ -613,7 +612,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |adjust|调整，调节，校准|
 |fluidly|灵活的，流畅的|
 |complement|补充（物），补足（物），补集，补码|**['kɑmplə.ment]**|
-|fix|修理，修复，处理，解决，整理，理解，认识，操纵|
+|fix|修理，修复，处理，解决，整理，理解，认识，操纵；解决方法，定位，困境|
 |fix up|修理，解决，安排|
 |fixed|固定的，确定的，不变的|
 |certain|确定的，肯定的，无疑的，特定的，某些，一定的|
@@ -752,7 +751,9 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |privilege|特权，优惠，荣幸|**['prɪvəlɪdʒ]**|
 |rational|基本理论，基本原理，根本原因|
 |consult|咨询，查询，请教，商量|
-|matter|事情，问题，状况，要紧，有关系|
+|matter|事情，问题，状况，要紧，有关系，使情况更糟的是，需要颜色对待的事，不是开玩笑的事，麻烦事，毛病，物品，大约，左右|
+|no matter how|不管怎样，无论怎样|
+|it doesn't matter|在...问题上，没关系，无所谓|
 |majority|大多数，大部分|
 |handbook|手册，指南，说明书|
 |remaining|仍需处理的，剩余的|
@@ -943,7 +944,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |outline|概述，概要，大纲，略图|
 |potentially|潜在的，可能的，大概的|
 |quota|配额，定额，指标|
-|community|社区|
+|community|社区，群体，社团，团体，界，群落，公众，群众|
 |standard|规范，标准（的），正常的|
 |primitive|原始的，基本的，简单的，基元，图元|**[ˈprɪmɪtɪv]**|
 |situation|情况，形势，环境|
@@ -995,6 +996,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |relatively|相当程度上，相对而言，相对地，相当地|
 |nominal|名义上的，有名无实的，象征性的|**['nɑmɪn(ə)l]**|
 |widely|广泛地，大量地，普遍地，更多地|
+|if|假如，如果，虽然，即使，当，每当，是否|
 |what if|如果..将会怎样|
 |duck|鸭子|
 |overall|全部（的），整体，总的，大致上|
@@ -1192,6 +1194,7 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |various|各种不同的，各种各样的，多姿多彩的，多方面的||
 |persist|保持，持续存在，维持，存留，持久||
 |upgrade|提升，提高，使升级，上升的||
+|dependent|需要供养的，需要照顾的，依赖的，取决于，由...来决定|
 |dependency|依存，属地，从属物，依赖（关系）||
 |tarball|包，原始码||
 |harness|治理，使做固定的工作，安全带，系带||
@@ -1262,5 +1265,53 @@ document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
 |mono|单声道的，单一，单|**[ˈmɑnoʊ]**|
 |blame|责备，责任，指责，责怪，过失|**[bleɪm]**|
 |vary|使不同，使呈现差异，改变，更改|**[ˈveri]**|
-
-
+|live|生存，活着，住，居住，放置，保存，生活，过活，继续存在，留存；活的，现场直播的，实况转播的，带电的，可爆炸的，燃烧的，可燃的；直播的，现场播出的，（电脑系统）开始运行，开始工作|
+|life|寿命，生命，一生，人生，生活，性命，生活方式，生活，寿命，存在周期，有效期，活力，热情，活物，生物，实物，赋予...生命，使...鲜活起来，使更加实在，使更有生机，一生，终生|
+|continuous|不断的，连续的，持续的|
+|integrate|使融入，使加入，合并，成为一体|
+|integration|一体化，集成，整合|**[ˌɪntəˈɡreɪʃ(ə)n]**|
+|pipeline|输送管道，渠道，途径，（计算机）流水线|
+|deployment|部署，配置，展开，调动，有效运用，发挥...的作用|
+|delivery|分娩，交付，交货，传送，递送，投递|
+|continuous integration|持续集合，持续整合|
+|continuous deployment|持续部署|
+|continuous delivery|持续交付，持续产出|
+|build sth in/into sth|（使）包括，使成为（计划、系统、协议的）组成部分|
+|experience|经验，经历，实践，阅历；体会到，感受到|
+|traditional|传统的，习俗的|
+|alone side|在...旁边，与...一起，同时，共存|
+|major|较重要的，主要的，重大的；大调的，大音阶的；少校；主修课程，专业；主修，以...为专业|**ˈmeɪ.dʒɚ**|
+|minor|较不重要的，次要的，轻微的；副修科目|**ˈmaɪ.nɚ**|
+|patch|补丁，程序补丁；斑，小块；接通，连接，缝补，修补，解决计算机系统或程序的某个问题|
+|announce|宣布，宣告，通告，告知，通知，作为...的迹象，显示|
+|attention|注意，留心，考虑，关心，吸引...的注意，集中注意力于，焦点，特别护理|
+|deserve|值得，应得|
+|ecosystem|生态系统，产业生态系统，生态环境|**ˈekoʊˌsɪstəm**|
+|fantastic|极好的，了不起的，很大的，大的难以置信的，幻想的，奇怪的，极大的|
+|sponsor|资助，赞助，支持，赞助商，主办单位|
+|donation|捐献，捐赠，捐助，捐款|
+|backer|资助人，赞助人|
+|contribution|贡献，奉献，捐款，捐助，出资，投稿|
+|table|一览表，表格，目录；桌子，台子，餐桌|
+|prerequisite|先决条件，前提，必要条件；必要的，先决条件的|**priˈrekwəzɪt**|
+|plug|插头，插座，塞子，堵塞物；宣传，推荐；堵，塞，插入|
+|pluggable|可插拔（的）|
+|plugin|插件，外挂，插入式，连接|
+|configuration|布局，构造，结构，格局，配置|
+|functionality|功能（性）|
+|standard|规范，标准，通用模式；标准的，规范的，通常的|
+|semistandard|参考资料|
+|official|官方的，正式的，公开的，公布的；官员，高级职员|
+|beforehand|事先，预先，提前；早做准备的，提前的|
+|fine-grained|细粒（度）（的）|
+|alternatively|或者，另外，要不|
+|explicitly|明确（地），明白地，显示地，清楚地，直接地|
+|refer to|查阅，参考，提到，涉及|
+|familiar|熟悉，通晓，熟悉的，常见的|
+|overview|概述，概况，概论，总览|
+|potential|潜在的，可能的；潜力，可能性，潜能|
+|expectation|期望，预期，期待，希望；预料|
+|via|通过，经由，经过，凭借|
+|often|时常，通常，经常，往往，多次|
+|abstract syntax tree|抽象语法树|
+|variety|品种，种类，变化，多样化，多样性|**vəˈraɪəti**|
