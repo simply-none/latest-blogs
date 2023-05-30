@@ -26,3 +26,5 @@
   - [突发灵感](docs/usage-inspiration/README.md)
 
   - [usage-books](docs/usage-books/README.md)
+
+  - [随感](docs/usage-diaries/README.md)

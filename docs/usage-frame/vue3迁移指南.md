@@ -20,7 +20,20 @@
 
 ## 响应性
 
-### ref和reactive
+### 响应性基本原理
+
+**深层响应性**
+
+vue中的状态是默认深层响应式的，会检测到响应性变量的深层次属性修改；同时，也可在某些特定场景中使用shallowXxx api创建浅层响应式对象，仅在顶层具有响应性。
+
+**响应式代理 vs 原始对象**
+
+原始对象：不会触发视图更新
+响应式对象（代理对象）：会触发视图更新
+
+
+
+### 响应式api
 
 声明响应式状态的方式：
 - 对象类型：reactive，ref
@@ -45,17 +58,43 @@ typescript用法：
 - 在任何值（不管是值还是引用，未使用类似ref的函数，则不是响应式变量）周围都有一个封装对象，这样就可以在整个应用中安全传递，不用担心在某地方失去它的响应性
 - 将值封装在对象中，是为了保持JavaScript不同数据类型（值类型、引用类型）的行为统一
 
-ref解包：
-- 定义：当ref变量直接作为setup函数返回对象的第一级属性时，在模板template中访问会自动浅层次解包它内部的值；
-- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了
-- 若ref变量作为响应式对象reactive的属性，当他被访问或被修改后，会自动解包他的内部值（即不需要通过.value的形式访问）。同时ref变量和响应式对象reactive的属性是互相影响的（引用地址相同），当属性重新赋值之后，他们就互不相关了（修改不会影响对方）
+ref解包（即不需要使用.value进行访问）：
+- 定义：当ref变量直接作为setup函数返回对象（注：非setup环境，而在setup环境中，作为一个顶级变量时）的第一级属性时，在模板template中访问会自动浅层次解包它内部的值，即可不带.value直接访问到；
+- 
+- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了；或者是直接解构该对象，得到一个顶层的响应式对象；仅包含一个文本插值而无相关运算时（比如`{{ pureObj.refValue }}`）也会被自动解包，相当于`{{ pureObj.refValue.value }}`
+- 若ref变量作为响应式对象reactive的属性，当他被访问或被修改后，会自动解包他的内部值（即不需要通过.value的形式访问）。同时ref变量和响应式对象reactive的属性是互相影响的（引用地址相同），当属性重新赋值之后，他们就互不相关了（修改不会影响对方）。只有当嵌套在深层响应式对象内才会进行解包，在浅层响应式对象shallowXxx中不会。
 - ref解包仅发生在响应式对象reactive（类型为普通Object对象）嵌套（ref作为属性）的时候，当ref变量作为其他原生集合类型Map或Array的属性或元素时，不会进行解包，这时仍然要通过.value进行访问
+
+注意：
+- ref被传递给函数或从一般对象上（作为其属性）被解构时，不会丢失响应性
 
 **reactive**：
 
 定义：
-- 该api返回一个响应式的对象状态，这个响应式转换是深度转换的，会影响传递对象的所有嵌套的属性
-- 其中data选项返回一个对象时，在内部是交由reactive函数使其转为响应式对象
+- 语法：`const xxx = reactive(obj)`
+- 该api返回一个响应式的对象状态，这个响应式转换是深度转换成代理对象的，会影响传递对象的所有嵌套的属性。即能够检测到深层次的对象或数组的（新增，修改，删除，替换值）改动
+- 为保证访问代理的一致性，对同一个原始对象调用reactive总是会返回同一个代理对象，而对已存在的代理对象调用reactive则返回该代理对象本身
+- 其中data选项返回一个对象时，在内部是交由reactive函数使其转为响应式对象（选项式语法）
+
+注意：
+- reactive仅对对象（对象、数组、map、set等）类型有效，对原始类型（string、number等）无效
+- 对响应式对象重新赋值后，将丢失初始引用的响应性连接。也意味着将响应式对象的**属性**赋值给其他变量、进行属性解构、将属性传入一个函数时，将会失去响应性，即修改这三个条件对应的内容时，响应式对象不会同步变更
+
+```typescript
+// 失去响应性的三种方式
+const state = reactive({ count: 0 })
+
+// 1
+let n = state.count
+n++
+
+// 2
+let {count} = state
+count++
+
+// 3
+fn(state.count)
+```
 
 响应式状态解构：
 - 当想使用一个响应式对象的多个属性的时候，可通过对象解构获取内部的一些属性，若想使得解构后的属性变量与原响应式对象相关联（变化同步发生），必须对这个响应式对象用toRefs函数包裹后解构，否则引用关联会失效（改变一个，另一个不发生变化）
@@ -66,8 +105,11 @@ ref解包：
 **readonly**:
 
 定义：
-- 接受一个对象（响应式/普通的），或者一个ref，返回一个原值的只读代理（深层只读代理，所有属性都不可修改）
+- 语法：`const xxx = readonly(obj)`
+- 接受一个对象（响应式/普通的），或者一个ref，返回一个原值的只读代理（深层只读代理，所有属性（包括嵌套属性）都不可修改）
 - 其返回值可以解包（和reactive类似），但是解包后的值是一个只读的
+
+**customRef**：**自定义Ref**
 
 **toRef和toRefs**：
 
@@ -86,15 +128,162 @@ ref解包：
 
 **shallowRef**
 
-定义：相当于ref的第一层级会响应式变更，不会引发深层次数据的变更。常用于对大型数据结构的性能优化（毕竟大量数据时深层次属性变更性能耗费大，所以使用该api，在每一次变更时均对其.value重新赋值）
+定义：
+- 语法：`const xxx = shallowRef(xx)`
+- 相当于ref的第一层级变化（ref的第一层级就是ref本身，而非其内部的属性第一层级）会响应式变更，不会引发深层次数据的变更（会修改值，但视图不刷新）。常用于对大型数据结构的性能优化（毕竟大量数据时深层次属性变更性能耗费大，所以使用该api，在每一次变更时均对其.value重新赋值）
+
+注意：上述的不引发视图更新，仅仅是指单独操作该属性时。如果混合着操作其他对象/属性，则有可能会引发变更
+
+**shallowReactive**
+
+定义：
+- 语法：`const xxx = shallowReactive(obj)`
+- 相当于reactive的第一层级变化（reactive的第一层级就是字面意思）会响应式变更，深层次数据变更不会引发视图刷新（会修改值，但视图不刷新）
+
+注意：
+- 上述的不引发视图更新，仅仅是指单独操作该属性时。如果混合着操作其他对象/属性，则有可能会引发变更
+- 值为ref的属性不会被自动解包（解包：可以不需要调用.value即可访问该值）
+
+```vue
+// shallowRef、shallowReactive会引发变更的情形：
+<script setup>
+import { shallowRef, shallowReactive } from 'vue'
+
+const person = shallowRef({
+  name: 'jade',
+  hobbies: ['唱', '跳', 'rap'],
+  frames: {
+    vue: '3',
+    react: '18'
+  }
+})
+
+const state = shallowReactive({
+  name: 'jade',
+  hobbies: ['唱', '跳', 'rap'],
+  frames: {
+    vue: '3',
+    react: '18'
+  }
+})
+
+function changeStates () {
+  // 单独仅改变非一级状态，视图层不会发生任何修改
+  person.value.frames.vue+=1
+  state.hobbies.push(34)
+
+  // 加上下面的任何一条一级状态的内容修改后，上述的非一级状态则会同时进行修改
+  person.value = Date.now()
+  state.frames = Date.now()
+}
+</script>
+
+<template>
+  <div>{{ person }}</div>
+  <div>{{ state }}</div>
+  <button @click="changeStates">状态变更</button>
+</template>
+```
+
+**shallowReadonly**
+
+定义：
+- 语法：`const xxx = shallowReadonly(obj)`
+- readonly的浅层作用形式，只有根层级（第一级属性）变为了只读，嵌套的属性则是可读写的
+
+注意：
+- 值为ref的属性不会被自动解包（解包：可以不需要调用.value即可访问该值）
 
 **triggerRef**
 
-定义：shallowRef的深层属性变更后，调用该api，会强制触发相应的watch/watchEffect监听器
+定义：
+- 调用语法：`triggerRef(shallowRefInstance)`
+- shallowRef的深层属性变更后，调用该api，会强制触发相应的watch/watchEffect监听器（即调用该方法后，会让视图层同步更新）
 
 **toRaw**
 
-定义：返回响应式对象（reactive、readonly、shallowReactive）的原始对象，返回值再用对应的api包裹，又会返回响应式对象
+定义：
+- 语法：`toRaw(proxy)`
+- 返回响应式对象（reactive、readonly、shallowReactive、shallowReadonly）的原对象，返回值再用对应的api包裹，又会返回响应式对象
+- 是一个可用于临时读取而不引起代理访问/跟踪开销，或写入不触发更改的特殊方式，不建议持久引用
+
+**markRaw**
+
+定义：
+- 语法：`markRaw(obj)`
+- 将对象标记为不可转为代理（proxy），然后返回该对象本身，这一句仅是常规对象和proxy的区别（即isReactive返回值区别），但将值用reactive等包裹后，该对象也是响应性的。
+
+用途：
+- 值不应该是响应式的，比如第三方类实例或vue组件对象
+- 带有不可变数据源的大型数据时，跳过代理转换可以提高性能
+
+注意：
+- 该方法和浅层式api（shallowXxx）可以选择性避开默认的深度响应和只读转换，并在状态关系谱中嵌入原始的非代理的对象。
+- markRaw作用的仅是对象的第一层级，然后通过reactive/ref等转为响应式对象后，获取到的是普通对象形式（而非代理形式）。若将markRaw左右的对象作为reactive对象的属性，则reactive对象始终是proxy，reactive对象对应的markRaw属性是普通对象形式。
+
+```typescript
+// 嵌套层级的代理对象
+const foo = markRaw({
+  nested: {}
+})
+
+// bar始终是proxy
+const bar = reactive({
+  // 注意，由于上面被markRaw包裹的对象属性nested并未进行markRaw包裹，所以他是可转为代理对象的
+  // 故通过bar.nested访问的内容是一个proxy
+  nested: foo.nested,
+  // 转成普通对象的形式，通过bar.nestedPure访问的内容则是普通对象
+  nestedPure: markRaw(foo.nested)
+})
+```
+
+**effectScope**
+
+定义：创建一个effect作用域，在该作用域内部可以捕获其中创建的响应式副作用（计算属性和侦听器）
+
+```typescript
+// 定义
+const scope = effectScope()
+// run
+scope.run(() => {
+  const double = computed(() => counter.value * 2)
+  watch(double, () => console.log(double.value))
+  watchEffect(() => console.log(double.value))
+})
+
+// 处理当前作用域内的所有effect
+scope.stop()
+```
+
+**getCurrentScope**：获取当前活跃的effect作用域
+
+**onScopeDispose(cb)**：
+- 在当前活跃的effect作用域上注册一个处理回调，当相关的effect作用域停止时，则会调用这个回调函数
+- 该方法可作为可复用的组合式函数中onUnmounted的替代品，他不与组件耦合，因为每一个setup函数也是在一个effect作用域中调用的
+
+### nextTick用法
+
+更改响应式状态对象后，DOM不会立即更新，而是等到更新周期的下个时机时，将所有状态的更改一次进行更新。
+
+若要访问更新后的状态，可以调用nextTick函数后进行获取。
+
+```javascript
+import { nextTick } from 'vue'
+// 使用await形式
+// nexttick之前代码（此时DOM未更新）
+// ......
+await nextTick()
+// nexttick之后的代码（此时DOM已经更新，可以获取到新的dom）
+// ......
+
+// 和vue2一样的方式
+nextTick(() => {
+  // 获取更新后的dom
+  // ......
+})
+```
+
+
 
 ## 组合式API
 
@@ -1126,122 +1315,6 @@ const newProps = computed(() => props.title)
 
 访问透传属性：使用`useAttrs()`内置函数
 
-### v-model用法
-
-定义：
-- 默认情况下，组件上的v-model使用modelValue作为prop和update:modelValue作为事件
-- 这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值
-
-使用：
-- 可以通过向v-model传递参数，用于替代默认参数modelValue，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
-- 可以同时传递多个v-model给子组件，不同的v-model将同步到不同的prop
-- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。**使用自定义修饰符**，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
-- 对于有参数的修饰符（比如`v-model:title.custom`，对应的prop就要改成参数名+'Modifiers'，即上面的modelModifiers改成titleModifiers
-
-<!-- tabs:start -->
-<!-- tab:v-model简写 -->
-```typescript
-// 1. 基础用法
-<My-Input v-model="value"/>
-<!-- 等同于下面 -->
-<My-Input :modelValue="value" @update:modelValue="val => value = val"></My-Input>
-
-<!-- 子组件 -->
-<input :value="modelValue" @input="e => $emit('update:modelValue', e.target.value)"/>
-
-const porps = defineProps({
-  modelValue: {
-    type: String
-  },
-  // modelValue对应的修饰符对象
-  modelValueModifiers: {
-    default: () => {}
-  }
-})
-
-// 2. 自定义参数名称
-<My-Input v-model:title="value">
-
-<!-- 子组件 -->
-<input :value="title" @input="e => $emit('update:title', e.target.value)"/>
-
-const porps = defineProps({
-  title: {
-    type: String
-  },
-  // title对应的修饰符对象
-  titleModifiers: {
-    default: () => {}
-  }
-})
-
-// 3. 自定义修饰符
-<My-Input v-model:title.toUpperCase="value"/>
-```
-
-<!-- tab:基本用法 -->
-```typescript
-// 父组件Parent
-<script>
-import Child from './child.vue'
-export default {
-  components: { Child }
-}
-</script>
-<template>
-  // 父组件将title传递给子组件
-  <Child v-model:title="bookTitle" v-model:book-desc="bookDesc"></Child>
-</template>
-
-// 子组件Child
-export default {
-  props: {
-    title: String,
-    bookDesc: String
-  },
-  // 若要父组件中的bookTitle同步更新，子组件必须将要emit的事件写明：此处是title
-  emits: ['update:title', 'update:bookDesc'],
-  template: `
-    <input type="text" :value="title" @input="$emit('update:title', $event.target.value)">
-    <input type="text" :value="bookDesc" @input="$emit('update:bookDesc', $event.target.value)">
-  `
-}
-```
-
-<!-- tab:带修饰符的v-model -->
-```typescript
-<template>
-  // 父组件将title传递给子组件，修饰符capitalize让title的值首字母大写
-  <Child v-model:title.capitalize="bookTitle" v-model:book-desc="bookDesc"></Child>
-</template>
-
-// 子组件Child
-export default {
-  props: {
-    title: String,
-    bookDesc: String,
-    titleModifiers: Object
-  },
-  // 若要父组件中的bookTitle同步更新，子组件必须将要emit的事件写明：此处是title
-  emits: ['update:title', 'update:bookDesc'],
-  template: `
-    <input type="text" :value="title" @input="emitTitleVal">
-    <input type="text" :value="bookDesc" @input="$emit('update:bookDesc', $event.target.value)">
-  `,
-  methods: {
-    emitTitleVal (e) {
-      let val = e.target.value
-      // 修饰符拦截
-      if (this.titleModifiers.capitalize) {
-        val = val.charAt(0).toUpperCase() + val.slice(1)
-      }
-      this.$emit('update:title', val)
-    }
-  }
-}
-```
-<!-- tabs:end -->
-
 ## vue自定义渲染器
 
 渲染器是围绕虚拟DOM存在的，为了能够将虚拟DOM渲染为真实的DOM，渲染器内部需要调用浏览器提供的DOM编程接口，如下所示：
@@ -1560,6 +1633,194 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 - 可以对v-model增加参数，`v-modle:title="pageTitle"`等同于`:title="pageTitle" @update:title="pageTitle = $event" />`
 - 可以传入多个v-model
 - v-model支持自定义修饰符
+
+定义：默认情况下，包含input的封装组件中的v-model在简化前使用modelValue作为prop和update:modelValue作为事件。这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值，因为使用v-model进行简化了。
+
+使用：
+- 可以通过向v-model传递参数，用于替代默认参数modelValue，即`v-model:title='bookTitle'`中的title，修改title的值bookTitle
+- 可以同时传递多个v-model给子组件，不同的v-model将同步到不同的prop
+- v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。**使用自定义修饰符**，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
+- 对于有参数的修饰符（比如`v-model:title.custom`，对应的prop就要改成参数名+'Modifiers'，即上面的modelModifiers改成titleModifiers
+
+<!-- tabs:start -->
+<!-- tab:v-model简写 -->
+```typescript
+// 1. 基础用法1
+<My-Input v-model="value"/>
+<!-- 等同于下面 -->
+<My-Input :modelValue="value" @update:modelValue="val => value = val"></My-Input>
+
+<!-- 子组件 -->
+<input :value="modelValue" @input="e => $emit('update:modelValue', e.target.value)"/>
+
+const emit = defineEmits(['update:modelValue'])
+// 使用：emit('update:modelValue', modelValue)
+
+const porps = defineProps({
+  modelValue: {
+    type: String
+  },
+  // modelValue对应的修饰符对象
+  modelValueModifiers: {
+    default: () => {}
+  }
+})
+
+// 1. 基础用法2：使用一个具有getter和setter的computed属性
+// 父组件：
+<My-Input v-model="modelValue"/>
+
+// 子组件：
+<input v-model="value"/>
+
+import { computed } from 'vue'
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+const value = computed({
+  get () {
+    return props.modelValue
+  },
+  set (val) {
+    emit('update:modelValue', val)
+  }
+})
+
+// 2. 自定义参数名称
+<My-Input v-model:title="value">
+
+<!-- 子组件 -->
+<input :value="title" @input="e => $emit('update:title', e.target.value)"/>
+
+defineEmits(['update:title'])
+
+const porps = defineProps({
+  title: {
+    type: String
+  },
+  // title对应的修饰符对象
+  titleModifiers: {
+    default: () => {}
+  }
+})
+
+// 3. 自定义修饰符
+<My-Input v-model:title.toUpperCase="value"/>
+```
+
+<!-- tab:基本用法 -->
+```typescript
+// 父组件Parent
+<script>
+import Child from './child.vue'
+export default {
+  components: { Child }
+}
+</script>
+<template>
+  // 父组件将title传递给子组件
+  <Child v-model:title="bookTitle" v-model:book-desc="bookDesc"></Child>
+</template>
+
+// 子组件Child
+export default {
+  props: {
+    title: String,
+    bookDesc: String
+  },
+  // 若要父组件中的bookTitle同步更新，子组件必须将要emit的事件写明：此处是title
+  emits: ['update:title', 'update:bookDesc'],
+  template: `
+    <input type="text" :value="title" @input="$emit('update:title', $event.target.value)">
+    <input type="text" :value="bookDesc" @input="$emit('update:bookDesc', $event.target.value)">
+  `
+}
+```
+
+<!-- tab:带修饰符的v-model -->
+```typescript
+<template>
+  // 父组件将title传递给子组件，修饰符capitalize让title的值首字母大写
+  <Child v-model:title.capitalize="bookTitle" v-model:book-desc="bookDesc"></Child>
+</template>
+
+// 子组件Child
+export default {
+  props: {
+    title: String,
+    bookDesc: String,
+    titleModifiers: Object
+  },
+  // 若要父组件中的bookTitle同步更新，子组件必须将要emit的事件写明：此处是title
+  emits: ['update:title', 'update:bookDesc'],
+  template: `
+    <input type="text" :value="title" @input="emitTitleVal">
+    <input type="text" :value="bookDesc" @input="$emit('update:bookDesc', $event.target.value)">
+  `,
+  methods: {
+    emitTitleVal (e) {
+      let val = e.target.value
+      // 修饰符拦截
+      if (this.titleModifiers.capitalize) {
+        val = val.charAt(0).toUpperCase() + val.slice(1)
+      }
+      this.$emit('update:title', val)
+    }
+  }
+}
+```
+<!-- tabs:end -->
+
+**v-model在原生html元素上的对应关系：**
+
+- 文本类型的input和textarea会绑定**value**属性并监听input事件
+- radio和checkbox类型的input会绑定**checked**属性并监听change事件
+- select会绑定**value**属性并监听change事件
+
+注意：
+- 在表单元素上，**v-model**会忽略对应元素的初始值，比如value、checked、selected的某个值，而是将绑定的js状态作为数据的正确来源。
+- 若想在拼写阶段也触发更新，则应该使用value+input，而非v-model
+- 初始值和选项不匹配时，iOS上的select元素使用v-model时可能会导致选不了第一项的问题，建议提供一个禁用的默认选项。
+
+**作用在v-model上的修饰符**
+
+`.lazy`：在change事件后更新v-model绑定的数据，默认情况是在input事件后更新。
+
+`.number`：使用parseFloat函数处理v-model绑定的值，若返回非数字，则不进行任何处理。
+
+`.trim`：自动去除v-model绑定的值首尾空格。
+
+**去除字符串的空格**：
+
+去除首尾空格：
+- `string.trim()`
+- `string.replace(/^\s+|\s+$/g, '')`
+
+去除所有空格：
+- `string.replace(/\s+/g, '')`
+
+**change事件和input事件：**
+
+change事件：在元素更改完成时（对于文本输入框，即在**失去焦点**时；对于其他元素：select、checkbox/radio input，即在选项更改时）触发。
+
+input事件：只要值修改，就会触发，比如键盘输入，鼠标粘贴，语音输入等。无法使用event.preventDefault()阻止默认事件，太迟了。
+
+**可编辑元素：contenteditable**：
+
+contenteditable：content + edit + able
+
+定义：
+- 该属性是一个全局的枚举属性，表示元素是否可被用户编辑。
+- 该属性可被元素继承
+
+属性的值：
+- true、''、无属性值：表示元素是可编辑的
+- false：表示元素不是可编辑的
+
+用途：
+- 能够自适应内容的高度，而非像textarea那样出现一个滚动条。
+- 能够插入图片，链接，视频，而非仅是文本内容
+- 仅支持文本内容，可将值设置为`plaintext-only`
+
 
 ### v-once
 
