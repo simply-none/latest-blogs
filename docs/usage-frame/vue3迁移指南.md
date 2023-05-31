@@ -18,6 +18,13 @@
 - 然后使用该文件绝对路径进行创建即可
 - 或者将vue文件对应的.bin目录存放到全局环境变量path中，然后对vue文件和vuecmd文件改成vue2或vue3即可。后面就能够直接在命令行中使用vue2和vue3进行项目创建
 
+## 模板语法
+
+注意：
+- 大括号内部可以是任意的单一JavaScript表达式（能放在return后面的表达式）
+- v-html替换的内容包含它所作在的元素本身
+- 模板中的表达式将被沙盒化，仅能访问到有限的全局对象列表（比如Math,Date），未显式包含在列表中的对象将不能在模板中访问。但是你可以在`app.config.globalProperties`中添加以显式包含在列表中
+
 ## 响应性
 
 ### 响应性基本原理
@@ -372,12 +379,54 @@ setup内其他钩子的使用：
 - watch接收三个参数，依次是一个想要侦听的响应式引用或getter函数、一个回调（响应式引用变化时执行的函数）、一个可选的配置选项对象（例如deep等）
 
 **computed**：
-定义：和watch定义类似
+
+定义：
+- 用于描述依赖响应式状态的复杂逻辑
+- 会自动追踪响应式依赖，只有它依赖的响应式数据变化时，才会同时更新；反之依赖的响应式数据不变时，或者依赖的是非响应式数据，它永不更新。而方法调用总是会在重渲染时再次执行该方法，当逻辑太过于复杂时，可能会有性能损耗
+
 使用：
-- 接收一个函数（和选项式computed一致），根据函数的返回值返回一个不可改变的响应式ref对象
-- 接收一个具有set和get函数的对象（和选项式computed类似），用于创建一个可读写的ref对象
+- 接收一个getter函数（和选项式computed一致）作为参数，根据函数的返回值返回一个只读的响应式ref，该ref会自动解包，加不加.value都不紧要
+- 接收一个具有set和get函数的对象（和选项式computed类似）作为参数，用于创建一个可读写的ref
 - 在使用时，修改或获取computed值，和ref变量类似，都是xxx.value的形式
 - 在computed中使用props的变量，也需要使用xxx.value形式引用，不然要报错
+
+注意：
+- getter函数不应该有副作用：计算属性声明中描述的是如何根据其他值派生一个值，即getter函数内部只做计算和返回计算后的内容。不要在getter中做异步请求或更改dom，这些操作应使用watch
+- 避免直接修改计算属性的值：应该视为只读的，即只更新它所依赖的原状态触发计算属性的更新。故而谨慎使用set/get的对象作为参数。
+
+
+```typescript
+import { computed, reactive } from 'vue'
+
+const books = reactive(['科幻', '计算机', '文学'])
+
+// 只读的getter函数作为参数（推荐）
+const getValByBooksLength = computed(() => {
+  return books.length > 3 ? '展示复杂分类' : '展示简单分类'
+})
+
+// 一个含set/get的对象作为参数
+const setAndGetValByBooksLength = computed({
+  get () {
+    return books.length > 3 ? '展示复杂分类' : '展示简单分类'
+  },
+  set (newVal) {
+    if (newVal.includes('复杂')) {
+      // 此处不能这样写，视图不刷新，同时报错不能分配给常量，因为books是const
+      books = [1, 2, 3]
+      // 改为
+      // 第一种方式：reactive变量改成ref，然后使用.value的形式修改
+      // 第二种方式：reactive变量使用对象的形式，然后用obj.xxx的形式修改
+      // 第三种方式：使用不改变原来引用的方式，比如数组的push等
+      books.splice(0, books.length, ...[1, 2, 3])
+    } else {
+      books.splice(0, books.length, ...[1])
+    }
+  }
+})
+
+
+```
 
 **setup中的生命周期钩子**：这些hooks接受一个回调函数，当钩子被组件调用时，回调函数将被执行
 - vue3中，在setup内使用生命周期钩子，需要先进行导入才能够使用
@@ -397,6 +446,37 @@ setup内其他钩子的使用：
 | `renderTriggered` | `onRenderTriggered` |
 | `activated` | `onActivated` |
 | `deactivated` | `onDeactivated` |
+
+![生命周期](https://cn.vuejs.org/assets/lifecycle.16e4c08e.png)
+
+**onMounted**：
+
+定义：
+- 注册一个回调函数`onMounted(cb)`，在组件挂载完成后执行
+- 在该阶段，vue会自动将回调函数注册到当前正在被初始化的组件实例上，意味着它应当在组件初始化时被 **同步**注册，而非异步的，所以不能在异步函数中调用该钩子
+
+使用：
+- 用于需要拿到dom树的时候，比如拿到某个节点信息
+
+**组件已挂载的情况**：
+- 所有的同步子组件已被挂载（不包含异步组件和Suspense内的组件）
+- 自身dom树已创建完成并插入了父容器中
+
+```vue
+<template>
+  <div ref="root"></div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const root = ref(null)
+
+onMounted(() => {
+  console.log(root.val, '获取div节点')
+})
+</script>
+```
 
 #### setup返回值
 
@@ -621,7 +701,7 @@ export default {
 
 #### watch
 
-语法，其中source的值可以是：
+语法`watch(source, cb: (value, oldValue, onCleanup) => void, options)`或`watch(source[], cb: (value, oldValue, onCleanup)[] => void, options)`，其中source的值可以是：
 - ref变量
 - getters，即箭头函数、对象的属性值，返回值应当是`.value`的形式
 - 响应式对象，比如reactive
@@ -637,7 +717,13 @@ const watchVal = watch(
   // 要监听的数据源
   source,
   // 监听到变化后要执行的回调函数
-  callback,
+  async (newV, oldV,onCleanup) => {
+    const { response, cancel } = doAsyncWork(newV)
+    // 当source变化时，取消该回调函数之前未完成的内容
+    // 然后调用cancel函数
+    onCleanup(cancel)
+
+  },
   // 监听选项，比如deep
   options
 )
@@ -656,24 +742,58 @@ watch(
 )
 ```
 
-监听选项：
+监听选项options：
 
 | 选项 | 类型 | 默认值 | 可选值 | 作用 |
 | --- | --- | --- | --- | --- |
 | deep | boolean | false | true | false | 是否进行深度监听 |
-| immediate | boolean | false | true | false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化 |
+| immediate | boolean | false | true | false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化就执行 |
 | flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机，其中post可以访问更新后的dom，或使用`watchPostEffect`函数 |
 | onTrack | (e) => void |  |  | 在数据源被追踪时调用（开发模式有效） |
 | onTrigger | (e) => void |  |  | 在监听回调被触发时调用（开发模式有效） |
 
 #### watchEffect
 
+
 解释：
-- 参数直接是一个回调函数，当响应式变量变化时，会直接执行回调函数
+- 参数直接是一个回调函数，当回调函数内使用到的响应式变量变化时，会直接执行回调函数
+- 它仅在同步执行期间才会追踪响应式变量，在异步回调中，只有在第一个await正常工作前访问到的响应式变量才会被追踪
+
+注意：
+- 同步的watchEffect会自动停止侦听，而在异步函数内的watchEffect则不会，此时需要调用它的返回值来停止
 
 ```typescript
+import { watchEffect, watchPostEffect, watchSyncEffect } from 'vue'
 
+// 语法
+const unEffect = watchEffect((onCleanup: (cleanupFn: () => void)) => {
+  // 停止之前未完成的内容,调用fn
+  onCleanup(fn)
+}, {
+  flush?: 'pre' | 'post' | 'sync',
+  onTrack,
+  onTrigger
+})
+// 停止
+unEffect()
+
+// 同watchEffect加sync options
+watchSyncEffect(() => {
+  // xxx
+})
+
+// 访问到更新后的dom，同watchEffect加post options
+watchPostEffect(() => {
+  // xxx
+})
 ```
+
+**watch vs watchEffect**:
+- watch能够懒执行，immediate的功劳
+- watch更加明确哪个状态触发的变更
+- watch可以访问状态变更前的值
+- watchEffect会在回调函数内部的响应式依赖变更时，就执行监听
+- watchEffect在同步执行过程中，自动追踪所有能访问到的响应式依赖
 
 ### template中的ref引用
 
@@ -1234,6 +1354,68 @@ render() {
 使用：
 - 函数式组件可以像普通组件一样被注册和消费，可以传给h函数第一个参数
 
+## 事件
+
+语法：`v-on:eventName.modifiers="eventHandler"`，其中`v-on:`可简化成`@`
+
+处理器种类分辨：通过检查值是否是合法的js标识符或属性访问路径，若是则是方法，否则是内联
+- `foo`, `foo.bar`, `foo['bar']`会被视为方法事件处理器
+- `foo()`, `count++`是内联事件处理器
+
+使用：
+- 在内联事件处理器中若想访问dom事件对象，可以传入一个特殊的变量`$event`, 或使用内联箭头函数`(event) => xxx`获取event
+
+**事件修饰符**：
+- stop: 阻止事件传播
+- prevent: 阻止事件默认行为
+- self: 事件目标是元素本身才会触发
+- capture: 事件先捕获，在冒泡
+- once: 只触发一次
+- passive: 事件默认行为将立即执行，一般用于触摸事件改善移动端滚屏性能
+
+注意：
+- 可以同时使用多个修饰符
+- 使用修饰符时，需要注意调用顺序，修饰符的作用顺序是从左往右的，顺序不一样，效果不一样
+- 不要同时使用prevent和passive
+
+**浏览器事件的默认行为**：
+
+定义：没添加该事件，而是在一定条件下浏览器自身触发的事件的行为
+
+默认行为有：
+- 点击链接，跳转
+- 点击表单提交按钮，触发向服务器提交内容
+- 按下鼠标按钮并移动，会选择该段文本
+- ......
+
+**按键修饰符**
+
+语法：
+- 使用kebab-case形式的[键盘事件暴露的按键名称](https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values)作为修饰符，例如`@keyup.page-down`，仅在按下pagedown这个键时才会触发事件
+
+注意：
+- 系统按键修饰符(alt、ctrl、shift、meta)和普通按键修饰符一起使用时，必须处于按下的状态。
+- exact修饰符仅能触发当前按键组合触发的事件，多一个组合外的事件都不会触发，比如`@click.exact`无任何按键才触发，`@click.enter.exact`仅在按下enter键才触发
+
+```vue
+<template>
+  <!-- 内联事件处理器 -->
+  <button @click="count++">add 1</button>
+  <!-- 方法事件处理器 -->
+  <button @click="addOne">add 1</button>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function addOne () {
+  count+=1
+}
+</script>
+```
+
 ## 自定义事件
 
 **事件名**：
@@ -1417,14 +1599,15 @@ const border = {
 ### emits选项
 
 改动：
-- 若想在组件中抛出父组件传入的事件，必须在`$emits`选项（与setup函数同级）中定义该事件
-- 因为移除了native修饰符，不在`$emits`选项中声明的事件，都会算入到组件的`$attrs`中，默认绑定到组件的根节点
+- 若想在组件中抛出父组件传入的事件，必须在`$emits`选项（与setup函数同级）中定义该事件。因为移除了native修饰符，不在`$emits`选项中声明的事件，都会算入到组件的`$attrs`中，默认绑定到组件的根节点
 
 ### 片段
 
 即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
 
 ## ⭕vue3与vue2不兼容的内容
+
+> 为了便于管理，该节中将包含兼容的内容。
 
 ### v-for中ref的定义
 
@@ -1436,6 +1619,18 @@ const border = {
 - 包含了父作用域中不作为组件props、自定义事件的属性绑定、事件
 - 当组件无声明任何prop时，他会包含所有父作用域的绑定，通过`v-bind="$attrs"`传入内部组件
 - vue3中的$attrs包含了所有传递给组件的attribute，其中包括class和style
+
+### 指令
+
+定义：
+- 指令是带有`v-`前缀的特殊的attribute
+- 指令的任务是在其表达式的值变化时响应式地更新DOM
+- 指令的构成：`v-指令名称:指令参数.指令修饰符1....指令修饰符n="指令值"`
+
+使用：
+- 指令可以带参数，参数是指令冒号后面的内容，比如`v-bind:href`中的href就是v-bind的参数
+- 指令可以使用动态参数，形式是`v-bind:[dyncAttrbute]="value"`，其中dyncAttribute是一个js表达式，表达式的值应该是一个字符串或null（意为移除该绑定）。动态参数也能够进行对应的简写形式，比如`v-bind:`简写成`:`，`v-on:`简写成`@`，`v-slot:`简写成`#`
+- 指令的动态参数表达式中并不支持所有的js表达式语法，比如空格和引号是不合法的，若想传入一个复杂的动态参数，应该使用计算属性替换它。同时，若动态参数是写在html文件（而非vue单文件组件）中时，避免在名称中使用大写字母，因为浏览器会强制转为小写
 
 ### 自定义指令
 
@@ -1475,8 +1670,11 @@ const MyDirective = {
 ```
 
 <!-- tab:使用自定义钩子 -->
-```typescript
-<div v-name:arg.modifiers1.modifiers2="value">
+```vue
+<template>
+  <!-- v-指令名：指令参数.修饰符1....修饰符n="值" -->
+  <div v-name:arg.modifiers1.modifiers2="value">
+</template>
 ```
 
 <!-- tabs:end -->
@@ -1708,7 +1906,7 @@ const porps = defineProps({
 ```
 
 <!-- tab:基本用法 -->
-```typescript
+```vue
 // 父组件Parent
 <script>
 import Child from './child.vue'
@@ -1737,12 +1935,13 @@ export default {
 ```
 
 <!-- tab:带修饰符的v-model -->
-```typescript
+```vue
 <template>
-  // 父组件将title传递给子组件，修饰符capitalize让title的值首字母大写
+  <!-- 父组件将title传递给子组件，修饰符capitalize让title的值首字母大写 -->
   <Child v-model:title.capitalize="bookTitle" v-model:book-desc="bookDesc"></Child>
 </template>
 
+<script>
 // 子组件Child
 export default {
   props: {
@@ -1767,6 +1966,7 @@ export default {
     }
   }
 }
+</script>
 ```
 <!-- tabs:end -->
 
@@ -1780,6 +1980,8 @@ export default {
 - 在表单元素上，**v-model**会忽略对应元素的初始值，比如value、checked、selected的某个值，而是将绑定的js状态作为数据的正确来源。
 - 若想在拼写阶段也触发更新，则应该使用value+input，而非v-model
 - 初始值和选项不匹配时，iOS上的select元素使用v-model时可能会导致选不了第一项的问题，建议提供一个禁用的默认选项。
+- 在使用了v-model的textarea中不支持双大括号插值表达式，因为v-model就代表了它的值
+- 在radio、checkbox、select元素中，v-model绑定的是静态字符串/布尔值，因为v-model绑定的是元素的value或者是checked。若想将值绑定动态数据（可以是非字符串类型），应使用v-bind:value实现
 
 **作用在v-model上的修饰符**
 
@@ -1850,21 +2052,159 @@ contenteditable：content + edit + able
 作用：
 - 用于隐藏尚未完成编译的DOM模板，即隐藏代码内容（比如还未编译时的内容`{{ message}}`，用户能看到该代码），当编译完成后，就展示编译后message的值
 
+### v-for
+
+- vue按照就地更新策略更新v-for渲染的元素列表，当元素顺序改变时，不会随之移动dom元素的顺序，仅仅是绑定的值发生变化。推荐使用key attribute跟踪每个节点，从而在元素改变时重用重排现有的元素
+- 可以直接在组件上使用v-for，由于组件有独立的作用域，v-for的数据不会自动传递给组件，这时需要定义额外的props，将其传入组件内部当中
+
+```vue
+<template>
+  <!-- 基本用法 -->
+  <div v-for="(item, index) in items">
+    {{ item.message }}, {{ index }}
+  </div>
+
+  <!-- 解构用法 -->
+  <div v-for="({ message }, index) in items">
+    {{ message }}, {{ index }}
+  </div>
+
+  <!-- 使用of替代in用法，更接近js迭代器语法 -->
+  <div v-for="item of items">
+    {{ item.message }}
+  </div>
+
+  <!-- 遍历对象 -->
+  <div v-for="(value, key, index) in person">
+    {{ key }}: {{ value }}: {{ index }}
+  </div>
+
+  <!-- 遍历范围：从1...n -->
+  <div v-for="n in 10">{{ n }}</div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+
+const items = ref([
+  { message: 'foo' },
+  { message: 'bar' }
+])
+
+const person = reactive({
+  name: 'jade',
+  age: 27,
+  sex: 'man'
+})
+</script>
+```
+
 ### v-if和v-for优先级问题
 
 改动：
 - 当两者作用于同一个元素时，v-if的优先级比v-for高
 
-### v-bind合并行为
+### v-bind
 
-改动：
-- 若同时定义了`v-bind="{ id: red }" id="blue"`这两个相同的不同表示法，声明的顺序决定了最后渲染谁，上面的由于id在后，所以渲染为`id="blue"`，替换下顺序，就渲染成不同的内容
+#### 基础知识
+
+- class和style都是attribute，可以和其他普通attribute一样使用v-bind将它们和字符串进行绑定。在复杂的逻辑时，vue为它们提供了特殊的功能增强（对象和数组形式）
+- 若某组件只有一个根元素，当使用该组件时携带了class，将会合并到组件内部的根元素上
+- 当组件有多个根元素，携带的class不会自动添加到根元素上，应该在组件内部的需要传过来的class的根元素上通过`$attrs`(template)、`useAttrs()`(script)显式接收传过来的class，使用`:class="$attrs.class"`(注意：这里接收过来的是字符串形式)。
+- 动态绑定多个值：通过不带参数的v-bind，可以将包含多个attribute的对象绑定到单个元素上，比如`<div v-bind="{id: 'jou', class: 'jade'}"></div>`，和`<div id="jou" class="jade"></div>`寓意相同
+- v-bind合并行为： 若同时定义了`v-bind="{ id: red }" id="blue"`这两个相同的不同表示法，声明的顺序决定了最后渲染谁，上面的由于id在后，所以渲染为`id="blue"`，替换下顺序，就渲染成不同的内容
+
+#### class类绑定
+
+```vue
+<template>
+  <!-- 第一种：绑定对象 -->
+  <!-- 根据isActive变量是否展示active，下同 -->
+  <!-- 使用ref作为对象的属性，也可使用计算属性computed -->
+  <div :class="{ 
+    active: isActive,
+    'text-danger': hasError,
+    'active-no-error': activeNoError
+  }"></div>
+  <!-- 使用reactive一步到位 -->
+  <div :class="classObject"></div>
+
+  <!-- 第二种：绑定数组 -->
+  <!-- 变量作为数组元素，同时对象形式的class也可作为数组元素，同时还可以是三元表达式 -->
+  <div :class="[
+    activeClass,
+    errorClass,
+    { 'other-active': isActive },
+    isActive && !hasError ? 'active-no-error' : ''
+  ]"></div>
+</template>
+
+<script setup>
+import { ref, reactive, computed } from 'vue'
+
+const isActive = ref(true)
+const hasError = ref(false)
+
+const activeClass = ref('active')
+const errorClass = ref('text-danger')
+
+const activeNoError = computed(() => {
+  return isActive && !hasError
+})
+
+const classObject = reactive({
+  active: true,
+  hasError: false
+})
+</script>
+```
+
+#### style样式绑定
+
+- 当在`:style`中使用了需要特殊浏览器前缀的css属性时，vue会自动添加前缀
+- 可以对一个样式属性提供多个不同前缀的值，数组仅会渲染浏览器支持的最后一个值，比如`:style="{display: ['-webkit-box', '-ms-flexbox', 'flex']}"`，在支持不需要特殊前缀的浏览器中都会渲染成flex
+
+```vue
+<template>
+  <!-- 第一种：使用对象形式 -->
+  <!-- 使用ref、计算属性作为对象属性 -->
+  <div :style="{
+    color: activeColor,
+    // 支持camelCase语法
+    fontSize: fontSize + 'px'
+    // 也支持kebab-cased语法
+    'background-color': backgroundColor
+  }">
+  </div>
+  <!-- 使用reactive一步到位 -->
+  <div :style="styleObject"></div>
+
+  <!-- 第二种：使用对象数组形式 -->
+  <div :style="[styleObject]"></div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+
+const activeColor = ref('red')
+const fontSize = ref(18)
+const backgroundColor = ref('#fff')
+
+const styleObject = reactive({
+  color: 'red',
+  fontSize: '18px',
+  backgroundColor: '#fff'
+})
+</script>
+```
 
 ### VNode生命周期事件
 
 通过事件监听组件生命周期，以前缀`vnode-`开头，并跟随相应的生命周期钩子的名字，比如`vnode-updated`
 
 ### 侦听数组
+
+- vue能够侦听响应式数组的变更方法（push,pop,unshift,shift,splice,sort,reverse），在这些方法调用时会触发相关的更新
 
 改变：
 - 当使用watch选项侦听数组时，只有当数组被替换时才会触发回调
