@@ -1,4 +1,4 @@
-# vue3迁移指南
+# vue3保点
 
 > 参考文档：      
 > vuejs官方迁移文档（旧）       
@@ -918,9 +918,41 @@ export default {
 
 ## 组件
 
-注册组件：
-- `app.component('name', {})`
+组件名格式：（非dom模板中）推荐使用PascalCase的格式，因为：
+- 它是合法标识符，在js中导入和注册都很容易，同时有较好的IDE自动补全
+- 它在模板中更明显表明它是一个vue组件而非原生元素
+
+全局注册组件：
+- `app.component('name', { /* 组件对象或组件实例 */})`
 - 上述内容返回app，可链式调用
+
+注意：
+- 全局注册的组件若未使用，在生产打包时无法自动移除（tree-shaking），仍然会出现在打包后的js中
+- 全局组件在大型项目中会让项目依赖关系不那么明确，和过多的全局变量一样，可能会影响应用长期的可维护性
+
+```typescript
+import MyComponent from './MyComponent.vue'
+
+app.component('MyComponent', MyCompopnent)
+```
+
+**局部注册组件**：
+- 仅在使用时进行导入，script setup导入后直接使用，无需注册（像vue2中的components选项）。非setup script和vue2一样
+
+```vue
+<template>
+  <ComponentA/>
+</template>
+
+<script setup>
+import ComponentA from './ComponentA.vue'
+</script>
+```
+
+**dom模板解析注意事项**：仅在dom中直接写vue模板生效（例如html，引入vue文件后进行使用），在vue单文件组件、内联模板字符串template选项、`<script type="text/x-template>`不需注意，有如下限制：
+- 在dom中，使用小写形式
+- 在dom中，使用闭合标签，即`</div>`
+- 特定元素仅在特定元素内部，比如tr在table内部，若想使用自定义组件替换tr，应使用`<tr is="vue:自定义组件名"></tr>`，在原生元素上is必须加前缀vue才会解析为一个vue组件。
 
 ### 动态组件
 
@@ -1484,17 +1516,30 @@ export default {
 
 ### props
 
-定义：使用defineProps定义，参数和vue2类似
+定义：
+- 使用defineProps定义，参数和vue2类似，这样才知道外部传入的哪些是props，哪些是透传attributes
 
 使用：
-- 绑定多个props，使用`v-bind="props"`的形式
+- 绑定多个props，使用`v-bind="props"`的形式。，比如`<div v-bind="{id: 'jou', class: 'jade'}"></div>`，和`<div id="jou" class="jade"></div>`寓意相同
 - 获取props，可直接使用defineProps结合ref、computed的形式获取
+- 在定义时即defineProps内，使用camelCase形式的名字，在使用时即template下的组件上，使用kebab-case形式的名字
+- props的类型可以是String、Number、Boolean、Array、Object、Date、Function、Symbol，以及自定义的类或构造函数
+
+注意：
+- 所有的props都遵循 **单向绑定**原则，props因父组件的更新而变化，自然的将新状态向下传给子组件，而不会逆向传递，这避免了子组件意外修改父组件状态的情况导致的数据混乱难以理解
+- 若想更改props，应该根据该props重新定义一个响应式变量（ref、reactive、computed）去修改
+- 子组件能够修改对象或数组的props内的元素，因为这两个是引用传递，不建议这样做，会有很大性能损耗。修改props的最佳方式是子组件用emit抛出一个事件去通知父组件修改
+- defineProps中的参数不可访问script setup中的其他变量，因为在编译时整个表达式会被移到外部函数中
+- 未传递的boolean类型的props默认值为false，其他类型则是undefined，默认值可通过default进行修改
 
 <!-- tabs:start -->
 
 <!-- tab:props定义 -->
 ```typescript
+// 方式1：字符串数组
 const props = defineProps(['title'])
+
+// 方式2：对象形式
 const props = defineProps({ title: String })
 const props = defineProps({
   title: {
@@ -1503,6 +1548,13 @@ const props = defineProps({
     validator(v) {}
   }
 })
+
+// 方式3：结合ts使用类型标注，在script setup中
+defineProps<{
+  title?: string
+  likes?: number
+}>()
+
 ```
 <!-- tab:获取props -->
 ```typescript
@@ -1513,6 +1565,51 @@ const newProps = computed(() => props.title)
 ```
 
 <!-- tabs:end -->
+
+**props校验**：
+
+```vue
+<script setup>
+import { defineProps } from 'vue'
+
+defineProps({
+  // 基础校验，值为undefined和null会跳过校验
+  propA: Number,
+  // 多种类型可能
+  propB: [String, Number],
+  // 包含条件的
+  propC: {
+    type: String,
+    required: true,
+    default: ''
+  },
+  propD: {
+    type: Object,
+    // 对象或数组的默认值，必须从一个工厂函数返回
+    // 该函数接收组件所接收到的原始prop作为参数
+    default (rawProps) {
+      return { msg: 'jade' }
+    }
+  },
+  // 自定义类型校验
+  porpE: {
+    validator (value) {
+      return ['success', 'warning'].includes(value)
+    }
+  },
+  // 函数类型默认值
+  propF: {
+    type: Function,
+    // 和对象/数组不一样，这仅是用来作为默认值的函数
+    default () {
+      return 'default'
+    }
+  }
+
+})
+
+</script>
+```
 
 ### 属性透传
 
