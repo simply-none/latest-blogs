@@ -608,6 +608,20 @@ export default defineComponent {
 - 语法：`const foo = inject('key', default)`
 - 若默认值是一个函数，需要添加第三个参数为false
 
+<!-- tabs:start -->
+
+<!-- tab:应用层provide -->
+```typescript
+import { createApp } from 'vue'
+
+const app = createApp({})
+
+// 应用层提供的数据可以在所有组件中注入
+app.provide('注入名', value)
+```
+
+<!-- tab:祖孙组件传递 -->
+
 ```typescript
 // 基本用法
 // 父组件
@@ -636,15 +650,17 @@ export default {
 }
 ```
 
+<!-- tabs:end -->
+
 #### 在setup中使用
 
 定义：
 - 在setup中使用provide和inject时，需要从vue中显式导入provide和inject
-- provide方法参数依次为：`name`(string类型)、`value`
-- inject方法参数依次为：`name`、`默认值`(可选，未复现😢😢😢)
-- 若provide和inject要保持响应性以同步变更，则需要对provide的值value使用ref或reactive包裹，（数组的长度不能监听变更😢😢😢）
-- 修改provide，可直接在父组件中，或通过provide一个方法在子孙组件中修改
-- 若想保持provide的值是可读（即在inject中修改不了），需要对provide的值value使用readonly包裹，使用readonly时，若仅修改对象的属性（而非修改对象的引用，给对象重新赋值），这时的readonly是无效的，（注：整个readonly未复现😢😢😢）
+- provide方法参数依次为：`name`(string、symbol类型：避免命名冲突)、`value`（任意类型，包括响应式变量：可以和后代组件建立响应式联系）
+- inject方法参数依次为：`name`、`默认值`。默认值会在未声明对应的provide时生效，声明之后就展示provide提供的值
+- 若provide和inject要保持响应性以同步变更，则需要对provide的值value使用ref或reactive包裹
+- 修改provide，应该在提供provide的父组件中去修改，即通过在provide提供一个修改provide变量的方法，然后在子孙组件调用该方法修改。这样能够确保提供状态的声明和变更操作都内聚在同一个组件中，易于维护。
+- 若想保持provide的值是可读（即在inject中修改不了），需要用readonly包裹provide的值
 
 ```typescript
 // 父组件
@@ -666,6 +682,7 @@ export default {
     }
     
     // 使用provide
+    // 非setup script中应该在setup函数中调用provide
     provide('count', count)
     provide('person', readonly(person))
 
@@ -682,6 +699,7 @@ export default {
 import { inject } from 'vue'
 export default {
   setup () {
+    // 非setup script中应该在setup函数中调用inject
     const parentCount = inject('count', 0)
     const parentPerson = inject('person', {})
     return {
@@ -1426,6 +1444,8 @@ render() {
 使用：
 - 在内联事件处理器中若想访问dom事件对象，可以传入一个特殊的变量`$event`, 或使用内联箭头函数`(event) => xxx`获取event
 
+### 原生事件
+
 **事件修饰符**：
 - stop: 阻止事件传播
 - prevent: 阻止事件默认行为
@@ -1477,24 +1497,60 @@ function addOne () {
 </script>
 ```
 
-## 自定义事件
+### 自定义事件
 
 **事件名**：
 - 具备自动大小写转换（大小写无关），驼峰与短横线可自动转换
 - 在DOM模板中（用template包裹的与script同级的内容），建议使用kebab-case（短横线事件名）
+- 自定义事件也支持once修饰符
+- 事件名称会自动进行格式转换，比如触发了camelCase形式的事件，可以用kekab-case的形式进行监听
 
 
 **事件自定义方式**：
 - 若emits中事件和原生事件重名，则该事件会代替原生事件
-- 可以对抛出的事件进行验证，这时emits是一个对象，key是事件名，value是一个函数，函数参数是事件抛出时传递的值，函数返回值代表事件是否有效
+- emits选项支持对象形式语法，可以对触发的事件进行验证（和props类型校验类似），这时emits是一个对象，key是事件名，value是一个函数，函数参数是事件抛出时传递的值，函数返回值代表事件是否合法有效，为false时会抛出一个控制台警告`Invalid event arguments: event validation failed for event "eventname".`
+- 可以在template组件模板中（像vue2一样）使用`$emit('eventname', xxx)`直接触发事件
+
+注意：
+- 组件触发的事件没有冒泡机制，对于非子组件事件，需使用事件总线或[全局状态管理方案](https://cn.vuejs.org/guide/scaling-up/state-management.html)
+- 虽然事件声明使用emits选项或defineEmits定义是可选的，但还是应该完整声明所有要触发的事件，以此作为文档记录组件的用法。同时也能够和透传attributes区分开
+- 若原生事件的名字（如click）被定义在emits选项中，则监听器只会监听组件触发的click，而不响应原生的click，否则会监听两次（即组件触发的和原生触发的）
 
 <!-- tabs:start -->
 <!-- tab:基础用法 -->
-```typescript
+```vue
 // emit代指将事件从组件（子）抛出去，让引用它的那个组件（父）接收
+<template>
+  <!-- 第二步：触发并抛出事件到父组件 -->
+  <div @click="$emit('inFocus', '事件参数')"></div>
+</template>
+<script>
 export default {
-  emits: ['inFocus', 'submit']
+  // 第一步：事件声明，定义需要抛出的事件列表
+  emits: ['inFocus', 'submit'],
+  setup (props, { emit }) {
+    // 第二步：触发事件可以用函数：
+    function clickHandle () {
+      emit('inFocus')
+    }
+  }
 }
+</script>
+
+<script setup>
+// 第一步：事件声明，定义需要抛出的事件列表
+// 注意defineEmits不能在子函数内使用，必须放在顶层作用域下
+const emit = defintEmits(['inFocus', 'submit'])
+// 第二步：触发事件可以用函数：
+function clickHandle () {
+  emit('inFocus', '事件参数')
+}
+</script>
+
+<template>
+  <!-- 第三步：接收子组件触发的事件并处理 -->
+  <SubCom @get-click="('接收事件参数') => { '处理' }"/>
+</template>
 ```
 <!-- tab:事件验证 -->
 ```typescript
@@ -1502,15 +1558,45 @@ export default {
   emits: {
     // 无验证
     click: null,
-    // 验证submit事件，其中email是emit传递的值
+    // 验证submit事件，其中email是emit第二个参数传递的值
     submit: ({ email }) => {
       if (email) {
         return true
       }
+      // 为false会抛出控制台警告，但不影响事件传给父组件
       return false
     }
   }
 }
+```
+
+<!-- tab:事件触发次数 -->
+```vue
+<!-- 子组件 -->
+<template>
+  <button @click="$emit('click', 'sub-val')">触发事件</button>
+</template>
+<script setup>
+// 若定义下面这句，注释掉，则click会触发两次，否则只触发一次
+// defineEmits(['click'])
+</script>
+
+<!-- 父组件 -->
+<template>
+  <SubCom @click="handleClick"/>
+</template>
+
+<script setup>
+function handleClick (arg) {
+  // 如果上面的emit定义注释了，则这里会输出两次arg
+  // 第一次：'sub-val'（子组件触发的）
+  // 第二次：PointerEvent（组件上原生的click）
+  
+  // 如果上面的emit定义未注释，则只会输出子组件触发的：sub-val
+  console.log(arg)
+
+}
+</script>
 ```
 <!-- tabs:end -->
 
@@ -1613,15 +1699,83 @@ defineProps({
 
 ### 属性透传
 
-透传属性`$attrs`：即没有被props接收的属性（v-bind），以及尚未被监听emits的监听器（v-on）
+透传属性`$attrs`：即没有在子组件props中声明的属性（v-bind），以及尚未被定义在emits/defineEmits上的监听事件（v-on）
 
 解释：
-- 在单根节点中，会自动传递给组件内部的根元素（未直接指明的情况下），若想传递给其他元素，需设置`inheritAttrs:false`，以及在需要的元素或组件上使用`v-bind="$attrs"`
+- 在单根节点中，会自动传递给组件内部的根元素（未直接指明props的情况下），若是class或style，则会自动进行合并；若不想自动继承到单根节点，而是想传递给其他元素，需设置`inheritAttrs:false`（setup script中需要重写一个同级别的script去存它），然后在需要的元素或组件上使用`v-bind="$attrs"`，或者选用部分属性`$attrs.xxx`
   - 当在元素上绑定attrs时，监听器和属性都会作用在该元素上
   - 当在组件上绑定attrs时，监听器和属性会传递给组件内部使用，此时组件内部应该通过props和emit进行获取
-- 在多根节点中，必须显式指明绑定的元素
+- 在多根节点中，必须显式指明需要绑定attrs的元素，否则控制台会发出警告
+- 在script中访问透传属性：使用`useAttrs()`内置函数
 
-访问透传属性：使用`useAttrs()`内置函数
+注意：
+- 透传的attributes保留了原始attributes的大小写（即不会进行转换成小写形式），所以原来是怎么样的属性名，就得通过那样的形式去访问，而访问一个对象。但是事件名除外，事件名是onPascalCase的形式
+
+<!-- tabs:start -->
+
+<!-- tab:透传属性基本用法 -->
+```vue
+<!-- 子组件 -->
+<template>
+  <!-- 注意，此处是直接通过attrs获取id的，故而在useAttrs中仍然能够访问到id -->
+  <button :id="$attrs.id"></button>
+
+  <!-- 此处就不会在访问到id了，如果在props中声明了id -->
+  <button :id="props.id"></button>
+  <!-- 或不带props -->
+  <button :id="id"></button>
+</template>
+
+<!-- 选项式中，attrs是setup参数context暴露的一个属性 -->
+<script>
+export default {
+  setup (props, { attrs }) {
+    // 虽然这里的attrs对象是最新的透传属性，但不是响应式的内容，无法进行watch监听
+    // 所以解决方法：
+    // 1. 使用props
+    // 2. 在onUpdated生命周期钩子中对attrs的变更去执行相应的操作
+  }
+}
+</script>
+
+<script setup>
+import { defineProps, useAttrs } from 'vue'
+
+// 注意，不管有没有将defineProps的返回值赋值给一个变量，都能够直接读取id这个props
+const props = defineProps(['id'])
+
+const attrs = useAttrs()
+// 若没上面的defineProps，attrs中必定包含id
+</script>
+
+<!-- 父组件 -->
+<SubCom id="Date.now()"></SubCom>
+```
+
+<!-- tab:使用inheritAttrs -->
+```vue
+<!-- 子组件 -->
+<template>
+  <div class="wrapper">
+    <!-- 第二步：使用无参的v-bind，此时将父组件上所有的属性（包括attribute和事件）都附在了button上 -->
+    <button class="btn" v-bind="$attrs">点击</button>
+  </div>
+</template>
+
+<script>
+// 第三步
+export default {
+  inheritAttrs: false
+}
+</script>
+
+<!-- 父组件 -->
+<template>
+  <!-- 第一步：设置传给子组件的属性 -->
+  <SubCom class="sub sub2" id="subid"></SubCom>
+</template>
+```
+<!-- tabs:end -->
 
 ## vue自定义渲染器
 
@@ -1915,7 +2069,19 @@ export default {
 
 ### 插槽
 
-引用作用域插槽使用`this.$slots.header()`的形式，而非`this.$scopedSlots.header`
+解释：
+- `<slot>`元素是一个插槽出口，标示父组件提供的插槽内容将在哪里被渲染的地方
+- 插槽的内容可以是任意合法的可以在template中展示的内容，比如文本、组件等
+- 插槽能够让组件更加灵活和可复用
+- 插槽内容能够访问父组件（当前组件）的数据，但无法访问子组件的数据（这时候就要用上作用域插槽了，即给v-slot加上参数和值）
+- 作用域插槽的意义在于将子组件的插槽内容的控制权交给父组件
+
+注意：
+- 引用作用域插槽使用`this.$slots.header()`的形式，而非`this.$scopedSlots.header`
+
+<!-- tabs:start -->
+
+<!-- tab:插槽用法 -->
 
 ```typescript
 // 插槽的语法
@@ -1939,6 +2105,108 @@ export default {
 <template #title="{text}"></template>
 
 ```
+
+<!-- tab:插槽类型 -->
+```vue
+<!-- 类型1： 默认插槽 -->
+<!-- 定义组件 -->
+<template>
+  <buton type="submit">
+    <slot>
+      <!-- 这里是默认内容，当使用组件时，未提供插槽内容时会展示 -->
+      submit
+    </slot>
+  </buton>
+</template>
+
+<!-- 使用组件 -->
+<template>
+  <SubCom/>
+  <!-- 或替换默认内容 -->
+  <SubCom>
+    替换slot的默认内容
+  </SubCom>
+</template>
+
+<!-- 类型2：具名插槽  -->
+<!-- 定义组件 -->
+<template>
+  <div class="wrapper">
+    <header>
+      <!-- 带name属性的slot是具名插槽 -->
+      <slot name="header"></slot>
+    </header>
+    <main>
+      <!-- 不带的是默认插槽 -->
+      <slot></slot>
+    </main>
+    <footer>
+      <slot name="footer"></slot>
+    </footer>
+  </div>
+</template>
+
+<!-- 使用组件 -->
+<template>
+  <SubCom>
+    <!-- 使用template加带参数的v-slot属性的方式 -->
+    <template v-slot:header>
+      <!-- header slot渲染的内容 -->
+    </template>
+    <!-- 未使用template加带参数的v-slot属性的方式则是默认插槽渲染的内容 -->
+    <!-- 默认插槽 -->
+    <div>默认插槽</div>
+
+    <template #header></template>
+
+    <!-- 使用插槽时，也可以使用动态参数 -->
+    <template #[dyncSlot]>
+      <!-- 渲染的内容 -->
+    </template>
+  </SubCom>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
+</script>
+
+<!-- 类型3：作用域插槽 -->
+<!-- 定义组件 -->
+<template>
+  <div>
+    <slot :text="greet" :count="1"></slot>
+  </div>
+  <div>
+    <slot name="header" :headername="jade"></slot>
+  </div>
+</template>
+
+<!-- 使用组件 -->
+<template>
+  <!-- 默认组件的v-slot可以直接放在组件名上 -->
+  <SubCom v-slot="slotProps">
+    <!-- 非template的默认就是默认插槽的内容 -->
+    {{ slotProps.text }}: {{ slotProps.count }}
+
+    <!-- header插槽：具名作用域插槽 -->
+    <template #header="{ headername }">
+      <!-- 注意此处不能访问slotProps的内容，因为处于不同的插槽当中 -->
+      {{ headername }}
+    </template>
+  </SubCom>
+</template>
+```
+<!-- tabs:end -->
+
+#### 无渲染组件
+
+定义：
+- 一些组件只包括了逻辑，将视图输出（内容的渲染）全权交给了父组件控制，这种类型的组件就是无渲染组件
+
+注意：
+- 虽然无渲染组件有趣，但大部分能用无渲染组件实现的功能都能通过高效的组合式API实现，而且还不会产生组件嵌套带来的额外开销
 
 ### 过渡的类名修改
 
