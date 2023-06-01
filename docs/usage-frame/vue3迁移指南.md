@@ -797,10 +797,27 @@ watchPostEffect(() => {
 
 ### template中的ref引用
 
-前景：类似vue2中的在script中使用template中定义的ref，例如`<div ref="divRef">`，使用如`this.$refs.divRef`
+
+
+前景：
+- 当需要访问DOM元素/组件时，应当使用ref attribute。该属性允许在一个特定的dom元素/组件实例挂载后，获得对它的直接引用
+- 类似vue2中的在script中使用template中定义的ref，例如`<div ref="divRef">`，使用如`this.$refs.divRef`
+
 
 使用：
 - 可以使用`watchEffect`函数侦听ref引用的更新，但是由于ref定义在setup中，此时watchEffect中不能够获取到ref对象，除非在watchEffect第二个参数上定义一个对象`{ flush: 'post' }`
+
+场景：
+- 在组件挂载时设置焦点
+- 在元素上初始化一个第三方库
+
+注意：
+- 在组件上使用ref会造成父子组件更加紧密耦合，如无必要请使用props/emit的方式进行父子组件的交互，只要绝对需要时才使用组件引用
+- 使用了script setup的组件默认是私有的，父组件无法访问使用了它的子组件的任何东西，除非子组件通过expose（defineExpose）显式暴露某些内容。
+
+警告:warning:：
+- 当ref只是一个静态属性时（即无v-bind），绑定的必须是一个变量，这样才能获取到值
+- 当ref是一个动态的属性时（即v-bind:ref），绑定的必须是一个函数，函数参数是绑定的当前元素el，可将el赋值给某变量
 
 与vue2的不同：
 - vue3中ref的本质是，将绑定元素赋值给一个变量保存起来，后面需要使用该元素的时候，则通过变量对应的索引或其他可识别的方式进行获取
@@ -819,7 +836,7 @@ export default {
     // 先定义一个响应式的变量，对应上面的divRef
     const divRef = ref(null)
 
-    // 挂载后才能获取到值
+    // 只有在挂载后才能获取到值
     onMounted(() => {
       console.log(divRef.value, 'onMounted')
     })
@@ -827,6 +844,12 @@ export default {
     // 侦听ref的变更
     watchEffect(() => {
       console.log(divRef.value, 'watchEffect')
+      // 侦听时，判断是否挂载，挂载了就会有值
+      if (divRef.value) {
+        // 做相应的动作
+      } else {
+        // 此处则未挂载，或元素已被卸载（通过v-if控制的挂载卸载）
+      }
     }, {
       // 必须要使用这个参数
       flush: 'post'
@@ -859,6 +882,10 @@ export default {
 <!-- tab:结合v-for的用法 -->
 ```typescript
 <template>
+  // ref和v-for一起使用时，ref包含的值是一个数组，但该数组不与源数组保持相同的顺序
+  <ul>
+    <li v-for="item in list" ref="itemRefs">{{ item }}</li>
+  </ul>
   // ref和v-for一起使用时，ref内容应当是一个函数，然后通过参数将元素的内容赋值到对应的变量中（根据对应规则设置）
   // 其中divs不一定是数组，也可以是一个对象，其ref通过迭代的key或索引被设置（如下面的i）
   <div v-for="(item, i) in list" :ref="el => { if (el) divs[i] = el }">
@@ -872,6 +899,7 @@ export default {
     setup () {
       const list = reactive([1, 2, 3])
       const divs = ref([])
+      const itemRefs = ref([])
       // 确保在每次更新之前重置ref
       onBeforeUpdate(() => {
         divs.value = []
@@ -879,7 +907,8 @@ export default {
       
       return {
         list,
-        divs
+        divs,
+        itemRefs
       }
     }
   }
