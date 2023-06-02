@@ -14,12 +14,10 @@ function getLog() {
 
 
 	mds.forEach(path => {
-    const bash = `git log -1 -- ./${path}`
 		const relativePath = './' + path
 		const fsObj = fs.statSync(relativePath)
-		console.log(fsObj, relativePath, '文件信息')
 		filesLatestLog[path] = {
-			date: fsObj.mtime,
+			date: date.formatTimestamp(fsObj.mtime),
 			id: fsObj.ino
 		}
 	});
