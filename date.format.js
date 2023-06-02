@@ -9,7 +9,7 @@ module.exports = {
 			min = ('' + date.getMinutes()).padStart(2, '0'),
 			sec = ('' + date.getSeconds()).padStart(2, '0');
 		var newTime =
-			year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+			year + '/' + month + '/' + day + ' ' + hour + ':' + min + ':' + sec;
 		return newTime;
 	},
 };
