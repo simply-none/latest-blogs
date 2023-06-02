@@ -2145,7 +2145,398 @@ const border = {
 
 ## 过渡和动画
 
+定义：使用Transition和TransitionGroup制作基于状态变化的过渡和动画，除此之外还可通过切换class去实现
 
+### 基于css的过渡效果
+
+**过渡的class**：
+- v-enter-from：进入动画的起始状态，在元素插入前添加，在元素插入完成后下一帧移除
+- v-enter-active：进入动画的生效状态，应用于整个进入动画阶段，在元素插入前添加，在过渡动画完成之后移除。可定义动画持续时间、延迟、速度曲线
+- v-enter-to：进入动画的结束状态，在元素插入完成后的下一帧被添加（即v-enter-from被移除的同时），在过渡动画完成之后移除
+- v-leave-from：离开动画起始状态，在离开过渡效果被触发（参考下面的进入离开触发条件）时立即添加，在一帧后移除
+- v-leave-active：离开动画的生效状态，应用于整个离开动画阶段，在离开过渡效果出发时立即添加，在过渡完成后移除。可定义动画持续时间、延迟、速度曲线
+- v-leave-to：离开动画的结束状态，在离开动画触发后的下一帧添加（v-leave-from被移除的同时），在过渡动画完成后移除
+
+**自定义过渡效果的前缀**：
+- 自定义过渡效果的前缀：给Transition组件传入一个name prop声明过渡效果名，与此同时应该在样式文件种将上述的前缀v改成name属性的值
+- 自定义每个过渡效果的class：给Transition传递上面的v-后面的名字prop，比如`<Transition leave-to-class="jade-leave-to">`，这在集成第三方动画库时很有用
+
+性能考量：
+- 制作动画时，尽量使用不会触发css布局变动的css属性（比如transform和opacity），因为这些属性在动画过程中不影响dom结构，不会触发布局的重绘重排，同时现代浏览器在执行transform属性的动画时会利用gpu进行硬件加速。
+- 可在[css triggers](https://csstriggers.com/)查询css属性是否触发布局变动
+
+**注意**：
+- 定义过渡效果时，必须设置起始或结束时的效果，否则动画没任何效果
+- 当你想同时在同一个元素上使用过渡transition和动画animation时（比如vue触发了一个动画，鼠标悬停触发另一个css过渡），此时你需要显式传入type prop给Transition组件，告诉vue是哪种类型，值可以是animation或transition
+- 虽然过渡class只能应用在直接子元素上，但可以使用深层级的选择器触发深层元素的过渡效果，例如使用`.v-enter-avtive .inner {}`语法，将过渡效果用在组件内的inner元素上。同时也能在深层元素上添加过渡延迟transition-delay以创建一个带渐进延迟动画序列，在嵌套过渡中，判断过渡结束的时间是所有内部元素的过渡完成的时间（默认情况下是监听第一个transitionend或animationend事件），这种情况下可以传入duration prop给Transition组件显式指定过渡持续时间（延迟+内部元素的过渡持续时间）。或者传入一个对象形式`{enter: 500, leave: 800}`分开指定进入和离开的过渡持续时间。
+
+<!-- tabs:start -->
+
+<!-- tab:css结合过渡 -->
+```vue
+<template>
+  <Transition name="slide-fade">
+    <p v-if="show">hello</p>
+  </Transition>
+</template>
+
+<style lang="scss">
+.slide-fade {
+  &-enter-active {
+    transition: all .3s ease-out;
+  }
+  &-leave-active {
+    transition: all .8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  // 定义开始动画前，结束动画后
+  &-enter-from,
+  &-leave-to {
+    // 过渡多个属性: transform和opacity
+    transform: translateX(20px);
+    opacity: 0;
+  }
+}
+</style>
+```
+
+<!-- tab:css结合动画 -->
+```vue
+<template>
+  <Transition name="bounce">
+    <p v-if="show" style="text-align: center;">
+      红红火火恍恍惚惚
+    </p>
+  </Transition>
+</template>
+
+<style lang="scss">
+.bounce {
+  &-enter-active {
+    animation: bounce-in .5s;
+  }
+  &-leave-active {
+    animation: bounce-in .5s reverse;
+  }
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
+```
+
+<!-- tab:深层过渡 -->
+```vue
+<template>
+  <!-- 指定过渡的持续时间(ms) = 延迟 + 内部元素的过渡持续时间 -->
+  <!-- 
+    <Transition name="nested" :duration="{
+      enter: 550,
+      leave: 550
+    }">
+   -->
+  <Transition name="nested" :duration="550">
+    <div v-if="show" class="outer">
+      <div class="inner">
+        hello
+      </div>
+    </div>
+  </Transition>
+</template>
+
+<style lang="scss">
+.nested {
+  &-enter-active,
+  &-leave-active {
+    .inner {
+      transition: all .3s ease-in-out;
+      transition-delay: .25s;
+    }
+  }
+  &-enter-from,
+  &-leave-to {
+    .inner {
+      transform: translateX(30ppx);
+      opacity: 0;
+    }
+  }
+}
+</style>
+```
+
+<!-- tabs:end -->
+
+### 使用js钩子去设置相应的过渡和动画
+
+定义：除了使用css特定的class外，还可以通过监听Transition组件事件的方式设置。
+
+对应的组件事件：
+- before-enter
+- enter
+- after-enter
+- before-leave
+- leave
+- after-leave
+- enter-cancelled
+- leave-cancelled：仅在v-show过渡中可用
+
+注意：
+- js钩子可以和css过渡和动画一起使用
+- 在仅用js钩子执行动画时，最好添加一个`:css="false"`的prop显式表明跳过对css过渡的自动探测，加强性能，防止css规则干扰过渡效果。这时就是使用js钩子全权负责过渡了，这种情况下，enter和leave钩子的回调函数done是必须的，不然会被同步调用，过渡将立即完成
+
+```vue
+<template>
+  <button @click="show = !show">切换</button>
+  <!-- css：false，跳过对css过渡检查 -->
+  <Transition
+    :css="false"
+    @before-enter="onBeforeEnter"
+    @enter="onEnter"
+    @after-enter="onAfterEnter"
+    @enter-cancelled="onEnterCancelled"
+    @before-leave="onBeforeLeave"
+    @leave="onLeave"
+    @after-leave="onAfterLeave"
+    @leave-cancelled="onLeaveCancelled">
+    <!-- 内容 -->
+    <div class="gsap-box" v-if="show"></div>
+  </Transition>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+// 导入动画库gsap
+import gsap from 'gsap'
+
+const show = ref(true)
+
+// 在元素插入到dom前调用
+function onBeforeEnter (el) {
+  // 这里是不是和上面的在style中设置的类似🧡
+  gsap.set(el, {
+    scaleX: 0.25,
+    scaleY: 0.25,
+    opacity: 1
+  })
+}
+
+// 在元素插入到dom后的下一帧调用
+function onEnter (el, done) {
+  // 调用回调函数done，表示过渡结束
+  // 若js钩子和css过渡/动画一起使用，可忽略
+  gsap.to(el, {
+    duration: 1,
+    scaleX: 1,
+    scaleY: 1,
+    opacity: 1,
+    ease: 'elastic.inOut(2.5, 1)',
+    // 这里调用done，表结束
+    onComplete: done
+  })
+  // done()
+}
+
+// 过渡完成时调用
+function onAfterEnter (el) {}
+function onEnterCancelled (el) {}
+
+// 在leave钩子之前调用
+function onBeforeLeave (el) {}
+
+// 在离开过渡开始时调用
+function onLeave (el, done) {
+  // 同onEnter
+  gsap.to(el, {
+    duration: 0.7,
+    scaleX: 1,
+    scaleY: 1,
+    x: 300,
+    ease: 'elastic.inOut(2.5, 1)'
+  })
+  gsap.to(el, {
+    duration: 0.2,
+    delay: 0.5,
+    opacity: 0,
+    onComplete: done
+  })
+}
+
+// 在离开过渡完成且元素移除出dom时调用
+function onAfterLeave (el) {}
+
+// 仅在v-show过渡中可用
+function onLeaveCancelled (el) {}
+</script>
+
+<style>
+.gsap-box {
+  background: #42b883;
+  margin-top: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+</style>
+```
+
+### 复用过渡效果（组件封装）
+
+```vue
+<script>
+// 钩子逻辑
+</script>
+<style>
+  /* 必要的css，注意不要使用scoped，不然不会用在插槽内容上 */
+</style>
+<template>
+  <Transition
+    name="my-transition"
+    @enter="onEnter"
+    @leave="onLeave"
+  >
+    <!-- 传递插槽 -->
+    <slot></slot>
+  </Transition>
+</template>
+
+<!-- 使用 -->
+<MyTransition>
+  <div v-if="show">hello</div>
+</MyTransition>
+```
+
+### Transition
+
+定义：
+- 无需注册，可在所有的组件上使用
+- 可以将进入和离开动画 应用到 通过默认插槽 传递 给它的元素/组件上
+- 当Transition组件元素被插入移除时：vue会自动检测目标元素是否应用了css过渡/动画，若是则这些过渡的css将在适当时机加减；若有作为监听器的js钩子，则这些钩子函数会在适当时机调用；若未检测到css过渡/动画，也未提供js钩子，则dom的增删操作将在浏览器下一个动画帧后执行
+  
+进入/离开的触发条件：
+- v-if，v-else-if，v-else触发的切换
+- v-show触发的切换
+- 用`<component>`动态切换组件
+- 改变属性key
+
+注意：
+- Transition仅支持单个元素或具有单根节点的组件作为其插槽内容
+- 只在初始渲染时应用过渡，可以添加appear prop到Transition组件上
+- 如果想要想执行离开动画，然后在完成之后在执行元素的进入动画（两个阶段逐步进行：离开后再进入），可以添加mode prop实现这种行为，属性值有out-in（常用）、in-out
+- Transition上的props可以是动态设置的，这样可以根据状态变化动态应用不同类型的过渡，使用v-bind，好处是提前定义好多组css class然后在它们直接动态切换
+
+<!-- tabs:start -->
+
+<!-- tab:基本用法 -->
+```vue
+<template>
+  <button @onclick="show =!show">切换</button>
+  <Transition>
+    <p v-if="show">hello</p>
+  </Transition>
+</template>
+
+<style>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
+```
+
+<!-- tabs:end -->
+
+### TransitionGroup
+
+定义：
+- 用于对v-for列表中的元素或组件的插入、移除、顺序改变添加动画效果
+
+和Transition的区别：
+- 默认情况下，不会渲染一个容器元素，但可以通过传入tag prop指定一个元素作为容器元素来渲染
+- 过渡模式mode prop在这里不可用，因为不是互斥场景切换
+- 列表元素必须有独一无二的key属性
+- css过渡的class会应用到列表元素上，而非容器元素上
+- 通过在js钩子中读取元素的data attribute，可以实现带渐进延迟的列表动画，看下例
+
+<!-- tabs:start -->
+
+<!-- tab:基础用法 -->
+```vue
+<template>
+  <TransitionGroup
+    name='list'
+    :css="false"
+    @before-enter="onBeforeEnter"
+    @enter="onEnter"
+    @leave="onLeave"
+    tag='ul'
+  >
+    <!-- 下面的data-index会通过el.dataset.index传给事件 -->
+    <li
+      v-for="(item, index) in items" 
+      :key="item.msg"
+      :data-index="index"
+    >
+      {{ item.msg }}
+    </li>
+  </TransitionGroup>
+</template>
+
+<script setup>
+import { reactive } from 'vue'
+import gsap from 'gsap'
+
+const items = reactive([
+  {
+    msg: 'aaa'
+  },
+  {
+    msg: 'bbb'
+  }
+])
+
+function onEnter (el, done) {
+  gsap.to(el, {
+    opacity: 1,
+    height: '1.6em',
+    delay: el.dataset.index * 0.15,
+    onComplete: done
+  })
+}
+</script>
+
+<style lang='scss'>
+.list {
+  // move: 对移动中的元素应用过渡
+  // 解决周围元素立即发生跳跃而非平稳移动的问题
+  &-move,
+  &-enter-active,
+  &-leave-active {
+    transition: all .5s ease;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+</style>
+```
+
+<!-- tabs:end -->
 
 ## ⭕vue3与vue2不兼容的内容
 
