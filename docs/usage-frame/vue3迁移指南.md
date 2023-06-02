@@ -2204,7 +2204,7 @@ const border = {
 ```vue
 <template>
   <Transition name="bounce">
-    <p v-if="show" style="text-align: center;">
+    <p v-if="show" :style="'text-align: center;'">
       红红火火恍恍惚惚
     </p>
   </Transition>
