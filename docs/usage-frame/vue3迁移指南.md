@@ -303,11 +303,173 @@ nextTick(() => {
 定义：
 - 利用vue的组合式api和生命周期钩子封装复用有状态逻辑的函数
 - 函数参数可接收ref，和非ref值（unref：将ref变为非ref）
-- 通常以`useFn`开头
+- 组合式函数采用`usePascalCase`的形式命名
+- 组合式函数不仅是为了复用，也能让代码组织更加清晰。能够基于逻辑问题将组件代码拆分成更小的功能函数
 
 注意：
-- 组合式函数在script setup中需要同步调用，这是为了将生命周期钩子等api注册在当前的组件上
+- 组合式函数在`script setup`/`setup()`中应始终被同步调用，在某些场景下也可以在onMounted这些生命周期钩子中调用，这是为了让vue能够确定当前正在被执行的到底是哪个实例，只有确定了当前组件实例，才能：将生命周期钩子等api注册在当前的组件上，将计算属性和监听器注册到当前组件上，以便在组件卸载时停止监听，避免内存泄露
+- script setup是唯一在调用await之后仍可调用组合式函数的地方，编译器会在异步操作之后自动恢复当前组件实例
+- 组合式函数可接收一般变量和响应式变量（例如ref）作为参数。最好在处理参数时对两者进行兼容，即处理响应式变量时，使用unref函数获取变量的值（响应式变量返回.value，否则原样返回）；同时若操作会根据响应式变量变化而变化，应该使用watch监听响应式变量，或者在watchEffect中调用unref来追踪它的变化
+- 推荐在组合式函数中始终返回一个包含多个ref的普通非响应式对象（即组合式函数返回`{ a: ref(xx), b: ref(xx) }`），这样在对象被解构时，对象属性仍能保持响应性，因为返回一个响应式对象在对象解构时会丢失和组合式函数内状态的响应性连接。若希望以对象属性的方式使用组合式函数中返回的状态，可以在调用组合式函数的时候使用reactive进行包裹（例如`reactive(useFn)`）
+- 在组合式函数中执行相关操作时，应当在正确的生命周期中访问（比如访问dom，应该在挂载之后，即onMounted钩子中）；同时确保在onUnmounted中清除带来的某些操作（比如事件监听器）。
 - 组合式函数可随意封装
+
+<!-- tabs:start -->
+
+<!-- tab:无状态组合函数 -->
+
+```typescript
+// useEventListener()
+import { onMounted, onBeforeUnmount } from 'vue'
+
+export function useEventListener (target, event, callback) {
+  onMounted(() => target.addEventListener(event, callback))
+  onBeforeUnmount(() => target.removeEventListener(event, callback))
+}
+```
+
+```typescript
+// useMouse()
+import { ref } from 'vue'
+import { useEventListener } from './event'
+
+export function useMouse () {
+  const x = ref(0)
+  const y = ref(0)
+
+  // 组合式函数中使用其他组合式函数
+  useEventListener(window, 'mousemove', event => {
+    x.value = event.pageX
+    y.value = event.pageY
+  })
+
+  return { x, y }
+}
+```
+
+```vue
+<script setup>
+import { useMouse } from './mouse.js'
+
+const { x, y } = useMouse()
+</script>
+
+<template>
+  鼠标坐标：{{ x }}: {{ y }}
+</template>
+```
+
+<!-- tab:有状态的组合函数 -->
+```typescript
+import { ref, isRef, unref, watchEffect } from 'vue'
+
+export function useFetch (url) {
+  const data = ref(null)
+  const error = ref(null)
+
+  async function doFetch () {
+    // 请求前重置状态
+    data.value = null
+    error.value = null
+
+    const urlValue = unref(url)
+
+    try {
+      // 人为模拟状态失败与否
+      await timeout()
+
+      const res = await fetch(urlValue)
+      data.value = await res.json()
+    } catch (e) {
+      error.value = e
+    }
+  }
+
+  // 判断是否是响应式变量，是的话监听它的变化
+  if (isRef(url)) {
+    watchEffect(doFetch)
+  } else {
+    doFetch()
+  }
+
+  // 返回属性是ref的普通对象
+  return { data, error, retry: doFetch }
+}
+
+function timeout () {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      if (Math.random() > 0.3) {
+        res()
+      } else {
+        rej(new Error('错误'))
+      }
+    }, 300)
+  })
+}
+```
+
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+import { useFetch } from './useFetch'
+
+const baseUrl = 'https://xxx.xxx.com/'
+const id = ref('1')
+const url = computed(() => baseUrl + id.value)
+
+const { data, error, entry } = useFetch(url)
+</script>
+
+<template>
+  <button v-for="i in 5" @click="id = i">{{ i }}</button>
+  <div v-if="error">
+    <p>错误信息：{{error.message}}</p>
+    <button @click="entry">重试</button>
+  </div>
+  <div v-else-if="data">当前数据：{{data}}</div>
+  <div v-else>加载中...</div>
+</template>
+```
+
+<!-- tab:在选项式中使用组合式函数 -->
+```vue
+<script>
+import { useMouse } from './mouse'
+import { useFetch } from './fetch'
+
+export default {
+  setup () {
+    const { x, y } = useMouse()
+    const { data, error } = useFetch('...')
+    // 必须在return中返回，否则通过this读取不到
+    return { x, y, data, error }
+  },
+  mounted () {
+    console.log(this.x)
+  }
+}
+</script>
+```
+
+<!-- tab:组合式按时抽离 -->
+```typescript
+// 调用多个组合式函数
+import { useA } from './useA'
+import { useB } from './useB'
+import { useC } from './useC'
+
+const { foo, bar } = useA()
+const { baz } = useB(foo)
+const { qux } = useC(baz)
+```
+
+<!-- tabs:end -->
+
+**组合式函数 vs 其他模式**：
+- mixin的短板：不清晰的数据来源、命名空间冲突、隐式跨mixin交流
+- 无渲染组件：会有额外的组件嵌套的性能开销。推荐纯逻辑复用用组合式函数，复用逻辑和视图布局时用无渲染组件（插槽组件）
+- react hooks：执行模型不一样
 
 ### setup组件选项
 
@@ -1048,6 +1210,102 @@ const asyncModalWithOptions = defineAsyncComponent({
 
 注意：
 - 对于在vue route中的异步组件，使用[懒加载](https://next.router.vuejs.org/guide/advanced/lazy-loading.html)加载路由组件，而不是上面这种方式
+
+
+## 插件
+
+定义：
+- 插件是一种为vue添加全局功能的工具代码
+- 插件可以是一个拥有install方法的对象，也可以是一个安装函数本身，安装函数会接收到安装它的应用实例app和传递给app.use的额外选项作为参数
+
+场景：
+- 通过app.component和app.directive注册一到多个全局组件/指令
+- 通过app.provide让一个资源注入到整个应用
+- 给app.config.globalProperties添加全局实例属性/方法
+- 包含上述三种功能的，比如vue-router
+
+<!-- tabs:start -->
+
+<!-- tab:插件的两种格式 -->
+```typescript
+// 第一种：导出一个函数，vue会直接调用这个函数
+// app：createApp函数生成的实例
+// options：插件初始化时的选项，是通过app.use的第二个参数传过来的
+export default function (app, options) {
+  // 逻辑代码
+}
+
+// 第二种：导出一个包含install的对象，vue通过调用install来启用插件
+export default {
+  install: (app, options) => {
+    // 逻辑代码
+    // 1. 注册全局属性/方法
+    app.config.globalProperties.$globalFn = () => {
+      console.log('这是全局方法')
+    }
+    // 2. 注册全局组件
+    app.components('global-com', GlobalCom)
+    // 3. 设置注入的全局数据
+    app.provide('global-data', globalData)
+  }
+}
+
+// 使用插件
+import myPlugin from './myPlugin'
+
+createApp(App).use(myPlugin, {
+  foo: 1,
+  bar: 2
+}).mounted('#app')
+```
+
+<!-- tabs:end -->
+
+附录：
+- 导入所有组件作为插件：https://juejin.cn/post/7137879039796051999
+
+下面是使用install方法进行单组件导入的用法：
+
+<!-- tabs:start -->
+
+<!-- tab:定义组件 -->
+```vue
+<template>
+  {{ date }}
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const date = ref(Date.now())
+</script>
+```
+
+<!-- tab:定义导出组件 -->
+```typescript
+import DateComp from './DateComp.vue'
+
+DateComp.install = (app, options) => {
+  app.component(DateComp.name, DateComp)
+}
+
+export {
+  DateComp
+}
+```
+
+<!-- tab:使用 -->
+```vue
+<template>
+  <DateComp/>
+</template>
+
+<script setup>
+import { DateComp } from './DateComp.ts'
+</script>
+```
+
+<!-- tabs:end -->
 
 
 ## teleport
@@ -1885,6 +2143,10 @@ const border = {
 
 即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
 
+## 过渡和动画
+
+
+
 ## ⭕vue3与vue2不兼容的内容
 
 > 为了便于管理，该节中将包含兼容的内容。
@@ -1916,8 +2178,10 @@ const border = {
 
 定义：
 - 在setup script中，以v开头的变量，可当作自定义指令使用在template中（用v-）
-- 在script中的directives钩子中定义属性x，然后可在template中（用v-）使用
-- 全局注册，使用`app.directives('name', {})`
+- 在`<script>`中的directives钩子中定义属性x，属性值是指令对象，然后可在template中（用v-）使用
+- 对于通过import导入的指令，也应当符合`vMyDirective`的命名形式（可通过重命名搞定）
+- 全局注册指令，使用`app.directives('name', {'指令对象'})`
+- 在组件上使用自定义指令时，会始终作用于组件的单根节点。对于多根节点则会被忽略同时抛出警告。
 
 解释：
 - 当只需要在mounted和updated执行相同的行为时，可使用简化形式，即自定义钩子对象换成`(el, binding) => {}`函数形式即可
@@ -1934,18 +2198,38 @@ const border = {
 // 自定义钩子对象
 const MyDirective = {
   // 新增
-  // el: 绑定的元素
+  // el: 绑定的元素，可读参数，其余参数均是只读参数
   // binding：一个对象，具有value、oldValue、arg、modifiers、instance、dir属性
+  // value：传给指令的值
+  // oldValue：之前的值，仅在beforeUpdate和updated可用
+  // arg：指令参数，可以是动态参数
+  // modifiers：指令修饰符对象
+  // instance：指令组件实例
+  // dir：指令的定义对象
   // vnode：绑定元素的底层VNODE
+  // prevNode：之前渲染中指令绑定的元素vnode，仅在beforeUpdate和updated可用
+  // 在绑定元素的attribute前或事件监听器应用前调用
   created (el, binding, vnode, preVnode) {}
+  // 元素插入到dom前调用
   beforeMount () {},
+  // 在绑定元素的父组件，及元素的所有子节点都挂载完成后调用
   mounted () {},
-  // 新增
+  // 新增，绑定元素的父组件更新前调用
   beforeUpdate () {},
+  // 绑定元素的父组件及元素的所有子节点更新后调用
   updated () {},
-  // 新增
+  // 新增，绑定元素父组件卸载前调用
   beforeUnmount () {},
+  // 绑定元素的父组件卸载后调用
   unMounted () {}
+}
+```
+
+<!-- tab:简化形式 -->
+```typescript
+// 相当于只有了mounted和updated钩子，且两个钩子实现的细节相同
+const vName = (el, binding) => {
+  console.log(el, '获取el')
 }
 ```
 
@@ -2314,6 +2598,7 @@ export default {
 </template>
 
 // 子组件Child
+<script>
 export default {
   props: {
     title: String,
@@ -2326,6 +2611,7 @@ export default {
     <input type="text" :value="bookDesc" @input="$emit('update:bookDesc', $event.target.value)">
   `
 }
+</script>
 ```
 
 <!-- tab:带修饰符的v-model -->
