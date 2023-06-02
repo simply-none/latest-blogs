@@ -267,14 +267,13 @@
           }
       }
 
-      addEventListener('hashchange', () => {
+      addEventListener('click', () => {
         changeTheme()
         setTimeout(() => {
           setAttr()
         }, 500)
-          
-        
       })
+      
 				// 1.创建HXMLHttpRequest对象
 				var xhr = null;
 				//  var xhr = new XMLHttpRequset();

@@ -6,11 +6,8 @@
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
-    "rer": "node ./t.js && git push -u origin --tags",
-    "re": "standard-version --release-as patch",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
-    "dev": "node ./time.js & docsify serve",
-    "pub": "node ./time-and-push.js"
+    "dev": "node ./time.js & docsify serve"
   },
   "dependencies": {
     "shelljs": "^0.8.5"

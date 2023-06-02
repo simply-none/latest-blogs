@@ -15,31 +15,17 @@ function getLog() {
 
 	mds.forEach(path => {
     const bash = `git log -1 -- ./${path}`
-		shell.exec(bash.toString(), (code, stdout, stderr) => {
-			let arr = stdout.split('commit');
-			arr = arr.filter(a => a);
-			arr = arr.map(arr => {
-				let cmt = arr.split(/\n+/);
-				return {
-					id: cmt[0].trim(),
-					author: cmt[1].slice(8),
-					date: date.formatTimestamp(cmt[2].slice(8)),
-					desc: cmt
-						.filter((val, index) => index > 2)
-						.join(', ')
-						.trim(),
-				};
-			});
-
-			const result = arr;
-			if (code) {
-				log = [];
-			} else {
-				log = result;
-      }
-      filesLatestLog[path] = log[0] ? log[0] : {}
-		});
+		const relativePath = './' + path
+		const fsObj = fs.statSync(relativePath)
+		console.log(fsObj, relativePath, '文件信息')
+		filesLatestLog[path] = {
+			date: fsObj.mtime,
+			id: fsObj.ino
+		}
 	});
+	const len = Object.values(filesLatestLog).length
+	console.log('计算中...', len)
+
 	setTimeout(() => {
     fs.writeFile('./logs.json', JSON.stringify(filesLatestLog), function (err) {
       // 读取失败 err的值也是为空  null转换为布尔值还是false
@@ -48,7 +34,7 @@ function getLog() {
       }
       console.log('成绩写入成功');
     });
-	}, 2000);
+	}, 500);
 
 }
 
