@@ -247,19 +247,18 @@
           const find = Object.keys(logs).find(path => {
             return currentUrl.includes(path)
           })
+          const h1 = document.querySelector(".content #main h1")
           if (find) {
             const isAddTime = document.querySelector(`.jade_${logs[find].id}`)
             if (isAddTime) {
-              return false
+              h1.removeChild(isAddTime)
             }
           }
           if (find) {
-            const h1 = document.querySelector(".content #main h1")
             const logNode = document.createElement('div')
             logNode.style = 'font-size: 0.5em; font-weight: 600; color: #a7a7a7;margin-top: 12px;padding: 3px 20px;border-left: 4px solid #3F51B5; '
             logNode.setAttribute('class', 'jade_' +  logs[find].id)
             const logTextNode = document.createTextNode('最后更新时间：' + logs[find].date)
-            console.log(logs[find].date, 'test')
             logNode.appendChild(logTextNode)
             h1.appendChild(logNode)
 
