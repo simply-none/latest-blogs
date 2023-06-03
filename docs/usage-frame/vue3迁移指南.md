@@ -698,27 +698,112 @@ export default {
 - 被`<script setup>`包裹的代码会被编译成组件中setup()函数的内容，意味着他会在每次组件实例被创建的时候执行（和created类似，每引用一次该组件，就执行一次），而普通的script只在组件首次引入时执行一次
 - 里面声明的顶层的`变量`、`函数声明`，以及`import导入的内容`，都能在模板template中直接使用，不需通过methods暴露它（函数， import导入的函数），不需通过新建变量暴露（变量，import导入的变量），不需要在compoments引入（import导入的组件）
 - 通过import导入的组件，为了保持一致性，建议在template中使用驼峰式命名，而不是短横线命名，这也有助于区分原生的自定义元素
-- 当import导入的组件用在动态组件component中时，其is属性的值就是这个导入的名字`:is="comName"`
+- 当import导入的组件用在动态组件component中时，其is属性的值就是这个导入的组件的名字`:is="comName"`
 - 单文件组件可以通过它的文件名被自己引用，这种方式相比于import导入的组件优先级更低
 - 若有命名的import导入和组件的推断名冲突，可以使用import别名导入`import { FooBar as AliasBar } from './components'`
-- 若导入一个属性是组件的对象`import * as Form from './form'`，可以直接使用类似`<Form.Label>`来引用
-- 对于在`<script setup>`里创建的自定义指令，必须以`vMyDirective`的形式命名，这样它才能够在template中以`<h1 v-my-directive>title</h1>`的形式使用；而对于导入的指令，也应当符合`vMyDirective`的命名形式（可通过重命名搞定）
-- 对于props和emit的声明，必须使用`defineProps`和`defineEmits`（仅在`<script setup>`内有效，且不需要导入能直接用）函数来声明，其接收的参数和选项式语法相同
+- 若导入一个属性是组件的对象（即.form内导出很多个组件时）`import * as Form from './form'`，可以直接使用类似`<Form.Label>`来引用
+- 对于在`<script setup>`里创建的自定义指令，必须以`vMyDirective`的形式命名，这样它才能够在template中以`<h1 v-my-directive>title</h1>`的形式使用；而对于导入的指令，也应当符合`vMyDirective`的命名形式（即通过`import { myDirective as vMyDirective} from xxx`语法重新命名导入的指令名）
+- 对于props和emit的声明，必须使用`defineProps`和`defineEmits`（仅在`<script setup>`内有效，且不需要导入能直接使用）函数来声明，其接收的参数和选项式语法相同
 - 由于传入到defineProps和defineEmits的选项会从setup中提升到模块的范围，所以他们不能引用在setup内部定义的变量，否则会引起编译错误。但是他们可以引用import导入的内容（这也是模块的范围）
-- 若想在父组件中使用`<script setup>`中的变量/方法，和setup选项式类似，这里需要使用defineExpose（不需要导入，语法和选项式相同）函数将变量/方法暴露出去
-- 对于slots和attrs的使用，和vue2一样，可以直接在模板中以`$slots`, `$attrs`使用，若想在`<script setup>`内部使用，需要用`useSlots()`和`useAttrs()`函数访问他们
+- defineProps和defineEmits要么使用运行时声明，要么使用类型声明，同时使用两种声明方式会导致编译报错，运行时声明即普通用法`defineProps({xxx})`，类型声明即ts用法`defineProps<{xxx}>()`。3.2以下版本中，defineProps的泛型类型参数只能使用类型字面量或者本地接口的引用，但在3.3版本中得到解决，支持在类型参数的位置引用导入的和有限的复杂类型，但是由于类型到运行时的转换是基于AST的，不支持使用需要 实际类型分析的 复杂类型，比如可以在单个prop上使用条件类型，但不能对整个props对象使用条件类型
+- 对于类型声明的defineProps没有可以给props提供默认值的方式，但可以通过withDefaults编译器宏实现，`props = withDefaults(defineProps<{}>(), {默认值对象})`，第二个参数就是一个提供prop属性默认值的对象。对于提供了默认值的prop，会进行类型检查，若prop是可选的，但是提供了默认值，则会自动删除该prop的可选标志变成必填
+- 若想在父组件中使用`<script setup>`中的变量/方法，和setup选项式类似，这里需要使用defineExpose编译器宏（不需要导入，语法和选项式相同）函数将变量/方法暴露出去，例如`defineExpose({暴露的对象})`
+- defineOptions编译器宏可以声明组件选项，比如inheritAttrs，即使用script setup时不需要再定义一个script设置组件选项了（仅支持3.3+版本），定义的选项将被提升到模块作用域中，无法访问script setup中非字面常数的局部变量
+- defineSlots宏可以用于为IDE提供插槽名称和props类型检查的类型提示，只接受类型参数，无运行时参数，类型参数是一个类型字面量，属性名是插槽名，值是插槽函数类型，函数的第一个canasta是插槽期望接收的props，返回类型目前被忽略，可以是any。该宏返回一个slots对象，等同于setup上下文中暴露或由useSlots()返回的slots对象（仅支持3.3+版本）
+- 对于slots和attrs的使用，和vue2一样，可以直接在模板中以`$slots`, `$attrs`使用，若想在`<script setup>`内部使用，需要用`useSlots()`和`useAttrs()`函数访问他们，两函数是真实的运行时函数，返回的内容与setup函数的第二个参数context的属性slots、attrs等价
 - 被包裹的代码，可以使用顶层的await，而不需要带有async，因为其结果会被编译为`async setup()`的形式，这种形式需要结合Suspense（实验性特性）一起使用
-- 因为模块执行语义的差异，`<script setup>`依赖单文件组件的上下文，当将其移动到外部的js或ts文件时，会产生混乱，所以不能和src属性一起使用
+- 可以使用script标签上的generic属性声明泛型类型参数，属性值和typescript中位于`<...>`之间的参数列表完全相同，可以使用多个参数，extends约束，默认类型和引用导入的类型，用法见下，更深层的含义见[1](https://github.com/vuejs/rfcs/discussions/436)
+- 因为模块执行语义的差异，`<script setup>`依赖单文件组件的上下文，当将其移动到外部的js或ts文件时，会产生混乱，所以不能和src attribute一起使用，即这样的语法是不允许的`script setup src="xxx"`
 
 
 **`<script setup>`会在下列情况下和普通的`<script>`一起使用**：
-- 无法在`<script setup>`中声明的选项，例如`inheritAttrs`或通过插件启用的自定义选项时
-- 声明命名导出
-- 运行一些特定的内容（比如只需要执行一次的内容）
+- 无法在`<script setup>`中声明的选项，例如`inheritAttrs`（最新版本可使用defineOptions声明）或通过插件启用的自定义选项时。对于可以在script setup声明的选项，则不应该在script中去声明
+- 声明模块的具名导出（named exports），即类似使用`export const xxx`的形式
+- 运行一些特定的内容（比如只需要在模块作用域执行一次的操作，或是创建单例对象时）
 - 这种场景下，script不支持使用render函数，应该使用script结合setup选项式的形式
+- 若处于一种不被支持的场景中时，可以考虑切换到一个显示的setup函数中，即使用选项式的语法
+
+
 
 **在typescript独有的功能**：
 - https://v3.cn.vuejs.org/api/sfc-script-setup.html#%E4%BB%85%E9%99%90-typescript-%E7%9A%84%E5%8A%9F%E8%83%BD
+
+<!-- tabs:start -->
+
+<!-- tab:defineExpose用法 -->
+```vue
+<!-- 子组件 -->
+<script setup>
+import { ref, reactive } from 'vue'
+const a = ref(1)
+const b = reactive({
+  name: 'b'
+})
+
+defineExpose({
+  // 暴露一个包含响应式变量的普通对象，解构时能保持响应性
+  a,
+  b
+})
+</script>
+
+<!-- 父组件 -->
+<template>
+  <!-- 必须定义ref，才能够访问到暴露的属性  -->
+  <Child ref="childRef"/>
+</template>
+<script setup>
+import { onMounted, ref, shallowRef } from 'vue'
+import Child from './Child.vue'
+
+// 第一种方式
+const childRef = ref()
+// 第二种方式
+const childRef = shallowRef()
+
+// 访问暴露的属性，需要在挂在后才能获取到
+onMounted(() => {
+  console.log(childRef.value.a, childRef.value.b)
+})
+</script>
+```
+
+<!-- tab:defineSlots用法 -->
+```vue
+<script setup lang="ts">
+const slots = defineSlots<{
+  // 默认插槽名称是default，默认插槽接收到的props是msg
+  default(props: { msg: string }): any
+}>()
+</script>
+```
+
+<!-- 在script中使用泛型 -->
+```vue
+<!-- 简单用法：这样貌似是无意义的，更多有意义的是通过extends的方式 -->
+<script setup lang="ts" generic="T">
+defineProps<{
+  items: T[]
+  selected: T
+}>()
+</script>
+
+
+<!-- 可以使用多个参数，extends约束，默认类型和引用导入的类型 -->
+<script
+  setup
+  lang="ts"
+  generic="T extends string | number, U extends Item"
+>
+  import type { Item } from './types'
+  defineProps<{
+    id: T,
+    list: U[]
+  }>()
+</script>
+```
+
+<!-- tabs:end -->
 
 #### defineComponent
 
@@ -1314,28 +1399,143 @@ import { DateComp } from './DateComp.ts'
 - teleport提供了一种干净的方法，允许我们自己决定在哪个DOM节点下面渲染被teleport包裹的内容，而不必求助于全局状态或将其拆分为两个组件
 - 通俗意义即代码写在这里，而其实际的渲染则在其他的位置
 - 同时teleport能够接收父组件注入的属性
-- 多个teleport组件可以将内容挂载到同一个目标元素，出现顺序是先来先占位
+- 多个teleport组件可以将内容挂载到同一个目标元素，出现顺序是先来先占位，按顺序依次追加到to目标元素下
 
 语法：
 teleport元素具备以下属性：
-- `to`：值为字符串，且必须要有。其值是有效的查询选择器（例如id选择器、类选择器、属性选择器）或HTMLElement元素，指定将包裹的内容移动到目标元素内部
-- `disabled`：属性可选，可用于禁用teleport功能，意味着内部内容不会移动到任何位置
+- `to`：指定将包裹的内容移动到目标元素内部，值为字符串，且必须要有。其值是有效的查询选择器（例如id选择器、类选择器、属性选择器）或HTMLElement元素（DOM对象）
+- `disabled`：属性可选，可用于禁用teleport功能，意味着内部内容不会移动到任何位置，和正常元素一样。使用场景比如可以根据不同的设备决定是否进行移动到to目标元素下
 
+使用：
+- Teleport可以和Transition组合使用创建带动画模态框
 
-```typescript
-<teleport to='#root'>
-  <div>A</div>
-</teleport>
-<teleport to="#root">
-  <div>B</div>
-</teleport>
+注意：
+- Teleport挂载时，传送的to目标必须已经存在于DOM中，所以需要确保Teleport挂载之前to目标元素就已经被挂载
+- Teleport只是改变了渲染的DOM结构，但不会影响组件间的逻辑关系（使用Teleport的地方的父子关系不会改变，子组件将会在vue devtools中嵌套在父组件下面，而非to目标下面），即传入的props、触发的事件、父组件的注入都会按预期工作
 
-// 结果将是：
-<div id="root">
-  <div>A</div>
-  <div>B</div>
-</div>
+<!-- tabs:start -->
+
+<!-- tab:基本用法 -->
+```vue
+<template>
+  <teleport to='#root'>
+    <div>A</div>
+  </teleport>
+  <teleport to="#root">
+    <div>B</div>
+  </teleport>
+
+  <!-- 结果将是： -->
+  <div id="root">
+    <div>A</div>
+    <div>B</div>
+  </div>
+</template>
 ```
+
+<!-- tab:Teleport和Transition一起使用创建动态模态框 -->
+```vue
+<!-- 使用modal.vue -->
+<script setup>
+import Modal from './modal.vue'
+import { ref } from 'vue'
+
+const showModal = ref(false)
+</script>
+
+<template>
+  <button id="show-modal" @click="showModal = true">展示弹窗</button>
+  <Teleport to="body">
+    <Modal :show="showModal" @close="showModal = false">
+      <template #header>
+        <h3>自定义header</h3>
+      </template>
+    </Modal>
+  </Teleport>
+</template>
+
+<!-- modal.vue -->
+<script setup>
+const props = defineProps({
+  show: Boolean
+})
+</script>
+
+<template>
+  <Transition name="modal">
+    <div v-if="show" class="modal-mask">
+      <div class="modal-container">
+        <div class="modal-header">
+          <slot name="header">default header</slot>
+        </div>
+        <div class="modal-body">
+          <slot name="body">default body</slot>
+        </div>
+        <div class="madal-footer">
+          <slot name="footer">
+            default footer
+            <button class="modal-default-button" @click="$emit('close')">ok</button>
+          </slot>
+        </div>
+      </div>
+    </div>
+  </Transition>
+</template>
+
+<style>
+.modal-mask {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: opacity .3s ease;
+}
+
+.modal-container {
+  width: 300px;
+  margin: auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/* transition过渡 */
+.modal-enter-from {
+  opacity: 0;
+}
+
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  transform: scale(1.1);
+}
+
+</style>
+```
+
+<!-- tabs:end -->
 
 ## 实例property
 
@@ -1799,6 +1999,20 @@ export default {
 // 第一步：事件声明，定义需要抛出的事件列表
 // 注意defineEmits不能在子函数内使用，必须放在顶层作用域下
 const emit = defintEmits(['inFocus', 'submit'])
+
+// 第一步：事件声明，ts语法形式, 3.3以下版本
+const emit = defineEmits<{
+  (e: 'inFocus', arg1: number): void
+  (e: 'submit', arg1: string): void
+}>()
+
+// 第一步：事件声明，ts语法形式，3.3+版本
+const emit = defineEmits<{
+  // 具名元组语法
+  inFocus: [arg1: number, arg2: string]
+  update: [arg1: string]
+}>()
+
 // 第二步：触发事件可以用函数：
 function clickHandle () {
   emit('inFocus', '事件参数')
@@ -2050,13 +2264,49 @@ export default {
 
 这些DOM接口完成了Web平台（浏览器）对DOM的增删改查操作。但若是渲染器不依赖任何一个平台下特有的接口，则应该提供一个抽象层，将其增删改查操作使用抽象接口实现，这就是自定义渲染器的本质。
 
-## 单文件组件样式特性
+## 单文件组件（SFC）
+
+定义：
+- vue的单文件组件（即.vue文件，single-file component），能够将一个vue组件的模板template、逻辑script、样式style封装在单个文件中
+- 使用单文件组件必须使用构建工具，比如vue-cli、vite等
+- SFC在特殊的场景下根据文件名自动推导组件名，比如：开发警告信息中需要格式化组件名时、devtools中观察组件时、递归组件自引用时（通过文件名引用自己。这在同名时比明确注册/导入的组件优先级低）
+
+组成：
+- template：每个vue文件最多包含一个顶层的template元素块，包裹的内容将被提取传递给@vue/compiler-dom预编译为js渲染函数，并附在导出组件的render选项上
+- script：每个文件最多包含一个script块（script setup除外），默认导出一个vue的组件选项对象，可以是对象字面量形式（{}），也可是defineComponent函数的返回值
+- script setup：最多包含一个，将被预处理为一个组件的setup函数
+- style：可包含多个该元素，可使用scoped和module attribute来封装当前组件的样式
+- 其他自定义的元素块：需要依赖工具链去处理
+- 不同块的注释遵循各自的语法，顶层注释遵循html注释语法
+
+使用：
+- 附着的预处理器熟悉lang attribute：比如`script lang="ts"`, `template lang="pug"`, `style lang="scss"`，这个需要工具链支持
+- 附着的scr attribute：若喜欢将vue组件分散到多个文件中，可为一个元素块使用src属性来导入一个外部文件，比如`template src="./xxx.html"`等。src导入规则和js模块导入规则一样，比如使用相对路径，从npm包中导入资源`style src="todomvc-app-css/index.css`
+
+单文件组件的优势：
+- 使用熟悉的html、css、js语法编写模块化组件
+- 让本来强相关的关注点自然内聚
+- 预编译模板，避免运行时编译开销
+- 组件作用域css
+- 在使用组合式api时语法更简单
+- 通过交叉分析模板和逻辑代码能进行更多编译时优化
+- 有更好的IDE支持，提供自动补全和类型检查等
+- 开箱即用的模块热更新HMR支持
+
+关注点分离：
+- 前端开发的关注点不是完全基于文件类型分离的
+- 前端工程化的最终目的是为了能够更好的维护代码
+- 关注点分离不是教条式的将其视为文件类型的区别和分离
+- 在组件中，模板、逻辑、样式本身是有内在联系且耦合的，放在一起能够增强内聚性和可维护性
+
+### 单文件组件样式特性
 
 **`<style scoped>`**:
-- 父组件的样式不会泄露到子组件当作，但是子组件根节点的样式会由子组件和父组件共同作用（和vue2一样，但通过v-html创建的内容不会被影响）
-- 若想父组件影响子组件样式，可以使用`:deep()`函数
-- 若想修改插槽内的样式，可以使用`:slotted`伪类实现
-- 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global`伪类实现
+- 处理方式：通过postcss将样式转为带属性选择器的样式，即元素上添加了自定义属性data-xxx，样式上也添加了同样的属性选择器data-xxx
+- 父组件的样式不会泄露到子组件当中，但是子组件根节点的样式会由子组件和父组件共同作用（和vue2一样，但通过v-html创建的内容不会被影响，不过也能通过deep伪类设置样式）
+- 若想父组件影响子组件样式，可以使用`:deep(选择器)`函数伪类，比如`div :deep(.child) {}`
+- 若想修改插槽内的样式（使用该组件时传过来的插槽内容，是由使用该组件的地方控制样式的，非该组件本身能控制），故而可以通过`:slotted(选择器)`伪类实现
+- 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global(选择器)`伪类实现
 - 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
 - 小心递归组件中的后代选择器😢😢😢，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
 
@@ -2095,7 +2345,8 @@ export default {
 <!-- tabs:end -->
 
 **`<style module>`**：
-- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方通过类似$style.red的方式访问样式
+- 仅作用于当前组件
+- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方（比如在template中）通过类似$style.red的方式访问样式
 - 可以给module定义一个值`<style module="classes">`，这样就能将$style替换成这个值了`classes.red`
 - 若想在setup选项或`<script setup>`中使用注入的类，需要使用函数`useCssModule()`或者是`useCssModule('classes')`
 - 若样式模块想用到script内部导出的变量（data中的，或者setup导出的），可以使用`v-bind`函数绑定
@@ -2131,6 +2382,106 @@ const border = {
 }
 </style>
 ```
+
+## 工具链
+
+在线环境：
+- [vue sfc 演练场](https://play.vuejs.org/)
+- [StackBlitz 中的 Vue + Vite](https://vite.new/vue)
+- [VueUse Playground](https://play.vueuse.org/)
+- [Vue + Vite on Repl.it](https://replit.com/@templates/VueJS-with-Vite)
+- [Vue on CodeSandbox](https://codesandbox.io/s/vue-3)
+- [Vue on Codepen](https://codepen.io/pen/editor/vue)
+- [Vue on Components.studio](https://components.studio/create/vue3)
+- [Vue on WebComponents.dev](https://webcomponents.dev/create/cevue)
+
+项目脚手架：
+- vite
+- vue-cli
+- [无构建方式使用vue](https://cn.vuejs.org/guide/scaling-up/tooling.html#note-on-in-browser-template-compilation)
+
+IDE支持：
+- vscode + volar插件（提供typescript支持，取代了vue2的vetur，两者会冲突）
+- webstorm
+
+开发者插件：vue devtools（支持web、electron）
+
+**测试**：
+
+> 该节只是选看，未看完，具体的测试应该到查看对应工具的文档
+
+目的：
+- 自动化测试能够预防无意引入的bug，并鼓励开发者将应用分解为可测试，可维护的函数、模块、类、组件。能够帮助更快速构建复杂的应用
+
+测试时机：越早越好
+
+测试类型：
+- 单元测试：检查函数、类、组合式函数的输入是否符合预期，推荐vitest，其他的有peeky、jest
+- 组件测试：检查组件是否正常挂载和渲染、是否能够进行互动、表现是否符合预期。目的是测试这个组件做了什么，而不是测试它是怎么做到的。分为视图测试、交互测试，推荐vitest、cypress组件测试、nightwatch
+- 端到端测试：检测跨越多个页面的功能，对生产构建的应用进行实际的网络请求（涉及建立数据库和后端），推荐cypress，其他的有playwright、nightwatch v2
+
+工具：
+- cypress，推荐用于E2E测试，也可通过cypress组件测试运行期给SFC作单文件组件测试
+- vitest：主要基于vite应用设计
+- jest（vite-jest）
+
+代码规范：
+- eslint-plugin-vue（vite）：由vue维护，提供SFC相关规则的定义，和eslint配套使用，然后启用eslint ide插件，就可以在开发时进行规范检查，同时还可配用lint-staged这样的工具在git提交时执行规范检查
+- webpack loader（vue-cli）
+
+格式化：
+- volar：对SFC文件
+- prettier：对SFC文件
+
+**路由**：
+
+- 客户端路由：单页面应用中，客户端的js可以拦截页面的跳转请求，动态获取新的数据，然后在无需重新加载的情况下更新当前页面
+- 服务端路由：指的是服务器根据用户访问的url路径返回不同的响应结果，当在传统的服务端渲染的web应用中点击一个链接时，浏览器会从服务端获得全新的html，然后重新加载整个页面
+
+**状态管理**：
+- Pinia
+- Vuex
+- 用响应式api做简单状态管理：单独定义一个状态文件，然后在使用/共享时导入状态，由于是响应式变更，所以在变化时会同步发生变化（单一数据源）
+
+**错误处理**：
+- 应用级错误处理：`app.config.errorHandler`，用于向追踪服务报告错误
+- 其他工具：sentry、bugsnag
+
+## 服务端渲染
+
+> https://cn.vuejs.org/guide/scaling-up/ssr.html
+
+定义：vue支持将组件在服务端渲染成html字符串，作为服务端响应返回给浏览器，最后在浏览器端将静态的html激活为能够交互的客户端应用
+
+ssr相比spa的优势：
+- 更快的首屏加载：无需等所有的js都下载执行后才显示；数据获取过程在首次访问时在服务端完成，可能有更快的数据库连接
+- 统一的心智模型：不需要在后端模板系统和前端框架间来回切换
+- 更好的SEO：方便收索引擎爬取
+
+ssr缺陷：
+- 开发中的限制：代码需要特殊处理，某些api（比如onMounted、自定义指令由于包含了dom的操作但可通过getSSRProps钩子解决、Teleport需要特殊处理）可能在服务端用不了
+- 更多与构建配置和部署相关的要求：需要能让nodejs服务器运行的环境，而spa可以部署在任意的静态文件服务器上
+- 更高的服务端负载：渲染资源更加占用cpu，需要合理分配服务器负载和缓存
+
+ssr应用解决方案：
+- Nuxt
+- Quasar
+- vite ssr
+
+## 部署
+
+### vite 部署
+
+> https://cn.vitejs.dev/guide/build.html
+> https://cn.vitejs.dev/guide/static-deploy.html
+
+### vue-cli部署
+
+> https://cli.vuejs.org/zh/guide/deployment.html
+
+## 性能优化
+
+
 
 ## ✅vue3新增的内容
 
@@ -2524,7 +2875,7 @@ function onEnter (el, done) {
   &-move,
   &-enter-active,
   &-leave-active {
-    transition: all .5s ease;
+*     transition: all .5s ease;
   }
 
   &-enter-from,
@@ -2534,6 +2885,66 @@ function onEnter (el, done) {
   }
 }
 </style>
+```
+
+<!-- tabs:end -->
+
+## KeepAlive
+
+定义：在多个组件间动态切换时缓存被移除的组件实例
+
+使用：
+- KeepAlive默认会缓存内部的所有组件实例
+- 可以通过include、exclude prop定制是否需要进行缓存，会根据组件的name选项进行匹配（在3.2.34版本+，使用script setup会自动根据文件名生成对应的name选项；在它以下版本，需要显式声明一个name选项）。prop的值可以是字符串、正则表达式（v-bind）、数组（v-bind）
+- 可以通过max prop（number类型）设置可被缓存的最大组件实例数，在指定了max后类似一个LRU缓存：缓存实例数量即将超过指定的那个最大数量时，则最久没被访问的缓存实例将被销毁，以便为新的实例腾出空间
+- 当一个组件实例从DOM上移除但由于被KeepAlive缓存而仍作为组件树的一部分时，它将变为不活跃状态而非被卸载；而当它作为缓存树的一部分插入到DOM中时，它将重新被激活。一个持续存在的组件可通过onActivated（首次挂载时、重新插入时）和onDeactivated（从DOM中移除时、卸载时）注册相应的两个状态的生命周期钩子。这两个钩子不仅可在缓存的根组件中定义，也可在缓存树中的后代组件中定义
+
+<!-- tabs:start -->
+
+<!-- tab:基本语法 -->
+```vue
+<template>
+  <!-- 默认形式：非活跃组件会被缓存 -->
+  <KeepAlive>
+    <component :is="activeComponent"/>
+  </KeepAlive>
+
+  <!-- 包含的组件a,b会被缓存，字符串形式 -->
+  <KeepAlive include="a, b">
+    <component :is="activeComponent"/>
+  </KeepAlive>
+
+  <!-- 包含的组件a,b会被缓存，正则和数组形式 -->
+  <KeepAlive :include="/a|b/">
+    <component :is="activeComponent"/>
+  </KeepAlive>
+  <KeepAlive :include="['a', 'b']">
+    <component :is="activeComponent"/>
+  </KeepAlive>
+  
+</template>
+```
+
+<!-- tab:在KeepAlive内缓存的组件中使用钩子 -->
+```vue
+<!-- 
+  比如下面的钩子函数是a或b组件，也可是a组件下的某个后代组件中定义的
+ -->
+<script setup>
+import { onActivated, onDeactivated } from 'vue'
+
+onActivated(() => {
+  // 调用时机：
+  // 1. 首次挂载时
+  // 2. 每次从缓存中被重新插入时
+})
+
+onDeactivated(() => {
+  // 调用时机：
+  // 1. 从DOM上移除进入缓存时
+  // 2. 组件卸载时
+})
+</script>
 ```
 
 <!-- tabs:end -->
