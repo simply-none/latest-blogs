@@ -4,9 +4,11 @@
 > vuejs官方迁移文档（旧）       
 > https://vue3.chengpeiquan.com/component.html#%E7%94%A8%E6%B3%95%E4%B8%8A%E7%9A%84%E5%8F%98%E5%8C%96
 
-## 准备工作
+## 准备
 
-防止代码出现警告：从vue2迁移到vue3后，需要安装valor插件，同时工作区需要禁用vetur插件
+> 若项目出现问题，时刻注意依赖间版本兼容的问题
+>
+> 未读内容：进阶主题-深入响应式系统后面的
 
 ## 安装
 
@@ -17,6 +19,23 @@
 **vue2和vue3共存**：需要非全局下载vue-cli(Vue2)和@vue/cli(vue3)，然后分别在对应目录下找到例如`D:\vue-version-cache\node_modules\.bin\vue`的文件
 - 然后使用该文件绝对路径进行创建即可
 - 或者将vue文件对应的.bin目录存放到全局环境变量path中，然后对vue文件和vuecmd文件改成vue2或vue3即可。后面就能够直接在命令行中使用vue2和vue3进行项目创建
+
+注意：
+- 防止代码出现警告：从vue2迁移到vue3后，需要安装valor插件，同时工作区需要禁用vetur插件
+
+**Typescript环境支持**：
+
+配置tsconfig.json：
+- `compilerOptions.isolatedModules`应为true，因为vite使用esbuild来转译ts并受限于单文件转译的限制
+- 若使用选项式API，需要将`compilerOptions.strict`或`compilerOptions.noImplicitThis`设为true，才能获得对组件选项中this的类型检查，否则this类型为any
+- 若配置了路径解析别名resolve.alias，需要在`compilerOptions.paths`选项重新配置一遍
+
+vscode插件：
+- typescript vue plugin
+- volar
+
+注意：
+- 为了让vue单文件组件和ts一起工作，同时普通的ts由vscode内置的ts语言服务处理，应该开启Volar的Takeover模式，即在当前的工作空间禁用typescript and JavaScript language features，然后重新启动vscode
 
 ## 模板语法
 
@@ -75,6 +94,31 @@ ref解包（即不需要使用.value进行访问）：
 注意：
 - ref被传递给函数或从一般对象上（作为其属性）被解构时，不会丢失响应性
 
+<!-- tabs:start -->
+
+<!-- tab:typescript用法 -->
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Ref } from 'vue'
+
+// 若未声明类型，会根据初始化的值自动推导
+// Ref<number>
+const year = ref(2023)
+
+// 指定类型：使用Ref
+const year2: Ref<string | number> = ref('2023')
+
+// 指定类型：使用泛型参数
+const year3 = ref<string | number>('2023')
+
+// 若指定了泛型参数未指定初始值：则最终类型将是一个包含undefined的联合类型: Ref<number | undefined>
+const year4 = ref<number>()
+</script>
+```
+
+<!-- tabs:end -->
+
 **reactive**：
 
 定义：
@@ -86,6 +130,29 @@ ref解包（即不需要使用.value进行访问）：
 注意：
 - reactive仅对对象（对象、数组、map、set等）类型有效，对原始类型（string、number等）无效
 - 对响应式对象重新赋值后，将丢失初始引用的响应性连接。也意味着将响应式对象的**属性**赋值给其他变量、进行属性解构、将属性传入一个函数时，将会失去响应性，即修改这三个条件对应的内容时，响应式对象不会同步变更
+
+<!-- tabs:start -->
+
+<!-- tab:基础用法 -->
+```vue
+<script setup lang="ts">
+import { reactive } from 'vue'
+
+// 自动推导：{ title: string }
+const book = reactive({ title: 'vue3' })
+
+// 显式标注：使用接口的形式
+// 注意：和ref不同的是，不推荐使用泛型参数的形式，因为在处理了深层次ref解包的返回值和泛型参数的类型不同
+interface Book {
+  title: string
+  year?: number
+}
+
+const book2: Book = reactive({ title: 'vue3' })
+</script>
+```
+
+<!-- tab:失去响应性的三种方式 -->
 
 ```typescript
 // 失去响应性的三种方式
@@ -102,6 +169,8 @@ count++
 // 3
 fn(state.count)
 ```
+
+<!-- tabs:end -->
 
 响应式状态解构：
 - 当想使用一个响应式对象的多个属性的时候，可通过对象解构获取内部的一些属性，若想使得解构后的属性变量与原响应式对象相关联（变化同步发生），必须对这个响应式对象用toRefs函数包裹后解构，否则引用关联会失效（改变一个，另一个不发生变化）
@@ -294,9 +363,14 @@ nextTick(() => {
 
 ## 组合式API
 
-使用场景：
-- 将零散分布的逻辑组合在一起来维护，还可以将单独的功能逻辑拆分成单独的文件
-- 将同一个功能所属逻辑抽离到函数组件当中（使用`export default function xxx () {}`的形式），在需要的时候进行导入即可
+定义：
+- 组合式API是一系列API的集合，从而可以使用函数而非声明式选项书写vue组件，它涵盖了下列api：响应式api、生命周期钩子、依赖注入
+- 组合式api不是函数式编程（数据不可变），而是以vue中数据可变的、细粒度的响应性系统为基础的
+
+场景：
+- 更好的逻辑复用、更灵活的代码组织：将零散分布的逻辑组合在一起来维护，还可以将单独的功能逻辑拆分成单独的文件；将同一个功能所属逻辑抽离到函数组件当中（使用`export default function xxx () {}`的形式），在需要的时候进行导入即可
+- 更好的类型推导：支持ts
+- 更小的生产包体积
 
 ### 组合式函数
 
@@ -469,7 +543,15 @@ const { qux } = useC(baz)
 **组合式函数 vs 其他模式**：
 - mixin的短板：不清晰的数据来源、命名空间冲突、隐式跨mixin交流
 - 无渲染组件：会有额外的组件嵌套的性能开销。推荐纯逻辑复用用组合式函数，复用逻辑和视图布局时用无渲染组件（插槽组件）
-- react hooks：执行模型不一样
+- react hooks：会在组件每次更新时重新调用，带来以下问题：
+  - hooks有严格的调用顺序，不可写在条件分支上
+  - react组件定义的变量会被钩子函数闭包捕获，若传递了错误的依赖数组，将会变得过期
+  - 昂贵的计算需要使用useMemo
+  - 很难推理出钩子代码运行时机，不好处理需要在多次渲染间保持引用（通过useRef）的可变状态
+- 组合式api：
+  - 仅调用setup一次，不需担心闭包问题，不限制调用顺序，可进行条件调用
+  - 响应性系统运行时会自动收集computed和watch的依赖（无需手动）
+  - 无需手动缓存回调函数来避免不必要的组件更新
 
 ### setup组件选项
 
@@ -557,6 +639,9 @@ setup内其他钩子的使用：
 - 避免直接修改计算属性的值：应该视为只读的，即只更新它所依赖的原状态触发计算属性的更新。故而谨慎使用set/get的对象作为参数。
 
 
+<!-- tabs:start -->
+
+<!-- tab:基础用法 -->
 ```typescript
 import { computed, reactive } from 'vue'
 
@@ -586,9 +671,23 @@ const setAndGetValByBooksLength = computed({
     }
   }
 })
-
-
 ```
+
+<!-- tab:typescript类型定义 -->
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+const count = ref(0)
+
+// 自动推导：ComputedRef<number>
+const double = computed(() => count.value * 2)
+
+// 泛型参数：
+const double = computed<number>(() => count.value * 2)
+</script>
+```
+<!-- tabs:end -->
 
 **setup中的生命周期钩子**：这些hooks接受一个回调函数，当钩子被组件调用时，回调函数将被执行
 - vue3中，在setup内使用生命周期钩子，需要先进行导入才能够使用
@@ -633,6 +732,7 @@ const setAndGetValByBooksLength = computed({
 import { ref, onMounted } from 'vue'
 
 const root = ref(null)
+const root2 = ref<HTMLDivElement | null>(null)
 
 onMounted(() => {
   console.log(root.val, '获取div节点')
@@ -758,12 +858,17 @@ import Child from './Child.vue'
 
 // 第一种方式
 const childRef = ref()
+// 使用typescript：注意，必须赋予初始值null，因为未挂载之前值都是null
+// child实例的类型
+// 若只想获取所有组件共享的属性，而非组件独有的，则可将InstanceType<typeof Child>换成ComponentPublicInstance
+const childRef2 = ref<InstanceType<typeof Child> | null>(null)
+
 // 第二种方式
 const childRef = shallowRef()
 
 // 访问暴露的属性，需要在挂在后才能获取到
 onMounted(() => {
-  console.log(childRef.value.a, childRef.value.b)
+  console.log(childRef.value?.a, childRef.value?.b)
 })
 </script>
 ```
@@ -867,7 +972,7 @@ const app = createApp({})
 app.provide('注入名', value)
 ```
 
-<!-- tab:祖孙组件传递 -->
+<!-- tab:祖孙组件传递选项式 -->
 
 ```typescript
 // 基本用法
@@ -897,6 +1002,49 @@ export default {
 }
 ```
 
+<!-- tab:祖孙组件传递typescript -->
+
+```typescript
+// 基本用法
+// provide-const.ts
+import type { InjectionKey } from 'vue'
+
+const todoLength = Symbol() as InjectionKey<number>
+const todoLengthByComputed = Symbol() as InjectionKey<number>
+  
+export {
+  todoLength,
+  todoLengthByComputed
+}
+
+// 父组件
+import Comp from './Comp.vue'
+import { ref, computed, provide, inject } from 'vue'
+import { todoLength, todoLengthByComputed } from './provide-const.ts'
+
+const todos = ref<string[]>(['看书', '写字', '找对象'])
+
+provide(todoLength, todos.value.length)
+provide(todoLengthByComputed, computed(() => todos.value.length))
+provide(pureTodoLength, todos.value.length)
+
+// 子孙组件
+import { inject } from 'vue'
+import type { InjectionKey } from 'vue'
+import { todoLength, todoLengthByComputed } from './provide-const.ts'
+
+// 第一种语法：使用 泛型显式声明 字符串类型，第二个参数是默认参数，未提供默认参数时类型是number | undefined
+const pureTodoLength1 = inject<number>('pureTodoLength', 0)
+
+// 可以强制类型转换
+const pureTodoLength2 = inject('pureTodoLength') as number
+
+// 第二种语法：和上述一样，引入上面定义的symbol变量
+const todoLength1 = inject(todoLength)
+const todoLengthByComputed1 = inject(todoLengthByComputed)
+
+console.log(todoLength1, todoLengthByComputed1, '获取provide')
+```
 <!-- tabs:end -->
 
 #### 在setup中使用
@@ -1981,6 +2129,7 @@ function addOne () {
 <template>
   <!-- 第二步：触发并抛出事件到父组件 -->
   <div @click="$emit('inFocus', '事件参数')"></div>
+  <div @click="clickHandle"></div>
 </template>
 <script>
 export default {
@@ -1995,7 +2144,7 @@ export default {
 }
 </script>
 
-<script setup>
+<script setup lang="ts">
 // 第一步：事件声明，定义需要抛出的事件列表
 // 注意defineEmits不能在子函数内使用，必须放在顶层作用域下
 const emit = defintEmits(['inFocus', 'submit'])
@@ -2013,8 +2162,10 @@ const emit = defineEmits<{
   update: [arg1: string]
 }>()
 
-// 第二步：触发事件可以用函数：
-function clickHandle () {
+// 第二步：触发事件可以用函数，ts语法
+// 在访问event上的属性时，可能需要使用类型断言，因为某些类型没有这个属性
+function clickHandle (event: Event) {
+  console.log((event.target as HTMLInputElement).value)
   emit('inFocus', '事件参数')
 }
 </script>
@@ -2094,10 +2245,10 @@ function handleClick (arg) {
 
 <!-- tab:props定义 -->
 ```typescript
-// 方式1：字符串数组
+// 方式1：字符串数组（运行时声明，即传递给defineProps的参数会作为运行时的props选项使用）
 const props = defineProps(['title'])
 
-// 方式2：对象形式
+// 方式2：对象形式（运行时声明，即传递给defineProps的参数会作为运行时的props选项使用）
 const props = defineProps({ title: String })
 const props = defineProps({
   title: {
@@ -2107,11 +2258,46 @@ const props = defineProps({
   }
 })
 
-// 方式3：结合ts使用类型标注，在script setup中
+// 方式1、2的升级用法，运行时声明使用PropType给prop标注一个更复杂的类型定义
+import type { PropType } from 'vue'
+
+interface Article {
+  title: string
+  content: string
+}
+
+const props = defineProps({
+  // 相当于在原有的Object类型上断言成一个更具体的类型
+  article: Object as PropType<Article>
+})
+
+// 选项式api用法
+export default defineComponent({
+  props: {
+    article: Object as PropType<Article>
+  }
+})
+
+// 方式3：结合ts 泛型参数使用类型标注，在script setup中（类型声明）
 defineProps<{
   title?: string
   likes?: number
 }>()
+
+// 方式3抽离：
+interface Props {
+  title?: string
+  likes?: number
+}
+
+defineProps<Props>()
+
+// props声明默认值，使用withDefaults（需导入），这时上面的可选标志将去除变为必填
+withDefaults(defineProps<Props>(), {
+  title: 'props用法',
+  likes: () => Date.now()
+})
+
 
 ```
 <!-- tab:获取props -->
@@ -2481,7 +2667,71 @@ ssr应用解决方案：
 
 ## 性能优化
 
+影响web应用性能的两个主要方面：
+- 页面加载性能：首屏内容展示与达到可交互状态的速度
+- 更新性能：应用响应用户操作时的更新速度
 
+页面加载优化：
+- 根据场景选用正确的架构：SPA、SSR、SSG（静态站点生成）
+- 包体积与Tree-shaking优化：压缩打包产物的体积（尽可能的使用构建工具，很多vue api可以在现代打包工具中被tree-shake，即未使用则不会打包到最终产物中）、引入新依赖时小心包体积膨胀（尽量选用提供ES模块格式的依赖，比如lodash-es；查看依赖体积评估其提供功能之间的性价比）
+- 代码分割：构建可以按需/并行加载的文件，仅在需要时才加载，像路由懒加载中使用的异步组件`defineAsyncComponent(() => import('./Foo.vue'))`
+
+更新优化：
+- props的稳定性：仅在符合条件的选项才应该更新，而非更新所有，例如`:active="item.id === activeId"`
+- 无需再次更新的内容，可使用v-once
+- 有条件跳过大型子树或v-for列表的更新，可使用v-memo
+
+通用优化：
+- 大型虚拟列表：使用列表虚拟化提升列表渲染的速度和性能，仅渲染用户视口中能看到的部分。现有的库有：vue-virtual-scroller、vue-virtual-scroll-grid等
+- 减少大型不可变数据的响应式开销：数据量大时，深度响应性会导致不小的性能负担，因为每个属性访问都将触发代理的依赖追踪，可以使用shallowRef、shallowReactive绕开深度响应，然后值改变时需要通过替换整个根状态触发更新
+- 避免不必要的组件抽象：组件实例比普通DOM节点要昂贵得多，为了逻辑抽象创建太多组件实例将会导致性能损失。这在使用频率最高的组件中尤其要注意
+
+性能分析工具：
+- 生产部署时的负载性能分析：PageSpeed Insights、WebPageTest
+- 开发时的性能分析：Chrome开发者工具性能面板（使用app.config.performance）、vue开发者工具
+
+## typescript
+
+### typescript与选项式api
+
+**定义组件**
+
+```vue
+<!-- 当lang=ts存在时，所有模板内（即template块中的）表达式都将享受到更严格的类型检查 -->
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+exprot default defineComponent({
+  props: {},
+  setup(props, context) {
+    return {
+      a
+    }
+  }
+  // xxx
+})
+</script>
+
+<template>
+<!-- 这里的a将会进行类型检查 -->
+  {{ a }}
+  <!-- 若不符合类型，可使用内联类型强制转换 -->
+  {{ (a as number).toFixed(2) }}
+</template>
+```
+
+## 使用vue的多种方式
+
+vue的使用场景：
+- 独立脚本，使用script引入的vue.js文件的（类似jQuery）
+- 作为web component嵌入
+- SPA
+- SSR/全栈
+- SSG/JAMStack（静态站点生成）
+- 桌面应用：electron、tauri
+- 移动端：Ionic vue
+- 混合应用：Quasar
+- 渲染器：比如 [WebGL](https://troisjs.github.io/) 甚至是[终端命令行](https://github.com/vue-terminal/vue-termui)
 
 ## ✅vue3新增的内容
 
