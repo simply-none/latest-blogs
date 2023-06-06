@@ -1,5 +1,9 @@
 # vscode技巧
 
+## vscode 代码图片
+
+> polacode
+
 ## 创建运行任务
 
 - 创建运行任务（ctrl+shift+B），会得到一个.vscode文件夹，包含tasks.json和launch.json俩个文件
