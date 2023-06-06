@@ -6,13 +6,16 @@
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
   "scripts": {
+    "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
+    "time": "node ./time.js",
     "dev": "node ./time.js & docsify serve"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
   },
   "devDependencies": {
+    "husky": "^8.0.3",
     "standard-version": "^9.5.0"
   },
   "standard-version": {
