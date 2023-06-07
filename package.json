@@ -7,7 +7,8 @@
   },
   "config": {
     "commitizen": {
-      "path": "node_modules/cz-customizable"
+      "path1": "node_modules/cz-customizable",
+      "path": "node_modules/cz-conventional-changelog"
     }
   },
   "scripts": {
@@ -27,6 +28,7 @@
     "@commitlint/cz-commitlint": "^17.5.0",
     "commitizen": "^4.3.0",
     "conventional-changelog-atom": "^3.0.0",
+    "cz-conventional-changelog": "^3.3.0",
     "cz-customizable": "^7.0.0",
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",

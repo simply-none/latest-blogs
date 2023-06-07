@@ -16,15 +16,18 @@ module.exports = {
     { value: 'build', name: 'build:   打包' },
     { value: 'revert', name: 'revert:   回退' }
   ],
-  //消息步骤
+  //消息步骤 
   messages: {
     type: '请选择提交类型',
+    scope: '\nDenote the SCOPE of this change (optional):',
     customScope: '请输入修改范围(可选)',
     subject: '请简要描述提交(必填)',
     body: '请输入详细描述(可选)',
     footer: '请输入要关闭的issue(可选)',
     confirmCommit: '确认以上信息提交?(y/n)'
   },
+  scopes: [{ name: 'accounts' }, { name: 'admin' }, { name: 'exampleScope' }, { name: 'changeMe' }],
+  allowCustomScopes: true,
   //跳过问题
   skipQuestion: ['body', 'footer'],
   //subject文字长度默认是
