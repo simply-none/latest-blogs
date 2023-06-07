@@ -2,7 +2,3 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 node ./time.js;
-
-git add . && npx git-cz;
-
-exit 0;
