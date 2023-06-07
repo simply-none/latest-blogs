@@ -7,12 +7,11 @@
   },
   "config": {
     "commitizen": {
-      "path1": "node_modules/cz-customizable",
-      "path": "node_modules/cz-conventional-changelog"
+      "path": "node_modules/cz-customizable"
     }
   },
   "scripts": {
-    "commit": "git-cz",
+    "commit": "git add . && git-cz",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "time": "node ./time.js",
