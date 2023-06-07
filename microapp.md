@@ -1,5 +1,5 @@
 # 需求解析
-
+ 
 1. 在📕【main.js】中
 2. 调用keycloakjs，在ready函数中，拿到keycloak的内容存到全局属性this.$fre，同时启动vue实例
 3. 获取当前组织所有的微应用对象，将其存到state.CurrentMicroApps中，同时通过qiankun的【setGlobalState】函数将该内容放在全局，可供微应用获取
