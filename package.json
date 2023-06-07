@@ -5,7 +5,13 @@
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
   },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
   "scripts": {
+    "commit": "git-cz",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "time": "node ./time.js",
@@ -15,7 +21,12 @@
     "shelljs": "^0.8.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.5",
+    "@commitlint/config-conventional": "^17.6.5",
+    "@commitlint/cz-commitlint": "^17.5.0",
+    "commitizen": "^4.3.0",
     "husky": "^8.0.3",
+    "inquirer": "^8.2.5",
     "standard-version": "^9.5.0"
   },
   "standard-version": {
