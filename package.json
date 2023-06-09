@@ -1,6 +1,6 @@
 {
   "name": "latest-blogs",
-  "version": "7.0.0",
+  "version": "3.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
@@ -11,6 +11,7 @@
     }
   },
   "scripts": {
+    "c": "standard-version",
     "commit": "git add . && git-cz",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
@@ -32,12 +33,5 @@
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
     "standard-version": "^9.5.0"
-  },
-  "standard-version": {
-    "skip": {
-      "changelog": true,
-      "tag": true,
-      "commit": true
-    }
   }
 }
