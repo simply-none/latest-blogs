@@ -15,6 +15,7 @@ const router = createRouter({
   // 路径对象数组
   routers: []
 })
+
 ```
 
 **路由模式**：history选项的变更，它的值的切换需要从vue-router导入对应的函数，比如：
