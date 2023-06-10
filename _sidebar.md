@@ -19,6 +19,8 @@
 
   - [速记](docs/usage-interview/README.md)
 
+    - [快速记忆](z-quick-note.md)
+
   - [突发灵感](docs/usage-inspiration/README.md)
 
   - [usage-books](docs/usage-books/README.md)
