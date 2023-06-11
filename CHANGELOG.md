@@ -1,22 +1,8 @@
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-### [6.0.1](https://github.com/simply-none/latest-blogs/compare/v6.0.0...v6.0.1) (2023-06-11)
-
-## [6.0.0](https://github.com/simply-none/latest-blogs/compare/v5.1.14...v6.0.0) (2023-06-11)
+## [6.0.1](https://github.com/simply-none/latest-blogs/compare/v6.0.0...v6.0.1) (2023-06-11)
 
 
-### ⚠ BREAKING CHANGES
 
-* **change scope:** break desc
-* **jousin:** jousin
-
-### Features
-
-* **accounts:** jk ([9d5c21a](https://github.com/simply-none/latest-blogs/commit/9d5c21a64bef921b619f8992114fbe57bef3f5c8))
-* d ([c83f7e8](https://github.com/simply-none/latest-blogs/commit/c83f7e84b234662cb200ce00684ff7fa4f6420a0))
-* **scope:** subject ([b1e46de](https://github.com/simply-none/latest-blogs/commit/b1e46de84e7141943d2fc214211362be9241e7ad))
+# [6.0.0](https://github.com/simply-none/latest-blogs/compare/v5.1.14...v6.0.0) (2023-06-11)
 
 
 ### Bug Fixes
@@ -29,4 +15,43 @@ All notable changes to this project will be documented in this file. See [standa
 * **d:** d ([5c12ed5](https://github.com/simply-none/latest-blogs/commit/5c12ed550486af85637f916ab7adb369bf4e9f58))
 
 
+### Features
+
+* **accounts:** jk ([9d5c21a](https://github.com/simply-none/latest-blogs/commit/9d5c21a64bef921b619f8992114fbe57bef3f5c8))
+* d ([c83f7e8](https://github.com/simply-none/latest-blogs/commit/c83f7e84b234662cb200ce00684ff7fa4f6420a0))
+* **scope:** subject ([b1e46de](https://github.com/simply-none/latest-blogs/commit/b1e46de84e7141943d2fc214211362be9241e7ad))
+
+
+### Performance Improvements
+
+* **admin:** 忽略项目测试文件 ([598029b](https://github.com/simply-none/latest-blogs/commit/598029b09eb5205391e6469a7e61bb72682d5b11))
+
+
+### Tests
+
 * **jousin:** jousin ([3745c87](https://github.com/simply-none/latest-blogs/commit/3745c8768129e86aed2291a89d7f5955e513fa37)), closes [#23](https://github.com/simply-none/latest-blogs/issues/23)
+
+
+### BREAKING CHANGES
+
+* **change scope:** break desc
+* **jousin:** jousin
+
+
+
+## [5.1.14](https://github.com/simply-none/latest-blogs/compare/v5.1.13...v5.1.14) (2023-04-20)
+
+
+
+## [5.1.13](https://github.com/simply-none/latest-blogs/compare/v5.1.7...v5.1.13) (2023-04-20)
+
+
+
+## [5.1.7](https://github.com/simply-none/latest-blogs/compare/v0.0.3...v5.1.7) (2023-04-20)
+
+
+
+## 0.0.3 (2023-03-27)
+
+
+
