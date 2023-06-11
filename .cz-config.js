@@ -19,7 +19,7 @@ module.exports = {
   //消息步骤 
   messages: {
     type: '请选择提交类型',
-    scope: '\nDenote the SCOPE of this change (可选):',
+    scope: '\n更改范围 (可选):',
     customScope: '请输入修改范围(可选)',
     subject: '请简要描述提交(必填)',
     body: '请输入详细描述(可选)',
@@ -27,11 +27,11 @@ module.exports = {
     footer: '请输入要关闭的issue(可选)',
     confirmCommit: '确认以上信息提交?(y/n)'
   },
-  scopes: [{ name: '笔记' }, { name: 'accounts' }, { name: 'admin' }, { name: 'exampleScope' }, { name: 'changeMe' }],
+  scopes: [{ name: '笔记' }, { name: '配置文件' }, { name: '其他' }],
   allowCustomScopes: true,
   allowBreakingChanges: ['feat', 'fix'],
   //跳过问题
-  skipQuestion: ['body', 'footer'],
+  skipQuestions: [''],
   //subject文字长度默认是
   subjectLimit: 72
 }
