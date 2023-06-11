@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.1](https://github.com/simply-none/latest-blogs/compare/v6.0.0...v6.0.1) (2023-06-11)
+
 ## [6.0.0](https://github.com/simply-none/latest-blogs/compare/v5.1.14...v6.0.0) (2023-06-11)
 
 
