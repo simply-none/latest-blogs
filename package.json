@@ -11,8 +11,8 @@
     }
   },
   "scripts": {
-    "commit": "node ./time.js && git add . && git-cz",
-    "r": "standard-version",
+    "commit": "git pull && node ./time.js && git add . && git-cz",
+    "r": "standard-version && git push --follow-tags origin master",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "time": "node ./time.js",
