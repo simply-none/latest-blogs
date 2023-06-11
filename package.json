@@ -1,6 +1,6 @@
 {
   "name": "latest-blogs",
-  "version": "5.1.14",
+  "version": "6.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
@@ -12,6 +12,7 @@
   },
   "scripts": {
     "commit": "node ./time.js && git add . && git-cz",
+    "r": "standard-version",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "time": "node ./time.js",
@@ -35,9 +36,9 @@
   },
   "standard-version": {
     "skip": {
-      "changelog": true,
-      "tag": true,
-      "commit": true
+      "changelog": false,
+      "tag": false,
+      "commit": false
     }
   }
 }
