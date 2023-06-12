@@ -11,8 +11,9 @@
     }
   },
   "scripts": {
-    "c": "standard-version",
-    "commit": "git add . && git-cz",
+    "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "commit": "git pull && node ./time.js && git add . && git-cz",
+    "r": "standard-version && git push --follow-tags origin master",
     "prepare": "husky install",
     "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
     "time": "node ./time.js",
@@ -28,10 +29,18 @@
     "@commitlint/cz-commitlint": "^17.5.0",
     "commitizen": "^4.3.0",
     "conventional-changelog-atom": "^3.0.0",
+    "conventional-changelog-cli": "^3.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "cz-customizable": "^7.0.0",
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
     "standard-version": "^9.5.0"
+  },
+  "standard-version": {
+    "skip": {
+      "changelog": true,
+      "tag": false,
+      "commit": false
+    }
   }
 }

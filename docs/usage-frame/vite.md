@@ -142,35 +142,63 @@ degit anncwb/vue-vben-admin project-name
 - vite仅执行ts文件的转译工作，不执行任何类型检查，它假定类型检查已经在IDE中或构建过程中处理完了
 - vite不把类型检查作为转换过程的一部分，是因为类型检查需要了解整个模块图，把类型检查塞进vite的转换管道，将损害vite的速度优势
 - vite的工作是尽可能将源码转换为可在浏览器运行的形式，建议将静态分析检查（比如eslint）与vite的转换管道分开
-  - 在构建生产版本是，可以在vite的构建命令之外运行`tsc --noEmit`
+  - 在构建生产版本时，可以在vite的构建命令之外运行`tsc --noEmit`
   - 在开发时，若需更多的IDE提示，建议在一个单独的进程中运行`tsc --noEmit --watch`，或者使用vite-plugin-checker插件
-- vite使用esbuild将ts转译为js，约是tsc速度的20-30倍，同时HMR更新反映到浏览器的时间小于50ms
+- vite使用esbuild将ts转译为js，速度约是tsc的20-30倍，同时HMR更新反映到浏览器的时间小于50ms
 - 使用*仅含类型的导入和导出*形式的语法可以避免潜在的*仅含类型的导入被不正确打包*的问题，比如`import type { T } from '../types'; export type { T };`
 
 **typescript编译器选项**，tsconfig.json中的compilerOptions的配置项需要注意：
-- `isolatedModules`：应该设为true，因为esbuild只执行没有类型信息的转译，并不支持比如`const enum`和隐式类型导入。然而一些库（比如vue）不能很好的和该选项共同工作，可以暂时使用`skipLibCheck: true`缓解
+- `isolatedModules`：该选项应该设为true，因为esbuild只执行没有类型信息的转译，并不支持比如`const enum`和隐式类型导入。而一些库（比如vue）不能很好的和该选项共同工作，可以暂时使用`skipLibCheck: true`缓解
 - `useDefineForClassFields`：在target是ESNext或ES2022及更新版本中默认为true
+- 影响构建的其他字段：extends、importsNotUsedAsValues、preserveValueImports、jsxFactory、jsxFragmentFactory
 
 **客户端类型**：
 - vite默认的类型定义是写给nodejs api的，要将其补充到一个vite应用的客户端代码环境中，需添加一个`d.ts`声明文件，内容为`/// <reference types="vite/client" />`，也可将`vite/client`添加到tsconfig的`compilerOptions.types`中，内容为`'types': ['vite/client']`，这将会提供以下类型定义补充：
   - 资源导入，比如导入一个svg文件
   - `import.meta.env`上vite注入的环境变量的类型定义
   - `import.meta.hot`上的HMR API类型定义
-- 若要覆盖默认的类型定义，需要在三斜线注释之前引入你自定义的类型定义声明文件
+- 若要覆盖默认的类型定义（比如svg文件的类型定义），需要在三斜线注释之前引入你自定义的类型定义的声明文件
 
 **其他功能**：
-- Vue
-- jsx
-- css
-- 静态资源
-- json
-- glob
-- 动态导入
-- webassembly
-- web workers
+
+- vite为vue提供了第一优先级的支持：
+  - @vitejs/plugin-vue支持vue3单文件组件
+  - @vitejs/plugin-vue-jsx支持vue3 jsx
+  - 还有vue2 sfc、jsx支持
+- vite支持jsx、tsx文件，jsx的转译是通过esbuild的（插件：@vitejs/plugin-vue-jsx）
+- 对于css，导入css文件会把内容插到style标签中；支持HMR；能够以字符串形式检索处理后的作为其模板默认导入的css
+  - css、less、sass支持@import导入和url()，能够使用vite别名（alias）
+  - 项目中若包含postcss配置（postcss.config.js），将会自动应用到所有已导入的css中
+  - css最小化压缩在postcss之后运行，会使用build.cssTarget选项
+  - 任何以.module.css为后缀的css（或预处理器）文件是一个css module，以默认导入的方式导入它会返回一个相应的模块对象，比如`import classes from './xx.module.css'; console.log(classes.red)`，会读取到文件的red选择器；若css.modules.localsConvention设置开启了camelCase格式变量命名转换（localsConvention: 'camelCaseOnly'），还可以使用按名导入的方式
+  - vite内置支持各个css预处理器，不需要安装特定的vite插件（比如loader），只需要安装预处理器本身即可
+  - 可以使用`?inline`结尾的导入（vite v4）获取css模块对象，进而获取对应的值，比如`import classes from './xx.css?inline`，这个仅会获取css对象，而不会自动注入css样式到当前页面；对于之前的版本可以使用默认导入和按名导入的方式
+- vite处理静态资源：
+  - 导入一个静态资源会返回解析后的url：`import imgUrl from './img.png'`
+  - 显式加载资源为url（目的是获取该文件的url）：`import imgUrl from './img.png?url'`
+  - 以字符串形式加载资源（目的是获取该文件的原生字符串）：`import imgUrl from './img.png?raw'`
+  - 加载为web worker（获取一个worker函数）：`import worker from './worker.js?worker'`
+  - 构建web worker时，内联为base64字符串：`import inlineWorker from './worker.js?worker&inline'`
+- vite导入多个模块：`import.meta.glob('./dir/*.js')`，这将会导入dir目录下的所有js文件，返回一个以文件名路径为key，模块对象为value的对象；
+  - 匹配到的文件默认是懒加载的，通过动态导入实现，会在构建时分离为独立的chunk；
+  - 若想直接导入所有模块，可以传入`{eager: true}`作为第二个参数；
+  - glob的导入形式可以通过第二个参数选项as属性实现，比如获取文件的内容`{as: 'raw'}`，获取文件的url`{ as: 'url'}`
+  - glob的第一个参数可以是一个glob数组（路径数组）
+  - glob参数支持反向匹配（以!作为glob的前缀），反向匹配一般放在数组结尾，比如匹配当前目录所有文件，除了app.vue外`glob('[./*', '!./app.vue'])`
+  - 导入模块部分内容（按名导入）：`glob('./*.js', { import : 'a'})`，只导入模块的a变量/函数，import和eager共存时可以对模块进行tree-shaking、import的值可以是default，即默认导入
+  - 自定义查询：第二个参数属性可以是query属性，值是一个查询对象，和接口请求的get query查询类似
+  - glob只是vite独有的功能，非web/es标准
+  - glob第一个参数会当成导入标识符，必须是相对路径/绝对路径/别名路径
+  - 所有的glob参数必须是字面量参数传入，不能使用变量或表达式，比如将第一个参数`'../*'`换成一个值为它的变量是不允许的，会报错
+- vite支持带变量的动态导入：`await import('./dir/${file}.js\')`，其中file必须是非嵌套的文件名，即`foo`，而非`bar/foo`
+- 预编译的wasm文件可以通过`?init`导入，默认导出一个初始化函数，函数返回值是导出wasm实例对象的promise
+- web worker可以使`new Worker()`和`new SharedWorker()`导入，相比于worker后缀导入更接近语法标准，更推荐，例如`const worker = new Worker(new URL('./worker.js', import.meta.url))
+  - worker构造函数接受第二个参数，用于创建worker模块的选项使用`{ type: 'module'}`
+  - worker后缀形式的导入对象，也需要使用worker构造函数`new ImportWorkObj()`
+  - 默认情况下，worker将在生产构建中编译成单独的chunk，若想内联成base64，需要添加inline参数`?worker&inline`，若想读取worker url，需要使用`?worker&url`
 - 构建优化：
-  - css代码分割
-  - 预加载指令生成
+  - css代码分割：vite会自动将一个异步chunk模块中使用到的css代码抽取除了，并为其生成一个单独的文件。这个css文件将在该异步chunk加载完成时自动通过link标签载入，该异步chunk会保证只在css加载完成后执行，避免发生[FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content#:~:text=A%20flash%20of%20unstyled%20content,before%20all%20information%20is%20retrieved.)；若你想将所有css抽取到一个文件中，可以设置`build.cssCodeSplit: false`禁用css代码分割
+  - vite会为入口chunk和他们在打包出的html中直接引入自动生成`link ref="modulepreload`标签指令
   - 异步chunk加载优化
 
 ### 依赖预构建
@@ -275,6 +303,14 @@ export default defineConfig({
   ]
 })
 ```
+
+## 构建生产版本
+
+## 部署静态站点
+
+## SSR
+
+
 
 ## 环境变量和模式
 
