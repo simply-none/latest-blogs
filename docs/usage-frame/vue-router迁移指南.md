@@ -50,11 +50,6 @@ function toogleRoute() {
 
 <!-- tabs:end -->
 
-**路由模式**：history选项的变更，它的值的切换需要从vue-router导入对应的函数，比如：
-- `history`对应于`createWebHistory()`函数
-- `hash`对应于`createWebHashHistory()`函数
-- `abstract`对应于`createMemoryHistory()`函数
-
 **单页面应用基路径设置**：
 - 基础路径作为路由模式函数的第一个参数传入，之后匹配的路由都会加上这个基础路径前缀
 - 例如：`history: createWebHashHistory('/base-dir/')`
@@ -62,6 +57,33 @@ function toogleRoute() {
 **路由元信息**：
 - 使用场景：比如希望将任意信息（过度名称、是否由权限）附加到路由上时，可以将这些内容设置在路径对象的meta属性上（与path同级）
 - 路由元信息可以通过$route.meta、导航守卫访问
+- 使用ts时，需要定义meta字段
+
+```typescript
+import 'vue-router'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    // meta对象内的属性及类型定义
+    isAdmin?: boolean
+    requireAuth: boolean
+  }
+}
+```
+
+**router-view**：该标签将显示与url对应的组件。
+
+## 路由模式
+
+**路由模式**：history选项的变更，它的值的切换需要从vue-router导入对应的函数，比如：
+- `history`对应于`createWebHistory()`函数
+- `hash`对应于`createWebHashHistory()`函数
+- `abstract`对应于`createMemoryHistory()`函数
+
+**hash模式**：它在内部传递的实际url之前使用了一个哈希字符#，由于这部分url从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。
+
+**html5模式**：正常的url模式，配置该模式时需要在服务器上配置一个回退路由（不匹配的路由则使用这个），一般是index.html页面，同时页面中再定义一个404路由（更友好）
+
 
 ## 组合式api
 
@@ -78,7 +100,7 @@ function toogleRoute() {
 - 路由跳转的方法是异步的
 
 **路由跳转的方式**：
-- 使用`<router-link :to="xxx">`，点击该链接，会在内部调用下面的路由对象方法
+- 使用`<router-link :to="xxx">`，点击该链接，会在内部调用下面的路由对象方法。不使用a标签是因为该标签可以在不重新加载页面的情况下更改URL、处理URL的生成和编码
 - 使用路由对象的方法，比如push、replace、go
 
 **跳转的参数设置**：
@@ -120,21 +142,26 @@ router.go(-100)
 - 没有硬编码的URL
 - params自动编码/解码
 - 防止url打字错误
-- 绕过路径排序，命名路由优先于path路由
+- 绕过路径排序，直接命中name为该值的路由，而非查询所有路由去匹配路径（命名路由优先于path路由）
 
 ## (动态)路由匹配
 
 **路径参数**：
+- 场景：需要将给定匹配模式的路由映射到同一个组件
 - 语法：用冒号`:`表示，比如`/:id`或`/user:id`，当有路径匹配该路由时，路径参数id可以通过路由参数`$route.params.id`获取
 - 当定义类似路由`/:id`时，vue-router内部使用正则`[^/]+`从url中提取路径参数
 - 一个路由中，可设置多个路径参数
 
 **路径参数与自定义正则表达式结合使用**：
-- `/:id(\\d+)`：表示路由参数id的值可以是正则表达式`\d+`所匹配的内容(即id的值可以是至少包含一个数字的数字字符串)，该例中**需要对`\d`的斜杠`\`进行转义**，例如`/123`, `/234`
-- `/:id+`：表示id可重复至少一次以上，这里的`+`的对象是id，与上述不同，上述`\\d+`表示的是id具体的内容可以是什么，这里表示的是id是可重复一次以上的，例如`/123/234/89`, `/123`
-- `/:id*`：表示id可重复0次以上，即可以不包含id，或者id重复一次以上，例如`/`, `/123`, `/123/12`
+- 语法形式：以冒号开头的变量（通过params.xx获取的），和变量名后括号括起来的正则表达式，即`:variable(re)`，可以和路径中的其他内容结合
+- [路径排名工具](https://paths.esm.dev/)：可以通过路径推算路由形式的path，也可以查看path是否符合路径参数
+- `/:id(\\d+)`：表示路由参数id的值可以是正则表达式`\d+`所匹配的内容(即id的值可以是至少包含一个数字的数字字符串)，例如`/123`, `/234`，注意在该例中**需要对`\d`的斜杠`\`进行转义**
+- `/:id+`：表示id可重复至少一次以上，这里的`+`的对象是id，与上述不同，上述`\\d+`表示的是id具体的内容可以是什么，这里表示的是id是可重复一次以上的，例如`/123/234/89`, `/123`，这时在给参数设值时需要提供一个数组形式
+- `/:id*`：表示id可重复0次以上，即可以不包含id，或者id重复一次以上，例如`/`, `/123`, `/123/12`，这时在给参数设值时需要提供一个数组形式
 - `/:id?`：表示id可重复0次或1次，例如`/`, `/23`, `/34`
 - 当路由使用了自定义正则表达式时，使用api（例如push）进行路由跳转时，其路径参数可以是一个数组形式，数组为空则表示重复0次，数组的长度表示重复`array.length`次，数组每一项的值表示路径参数的值，比如`{ params: { id: [1, 2, 3] }}`可以匹配路由`/:id(\\d+)+`，path的形式则是`/1/2/3`
+- 捕获所有路由，使用`path: '/:patchMatch(.*)*'`的语法形式，其中patchMatch可以是任意值，可通过params.patchMatch设值或查值，其他类似语法还有`path: '/user-patchMatch(.*)*'`
+- 更宽泛的路由匹配需要放在更底部，因为路由匹配是从上往下匹配的，匹配成功即停止匹配。
 
 **sensitive vs strict**：
 - 两个属性都可用于整个全局路由（和history、routes同级）与和当前路由上（和path同级）
@@ -183,6 +210,7 @@ router.push(location)
 注意：
 - 嵌套路由的跳转，可通过name属性进行跳转，也可通过path属性进行跳转
 - 当通过name属性跳转到父路由（上级路由）时，重新刷新加载页面时将会显示嵌套的空子路由(`path: ''`)，而非父路由
+- 在某种情况下，你只想访问父路由，而非嵌套的空子路由，此时你需要使用命名路由访问（即使用name的形式跳转）
 
 ```javascript
 const routes = [
@@ -211,7 +239,7 @@ const routes = [
 
 解释：
 - 想在同一个界面中同时显示多个视图，比如常规的布局（header、aside、main），不仅可以使用组件的方式，还可以使用嵌套视图的方式使用
-- 命名视图通过`<router-view name>`结合components对象（和path同级）一起使用，对象的属性名即name的值，对象的属性值是一个组件
+- 命名视图通过`<router-view name>`结合components属性对象（和path同级）一起使用，对象的属性名即name的值，对象的属性值是一个组件
 
 ```javascript
 // html
@@ -258,11 +286,12 @@ const routes = [
 - redirect属性的值可以是：字符串（带/）、字符串（不带斜杠，表明是一个相对路由）、路径对象、参数为目标路由to且返回值为路径对象的函数
 - 在含有重定向属性的路由中，添加导航守卫（比如beforeEnter）是无效的，因为导航守卫仅应用在目标路由上
 - 在函数重定向属性的路径对象中，可省略component属性，毕竟该路由从不会被访问，而是被重定向，除非该路由是一个含有children的父路由（因为子路由必然会访问到父路由内的内容）
+- 若redirect的值是一个不带`/`的字符串或含path属性（不带`/`)的对象，则会重定向到以当前path为参照的相对位置上，比如当前位置是`/users/:id/posts`，redirect的值是`profile`或`{path: 'profile'}`，则会重定向到`/users/:id/profile`的位置上
 
 **别名**：
 - 在routes下和path属性同级的地方通过配置alias属性生效
 - 路由配置别名之后，匹配别名的路由的url将不会变化，而匹配的路由组件将是component中定义的
-- alias的值可以是：字符串（带/，路径path）、字符串（不带/，表相对路由）、字符串数组
+- alias的值可以是：字符串（带/，路径path）、字符串（不带/，表相对路由）、字符串数组（提供多个别名）。别名中可以带路径参数（如果有的话）
 
 ```javascript
 // 路由别名
@@ -348,7 +377,7 @@ const routes = [
 
 ```typescript
 const router = createRouter({ ... })
-// 可选的next参数，如果选择了，则可不使用return的形式，而是直接调用next(...)
+// 可选的next参数，如果选择了，则可不使用return的形式，而是直接调用next(...)，next的参数是return的返回值
 router.beforeEach((to, from, next?) => {
   // 取消当前的导航
   return false
@@ -387,14 +416,14 @@ router.beforeResolve(async to => {
 作用：用于访问分析，更改页面标题，声明页面等
 
 ```typescript
-router.afterEach((to, from, failure) => {
+router.afterEach((to, from, failure?) => {
   if (!failure) sendToAnalytics(to.fullPath)
 })
 ```
 
 **路由独享的守卫beforeEnter**：
 
-定义：在路由配置中，path同级位置定义beforeEnter字段，接受`(to, from)`两个参数，语法和beforeEach类似
+定义：在路由配置对象route中，path同级位置定义beforeEnter字段，接受`(to, from)`两个参数，语法和beforeEach类似
 
 作用：
 - 只在进入路由时触发，在params、query、hash改变时不会触发
