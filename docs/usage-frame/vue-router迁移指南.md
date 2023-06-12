@@ -6,17 +6,49 @@
 - 不支持base属性，通过路由模式函数的第一个参数替代
 - 不支持fallback属性，可以直接使用[html5 history api](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)进行历史会话访问
 
-```javascript
-import { createRouter, createWebHashHistory } from 'vue-router'
+<!-- tabs:start -->
+
+<!-- tab:创建路由 -->
+```typescript
+// 第1步：定义路由文件router/index.ts
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
-  // 路由模式
-  history: createWebHashHistory(baseurl),
-  // 路径对象数组
-  routers: []
+  history: createWebHashHistory(baseUrl),
+  routes: []
 })
 
+// 第2步：在main.ts中挂载路由
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
 ```
+
+<!-- tab:使用路由 -->
+```vue
+<script setup lang="ts">
+import { useRouter, useRoute } from 'vue-router'
+// 1. 使用useRoute
+const route = useRoute()
+
+// 2. 使用router,获取当前路由
+const router = useRouter()
+const route = router.currentRoute.value
+
+// 路由跳转，路由对象属性有：path、query、hash、params、name，谨记params不能和path一起使用
+function toogleRoute() {
+  router.push({
+    // 路由对象
+  })
+}
+</script>
+```
+
+<!-- tabs:end -->
 
 **路由模式**：history选项的变更，它的值的切换需要从vue-router导入对应的函数，比如：
 - `history`对应于`createWebHistory()`函数
@@ -121,8 +153,8 @@ const routes = [
   { path: '/user-:afterUser(.*)' , component: UserGeneric }
 ]
 
-// 使用api进行路由跳转
-router.resolve({
+// 使用api进行路由跳转，值为：RouteLocation & { href: string; }，可以用作router.push的参数
+const location = router.resolve({
   name: 'user',
   params: {
     // 可以匹配路由`/:id*`
@@ -131,6 +163,7 @@ router.resolve({
     id: [12, 34]
   }
 })
+router.push(location)
 ```
 <!-- tabs:end -->
 
@@ -251,8 +284,8 @@ const routes = [
 - 用于路由和组件解耦，即不通过$route.params获取路由的参数，而是直接通过porps获取
 
 用法：
-- 当路径对象中包含路由参数（以`:`开头的）时，在path属性的同级设置属性props为true之后，路由参数(`route.params`的属性)会当作组件的props传入组件，此时只需要在组件中定义好props即可
-- 若路径对象有命名视图时（即包含components属性），需要为每个命名视图定义路由参数是否作为props传入组件，即`props: { default: true, sidebar: true }`
+- 当路径对象中包含路由参数（以`:`开头的）时，在path属性的同级设置属性props为true之后，在组件中获取到的路由参数(`route.params`的属性)会当作组件的props传入组件，此时只需要在组件中定义好对应的props即可。之后可以直接通过对应的prop获取到相关路由参数的值
+- 若路径对象有命名视图时（即包含components属性），需要在props属性中为每个命名视图（key）定义路由参数是否作为props传入组件（value：boolean），即`props: { default: true, sidebar: true }`
 - 当props属性是一个对象形式（非命名视图中）时，该props内的属性将直接当作props传入到组件中，此时属性值是静态的，因为写路径对象时就固定了
 - 当props是一个参数为route对象的函数时，其返回值作为props传入到组件中，此时属性值由函数返回值决定
 
@@ -289,6 +322,7 @@ const routes = [
   {
     path: '/user',
     component: XX,
+    // 给路由参数name设置别名为alias，之后通过alias读取
     props: route => ({ alias: route.query.name })
   }
 ]
@@ -661,6 +695,7 @@ if (router.currentRoute.value.redirectedFrom) {}
 
 **动态路由的实现**：
 - 增加路由：const removeRoute = router.addRoute()
+  - 添加admin路由：`router.addRoute({path: '/about', name: 'admin', component: About})`
   - 在admin路由上添加子路由：`router.addRoute('admin', { path: 'user', component: User })`
 - 删除路由的方式：
   - 上面的进行removeRoute()

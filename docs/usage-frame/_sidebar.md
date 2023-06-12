@@ -7,7 +7,6 @@
     - [Vue2](docs/usage-frame/Vue2知识点.md)
     - [ElementUI](docs/usage-frame/elementui知识点)
     - [vue3保点](docs/usage-frame/vue3保点.md)
-    - [Vue3](docs/usage-frame/vue3知识点及其代码.md)
     - [pinia](docs/usage-frame/Pinia.md)
     - [vite](docs/usage-frame/vite.md)
     - [vue-router迁移指南](docs/usage-frame/vue-router迁移指南.md)
