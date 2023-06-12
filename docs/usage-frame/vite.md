@@ -265,9 +265,9 @@ degit anncwb/vue-vben-admin project-name
 - public的资源不应被js文件引用
 
 **new URL**：
-- `import.meta.url`是esm原生功能，会暴露当前模块的url，和原生url构造器一起使用，可得到一个完整解析的静态资源url，比如`const imgurl = new URL('./img.png', import.meta.url).href`，这能在现代浏览器中直接使用，不需vite处理
+- `import.meta.url`是esm原生功能，会暴露当前模块的url，和原生url构造器`new URL`一起使用，可得到一个完整解析的静态资源url，比如`const imgurl = new URL('./img.png', import.meta.url).href`，这能在现代浏览器中直接使用，不需vite处理
 - 还支持动态url，通过模板字符串引入动态变量路径
-- 不支持完全的变量名作为路径
+- 不支持完全的变量名作为路径，出上面的模板字符串外，必须是静态字符串
 - 无法在ssr中使用
 
 ## 使用插件
@@ -306,11 +306,110 @@ export default defineConfig({
 
 ## 构建生产版本
 
-## 部署静态站点
+使用`vite build`命令构建生产环境，默认情况下，会使用`root/index.html`作为构建入口。
+
+默认情况下，vite的目标是能够支持原生ESM script标签、原生ESM动态导入、import.meta的浏览器。可以通过build.target选项指定构建目标（最低支持es6）。
+
+对于传统浏览器可以通过插件@vitejs/plugin-legacy使用vite构建产物，该插件会自动生成传统版本的chunk和es语言特性对于的polyfill。兼容版的chunk只会在不支持原生ESM的浏览器进行按需加载。
+
+若想在嵌套的公共路径下部署项目，需要指定base选项，然后所有资源路径（js引入的资源url、css的url()引用、html文件引入的资源）都会根据该配置自动调整。而对于动态链接的url，可以使用全局注入的import.meta.env.BASE_URL变量（只能使用点语法，不能使用中括号语法），它的值就是公共基础路径base的值。
+
+可以通过build.rollupOptions选项来自定义构建，直接调整底层的rollup选项。
+
+可以通过build.rollupOptions.output.manualChunks自定义chunk分割策略。vite2.8之前，chunk默认分割成index和vendor。在之后的版本，manualChunks默认情况下不再被更改，可以在plugins选项中引入vite中的splitVendorChunkPlugin函数继续使用vendor chunk策略。
+
+可以使用vite build --watch启用rollup监听器，也可通过build.watch选项启用，当设置后，对于vite.config.js的改动和任何要打包文件的改动，都会触发重新构建。
+
+### 多页面应用配置
+
+构建多页面项目，需要在build.rollupOptions.input对象选项中指定多个入口点即可，key为页面标识，value为页面路径。若指定了其他的根目录，__dirname的值仍然是当前配置文件所在目录。
+
+示例详解：假设项目中有两个入口src/moduleA/index.html，src/moduleB/index.html，每个入口都有一套完整的路由、组件等内容（和单页面类似）
+1. 配置vite.config.js
+2. 若想在首次加载时就展现moduleA的内容，需要在根目录配置index.html，然后使用`location.href="./src/moduleA/"`跳转到moduleA的入口；或者直接使用`xxx/src/moduleA`这样的路径去访问。
+3. 此时展现了moduleA中mount挂载的根节点内容，但是不会展示`RouterView`节点内容，这时需要在`script setup`中使用路由跳转到当前位置`router.push(xxx)`
+4. 若想在moduleA中跳转到moduleB，重复第2、3步即可
+
+<!-- tabs:start -->
+
+<!-- tab:viteconfig设置 -->
+```typescript
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        // __dirname: viteconfigjs所在目录，路径可以是index.html的路径，也可以是其所在的目录路径
+        main: path.resolve(__dirname, './src/moduleA'),
+        main2: path.resolve(__dirname, './src/moduleB/index.html')
+      }
+    }
+  }
+})
+```
+
+<!-- tab:配置模块跳转 -->
+```vue
+<template>
+  <div id="moduleA">
+    <button @click="toModuleB">跳转到B</button>
+    <router-view/>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+// 跳转到moduleA 路由设置的相关路径，必须，否则不展示router view的内容
+router.push('/')
+
+function toModuleB () {
+  location.href = '/src/moduleB/'
+}
+</script>
+```
+<!-- tabs:end -->
+
+### 缓存优化（实验性）
+
+若想将部署的资源、公共文件使用不同的缓存策略存放在不同的位置，比如：
+- 生成的入口html文件
+- 生成的带hash的文件（js、css、其他文件）
+- 拷贝的公共文件（public目录下的）
+
+```typescript
+// vite.config.ts
+export default {
+  experimental: {
+    renderBuiltUrl (
+      filename: string,
+      { hostId, hostType, type}: {
+        hostId: string,
+        hostType: 'html' | 'js' | 'css',
+        type: 'public' | 'asset'
+      }) {
+        // 如果是public目录下的文件，存放在该位置
+        if (type === 'public') {
+          return 'https://xxx.xx.com/' + filename
+        }
+        // hostId：即文件的路径字符串，extname获取文件类型
+        // 如果是js文件，则：
+        else if (path.extname(hostId) === '.js') {
+          return {
+            runtime: `window.__assetsPath(${JSON.stringify(filename)})`
+          }
+        }
+        else {
+          // 其他文件，存放于该位置
+          return 'https://aa.bb.com/' + filename
+        }
+      }
+  }
+}
+```
 
 ## SSR
-
-
 
 ## 环境变量和模式
 

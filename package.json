@@ -34,7 +34,8 @@
     "cz-customizable": "^7.0.0",
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "vue-router": "^4.2.2"
   },
   "standard-version": {
     "skip": {
