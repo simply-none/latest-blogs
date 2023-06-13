@@ -84,16 +84,6 @@ declare module 'vue-router' {
 
 **html5模式**：正常的url模式，配置该模式时需要在服务器上配置一个回退路由（不匹配的路由则使用这个），一般是index.html页面，同时页面中再定义一个404路由（更友好）
 
-
-## 组合式api
-
-解释：
-- 在模板template中，仍然可以通过$router,$route获取路由对象（提供push等操作的）和路径对象（访问params等）
-- 在script中，通过`useRouter()`, `useRoute()`获取路由对象和路径对象
-- route是一个响应式对象，其任何属性都可被监听，为避免监听整个route对象，应该进行确切监听，比如`watch(() => route.params.id, (id, oldId) => {})`
-- [`useLink()`获取router-link v-slot api暴露的内容，可自定义一个类似router-link的组件](http://events.jianshu.io/p/652edf91b902)
-  - [router-link的扩展](https://router.vuejs.org/zh/guide/advanced/extending-router-link.html)
-
 ## 路由跳转(编程式导航)
 
 注意：
@@ -737,3 +727,403 @@ if (router.currentRoute.value.redirectedFrom) {}
 - `router.hasRoute()`：检查路由是否存在
 - `router.getRoutes()`：获取一个包含所有路由记录的数组
 
+## 组合式api
+
+解释：
+- 在模板template中，仍然可以通过$router,$route获取路由对象（提供push等操作的）和路径对象（访问params等）
+- 在script中，通过`useRouter()`, `useRoute()`获取路由对象和路径对象
+- route是一个响应式对象，其任何属性都可被监听，为避免监听整个route对象，应该进行确切监听，比如`watch(() => route.params.id, (id, oldId) => {})`
+- [`useLink()`获取router-link v-slot api暴露的内容，可自定义一个类似router-link的组件](http://events.jianshu.io/p/652edf91b902)
+  - [router-link的扩展](https://router.vuejs.org/zh/guide/advanced/extending-router-link.html)
+
+### 自定义router-link
+
+定义：
+- 常规的RouterLink组件提供了满足大多数程序的需求，若想自定义一个内容不包裹在a标签内的RouterLink，需要使用custom attribu + v-slot（插槽）的形式来满足这部分内容。
+
+用法：
+
+<!-- tabs:start -->
+
+<!-- tab:定义一个自定义的router-link -->
+
+```vue
+<!-- custom-link -->
+<template>
+<!-- v-bind="$props":这里其实最重要的就是将里面的to传过去，哈哈哈，使用:to="xxx"效果也是一样的 -->
+<!-- 
+  第一种用法获取useLink的返回值：使用v-slot，
+  第二种是直接使用useLink，然后解构，在需要的地方使用即可
+-->
+  <RouterLink
+    v-bind="$props"
+    custom
+    v-slot="{ route, href, isActive, isExactActive, navigate }"
+  >
+    <div class="card" @click="navigate">
+      <div class="left">
+        {{ card.name }}
+      </div>
+      <div class="body">
+        <slot/>
+      </div>
+    </div>
+  </RouterLink>
+</template>
+
+<script setup>
+import { useLink, RouterLink } from 'vue-router'
+
+defineProps({
+  // @ts-ignore，使用ts，需要加上这个，注意，下面的RouterLink.props放这里无效
+  /**
+   * 更加有效的方法是：上面router-link绑定v-bind=$props时，这里是需要定义props的
+   * 而 传统的router-link需要传的attribute有：
+   *    to（必须）
+   *    replace?、
+   *    custom?（自定义router-link必填，Boolean）、
+   *    activeClass?（指向其本身，指向其child时）、
+   *    exactActiveClass（只有精确指向其本身，而非指向其child时）?、
+   *    ariaCurrentValue?（只有精确指向其本身，而非指向其child时，会将属性值传给该组件的aria-current属性）
+   * 
+   * 故而，这里的RouterLink.props可以说等同于
+   *    type RouterLinkProps = {
+   *      to: RouteLocationRaw,
+   *      // 上面的其他属性（可选的）
+   *    }
+   */
+  ...RouterLink.props,
+  // 等同于：RouterLinkProps类型
+  // ...other props
+})
+</script>
+```
+
+<!-- tab:使用自定义的router-link -->
+```vue
+<template>
+  <CustomLink
+    to="#"
+    ></CustomLink>
+</template>
+
+<script setup>
+import { useLink } from 'vue-router'
+import CustomLink from './CustomLink.vue'
+
+const to = {
+  hash: '#'
+}
+
+// 一般router-link的属性都会传过来的，所以使用useLink(props)解析就可以，然后再将这些值（除去RouterLinkProps类型的属性值外，其他的不能通过useLink解析出来，这时需要使用prop）放在需要使用的地方，比如useLink内部插槽自定义的地方
+const defaultPropsValue = useLink(to)
+
+// 在自定义插槽时，必须在点击的地方调用navigate函数，不然不会跳转，使用@click="navigate"即可
+// 
+const { route, href, isActive, isExactActive, navigate } = defaultPropsValue
+</script>
+```
+
+<!-- tab:router-link组件类型追溯 -->
+```typescript
+/**
+ * Component to render a link that triggers a navigation on click.
+ */
+export declare const RouterLink: _RouterLinkI;
+
+/**
+ * router-link组件的类型
+ * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
+ * automatically for JSX.
+ *
+ * @internal
+ */
+export declare interface _RouterLinkI {
+    new (): {
+        $props: AllowedComponentProps & ComponentCustomProps & VNodeProps & RouterLinkProps;
+        // 插槽类型
+        $slots: {
+          // route属性:fullPath hash href matched meta name params path query redirectedFrom
+          // 注意：default插槽的参数返回值：是useLink的返回值（这两个是一样的）
+            default?: ({ route, href, isActive, isExactActive, navigate, }: UnwrapRef<ReturnType<typeof useLink>>) => VNode[];
+        };
+    };
+    /**
+     * Access to `useLink()` without depending on using vue-router
+     *
+     * @internal
+     */
+    useLink: typeof useLink;
+}
+
+export declare interface RouterLinkProps extends RouterLinkOptions {
+    /**
+     * Whether RouterLink should not wrap its content in an `a` tag. Useful when
+     * using `v-slot` to create a custom RouterLink
+     */
+    custom?: boolean;
+    /**
+     * Class to apply when the link is active
+     */
+    activeClass?: string;
+    /**
+     * Class to apply when the link is exact active
+     */
+    exactActiveClass?: string;
+    /**
+     * Value passed to the attribute `aria-current` when the link is exact active.
+     *
+     * @defaultValue `'page'`
+     */
+    ariaCurrentValue?: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false';
+}
+
+declare interface RouterLinkOptions {
+    /**
+     * Route Location the link should navigate to when clicked on.
+     */
+    to: RouteLocationRaw;
+    /**
+     * Calls `router.replace` instead of `router.push`.
+     */
+    replace?: boolean;
+}
+
+/**
+ * User-level route location
+ */
+export declare type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNamedRaw;
+
+/**
+ * Route Location that can infer the possible paths.
+ *
+ * @internal
+ */
+export declare interface RouteLocationPathRaw extends RouteQueryAndHash, MatcherLocationAsPath, RouteLocationOptions {
+}
+
+/**
+ * Route Location that can infer the necessary params based on the name.
+ *
+ * @internal
+ */
+export declare interface RouteLocationNamedRaw extends RouteQueryAndHash, LocationAsRelativeRaw, RouteLocationOptions {
+}
+
+/**
+ * @internal
+ */
+export declare interface RouteQueryAndHash {
+    query?: LocationQueryRaw;
+    hash?: string;
+}
+
+/**
+ * @internal
+ */
+export declare interface MatcherLocationAsPath {
+    path: string;
+}
+
+/**
+ * @internal
+ */
+export declare interface LocationAsRelativeRaw {
+    name?: RouteRecordName;
+    params?: RouteParamsRaw;
+}
+
+/**
+ * Common options for all navigation methods.
+ */
+export declare interface RouteLocationOptions {
+    /**
+     * Replace the entry in the history instead of pushing a new entry
+     */
+    replace?: boolean;
+    /**
+     * Triggers the navigation even if the location is the same as the current one.
+     * Note this will also add a new entry to the history unless `replace: true`
+     * is passed.
+     */
+    force?: boolean;
+    /**
+     * State to save using the History API. This cannot contain any reactive
+     * values and some primitives like Symbols are forbidden. More info at
+     * https://developer.mozilla.org/en-US/docs/Web/API/History/state
+     */
+    state?: HistoryState;
+}
+```
+<!-- tab:useLink函数类型追溯 -->
+```typescript
+export declare function useLink(props: UseLinkOptions): {
+    route: ComputedRef<RouteLocation & {
+        href: string;
+    }>;
+    href: ComputedRef<string>;
+    isActive: ComputedRef<boolean>;
+    isExactActive: ComputedRef<boolean>;
+    navigate: (e?: MouseEvent) => Promise<void | NavigationFailure>;
+};
+
+// 参数
+export declare type UseLinkOptions = VueUseOptions<RouterLinkOptions>;
+
+/**
+ * Type to transform a static object into one that allows passing Refs as
+ * values.
+ * @internal
+ */
+declare type VueUseOptions<T> = {
+    [k in keyof T]: Ref<T[k]> | T[k];
+};
+
+// 返回值
+
+/**
+ * {@link RouteLocationRaw} resolved using the matcher
+ */
+export declare interface RouteLocation extends _RouteLocationBase {
+    /**
+     * Array of {@link RouteRecord} containing components as they were
+     * passed when adding records. It can also contain redirect records. This
+     * can't be used directly
+     */
+    matched: RouteRecord[];
+}
+
+/**
+ * Base properties for a normalized route location.
+ *
+ * @internal
+ */
+export declare interface _RouteLocationBase extends Pick<MatcherLocation, 'name' | 'path' | 'params' | 'meta'> {
+    /**
+     * The whole location including the `search` and `hash`. This string is
+     * percentage encoded.
+     */
+    fullPath: string;
+    /**
+     * Object representation of the `search` property of the current location.
+     */
+    query: LocationQuery;
+    /**
+     * Hash of the current location. If present, starts with a `#`.
+     */
+    hash: string;
+    /**
+     * Contains the location we were initially trying to access before ending up
+     * on the current location.
+     */
+    redirectedFrom: RouteLocation | undefined;
+}
+
+/**
+ * Normalized/resolved Route location that returned by the matcher.
+ */
+declare interface MatcherLocation {
+    /**
+     * Name of the matched record
+     */
+    name: RouteRecordName | null | undefined;
+    /**
+     * Percentage encoded pathname section of the URL.
+     */
+    path: string;
+    /**
+     * Object of decoded params extracted from the `path`.
+     */
+    params: RouteParams;
+    /**
+     * Merged `meta` properties from all the matched route records.
+     */
+    meta: RouteMeta;
+    /**
+     * Array of {@link RouteRecord} containing components as they were
+     * passed when adding records. It can also contain redirect records. This
+     * can't be used directly
+     */
+    matched: RouteRecord[];
+}
+
+/**
+ * {@inheritDoc RouteRecordNormalized}
+ */
+export declare type RouteRecord = RouteRecordNormalized;
+
+
+/**
+ * Normalized version of a {@link RouteRecord | route record}.
+ */
+export declare interface RouteRecordNormalized {
+    /**
+     * {@inheritDoc _RouteRecordBase.path}
+     */
+    path: _RouteRecordBase['path'];
+    /**
+     * {@inheritDoc _RouteRecordBase.redirect}
+     */
+    redirect: _RouteRecordBase['redirect'] | undefined;
+    /**
+     * {@inheritDoc _RouteRecordBase.name}
+     */
+    name: _RouteRecordBase['name'];
+    /**
+     * {@inheritDoc RouteRecordMultipleViews.components}
+     */
+    components: RouteRecordMultipleViews['components'] | null | undefined;
+    /**
+     * Nested route records.
+     */
+    children: RouteRecordRaw[];
+    /**
+     * {@inheritDoc _RouteRecordBase.meta}
+     */
+    meta: Exclude<_RouteRecordBase['meta'], void>;
+    /**
+     * {@inheritDoc RouteRecordMultipleViews.props}
+     */
+    props: Record<string, _RouteRecordProps>;
+    /**
+     * Registered beforeEnter guards
+     */
+    beforeEnter: _RouteRecordBase['beforeEnter'];
+    /**
+     * Registered leave guards
+     *
+     * @internal
+     */
+    leaveGuards: Set<NavigationGuard>;
+    /**
+     * Registered update guards
+     *
+     * @internal
+     */
+    updateGuards: Set<NavigationGuard>;
+    /**
+     * Registered beforeRouteEnter callbacks passed to `next` or returned in guards
+     *
+     * @internal
+     */
+    enterCallbacks: Record<string, NavigationGuardNextCallback[]>;
+    /**
+     * Mounted route component instances
+     * Having the instances on the record mean beforeRouteUpdate and
+     * beforeRouteLeave guards can only be invoked with the latest mounted app
+     * instance if there are multiple application instances rendering the same
+     * view, basically duplicating the content on the page, which shouldn't happen
+     * in practice. It will work if multiple apps are rendering different named
+     * views.
+     */
+    instances: Record<string, ComponentPublicInstance | undefined | null>;
+    /**
+     * Defines if this record is the alias of another one. This property is
+     * `undefined` if the record is the original one.
+     */
+    aliasOf: RouteRecordNormalized | undefined;
+}
+
+
+```
+<!-- tabs:end -->
