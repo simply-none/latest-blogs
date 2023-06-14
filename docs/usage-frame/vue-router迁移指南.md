@@ -436,8 +436,8 @@ router.afterEach((to, from, failure?) => {
 
 **组件内的守卫**：组合式api使用on访问
 - beforeRouteEnter：不能访问this，此时组件未创建，但可通过第三个参数next访问
-- beforeRouteUpdate：当前路由改变（params、query、hash的改变），但是该组件被复用时触发
-- beforeRouteLeave：用于预防用户在未保存修改前突然离开
+- beforeRouteUpdate：当前路由改变（params、query、hash的改变），该组件被复用、更新时触发
+- beforeRouteLeave：用于预防用户在未保存修改前突然离开；在组件离开时触发；
 
 ```typescript
 import { ref } from 'vue'
@@ -690,7 +690,32 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 - 所有导航失败，都会暴露to、from属性，以反映导航的当前位置和目标位置
 
 ```javascript
-router.push('/user').then(failure => {
+/**
+ * NavigationFailure 类型详解
+ * 
+ * 属性：
+ *    cause：Error.cause
+ *    name：Error.name
+ *    stack: Error.stack
+ *    message: Error.message
+ *    type: 导航类型（NavigationFailureType）
+ *    from：上一个路由位置
+ *    to：要导航的下一个路由位置
+ * 
+ * NavigationFailureType 枚举类型详解
+ * 
+ * 定义：导航失败的原因
+ * 枚举成员：
+ *    aborted = 4：中断导航，导航守卫返回了false或调用了next(false)
+ * 
+ *    cancelled = 8：取消导航，另一个导航已经开始
+ * 
+ *    duplicated = 16：重复导航，已处于当前导航路径
+ * 
+ * 
+ */
+import type { NavigationFailure } from 'vue-router'
+router.push('/user').then(failure: NavigationFailure => {
   if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
     failure.to.path
     failure.from.path

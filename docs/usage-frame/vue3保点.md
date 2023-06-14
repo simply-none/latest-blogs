@@ -190,12 +190,61 @@ fn(state.count)
 - 接受一个对象（响应式/普通的），或者一个ref，返回一个原值的只读代理（深层只读代理，所有属性（包括嵌套属性）都不可修改）
 - 其返回值可以解包（和reactive类似），但是解包后的值是一个只读的
 
-**toRef和toRefs**：
+**toRef**：
 
-| API | 语法 | 作用 | 解释|
-| --- | --- | --- | --- |
-| toRef | `toRef(obj, key)` | 创建一个新的ref变量，转换 reactive 对象的某个字段为ref变量；若对应的key不存在，值为undefined；若对不存在的key进行赋值，原ref变量也会同步增加这个变量 |只转换一个字段
-| toRefs | `toRefs(obj)` | 创建一个新的对象，它的每个字段都是 reactive 对象各个字段的ref变量 |转换所有字段
+定义：
+- 基于响应式对象的一个属性，创建一个对应的ref，这个ref会和源属性保持同步，两个互相影响同步更改。
+- 将值、refs（包括reactive等）、getters规范化为refs（3.3+）
+
+语法：
+
+```typescript
+/* 对象属性签名 */
+const person = reactive({
+  name: 'jade',
+  age: 27
+})
+
+// 双向ref，会与源属性同步
+const nameRef = toRef(person, 'name')
+
+// 若第二个参数，不存在于对象属性中，则会传教一个属性，值为undefined，这个也是双向的
+const unexistRef = toRef(person, 'sex')
+
+/* 规范化签名(3.3+) */
+
+// 按原样返回现有的ref
+const name = ref('jade')
+const nameAlias = toRef(name)
+
+// 注意，reactive也是ref，故同上
+const personAlias = toRef(person)
+
+// 创建一个只读的ref，当访问.value时会调用此getter函数
+const foo = toRef(() => props.foo)
+
+// 从非函数的值中创建普通的ref，等同于ref(1)
+const ref1 = toRef(1)
+```
+
+
+**toRefs**：
+
+定义：
+- 将一个响应式对象转换为一个普通对象，普通对象的每个属性都是指向源对象相应的**ref**。每个单独的ref都是使用toRef创建的
+- 用途是解构、展开返回的对象不会失去响应性
+
+```typescript
+const person = reactive({
+  name: 'jade',
+  age: 27
+})
+
+// 调用属性需要加上.value：personRefs.name.value
+const personRefs = toRefs(person)
+// 直接解构，直接调用：name
+const { name } = toRefs(person)
+```
 
 **toValue**:
 
