@@ -287,12 +287,30 @@ export function createProxy (list: ProxyList = []) {
   for (const [prefix, target] of list) {
     const isHttps = httpsRE.test(target)
     ret[prefix] = {
+      // 后端接口url前缀
       target: target,
       changeOrigin: true,
       ws: true,
       // 当请求后端接口地址时，转成另一个不报错的接口地址
       // 比如请求http://localhost:3000下的接口时，会自动转成 本机ip:端口/basic-api
-      rewrite: (pathhttp://localhost:3000下的接口时，会自动转成) => path.replace(new RegExp(`^${prefix}`), ''),
+      // 替换axios设置的baseurl换成后端的二级或其他级别路径
+      /**
+       * example:
+       * 后端地址：https://xxx.xxx.com/v1/api/file-service/file/get-file
+       * target: https://xxx.xxx.com
+       * axios baseurl: /api-test
+       * rewrite: 替换的值，即将 /api-test 替换成 接口目标(除去域名target后的前缀），
+       *    若值为'', 这时你的axios请求接口地址就得是`/v1/api/file-service/file/get-file`
+       *    若值为'/v1/api', 这时你的axios请求接口地址就得是`/file-service/file/get-file`
+       * 
+       *        值为'/v1/api'
+       *        axios.defaults.baseURL = '/api-test'
+       *        axios.get('/file-service/file/get-file')，
+       *        这时，浏览器控制台展示的接口完整路径是：https://localhost:8080（开发地址）+ '/api-test' + '/file-service/file/get-file'
+       * 
+       *        而被代理的后端接口地址其实是：https://xxx.xxx.com（接口地址）+ '/v1/api' + '/file-service/file/get-file'
+       */
+      rewrite: (path) => path.replace(new RegExp(`^${prefix}`), ''),
       // http模式下，需关闭不安全提示
       ...(isHttps ? { secure: false } : {} )
     }
