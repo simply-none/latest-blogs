@@ -49,11 +49,27 @@ pinia的目的：设计成一个拥有组合式API的vue状态管理库
 <!-- tabs:start -->
 <!-- tab:vue3 -->
 ```typescript
-import { createPinia } from 'pinia'
+import { createPinia, setMapStoreSuffix } from 'pinia'
 import { createApp } from 'vue'
+
+// 默认情况下，pinia会在每个store的id后面加上Store的后缀，可以自定义后缀
+// 先完全删除后缀
+setMapStoreSuffix('')
+// 再设置后缀
+setMapStoreSuffix('_store')
+// 之后在引入mapStores的时候，就可以通过this.id_store来访问每一个store了
 
 const app = createApp()
 app.use(createPinia()).mount('#app')
+
+// 设置修改后缀时，还需要添加类型，可以放在全局的global.d.ts文件中，也可以放在当前位置
+import 'pinia' // 在全局.d.ts文件中需要导入
+declare module 'pinia' {
+  export interface MapStoresCustomization {
+    suffix: '_store'
+  }
+}
+
 ```
 
 <!-- tab:vue2 -->
@@ -399,16 +415,20 @@ export default {
 ```typescript
 // 选项式API方式使用
 
+// 若向访问store的大部分内容，又不想映射store的每个属性，可以使用mapStores
 // 通过mapState会映射为只读属性，对于数组的更新方法（push等），还是能修改的，因为是一个引用
 // 通过mapWritableState映射为可读写属性，其参数和mapState类似
 // mapState可以映射state和getter，写法一致
-import { mapState, mapWritableState, mapActions } from 'pinia'
+import { mapStores, mapState, mapWritableState, mapActions } from 'pinia'
 
 import { useCounterStore } from '@/stores/counter'
 import { useCounterStore2 } from '@/stores/counter2'
 
 export default {
   computed: {
+    // 传递一个接一个的store，通过id（第一个参数）+Store的形式访问store
+    // 在其他地方，需要通过this.counterStore.xxxstate访问
+    ...mapStores(useCounterStore, useCounterStore2),
     // 通过this.useCounterStore.count和this.useCounterStore2.count形式访问
     ...mapState(useCounterStore, useCounterStore2),
     // 通过this.count访问useCounterStore.count
@@ -573,4 +593,238 @@ new Vue({
 })
 ```
 
+<!-- tab:添加类型 -->
+```typescript
+// 为新的store属性添加类型，需要扩展PiniaCustomProperties接口
+import 'pinia'
+import type { Ref } from 'vue'
+import type { Router } from 'vue-router'
+
+declare module 'pinia' {
+  // Id, S：State, G：Getters, A：Actions，SS：Setup Store/Store
+  // 在泛型中扩展类型时，他们的名字必须和源代码中完全一样，Id不能命名为id或I，S不能命名为State
+  export interface PiniaCustomProperties <Id, S, G, A> {
+    /* ⛳标注store属性的类型 */
+
+    // 使用一个setter，可以允许字符串和引用
+    set hello (value: string | Ref<string>)
+    get hello: string
+
+    // 也可以直接定义
+    hello: string
+
+    // 添加路由
+    router: Router
+
+    /* ⛳标注options的类型 */
+    $options: {
+      id: Id
+      state?: () => S
+      getters?: G
+      actions?: A
+    }
+  }
+
+  /* ⛳标注state的类型:包括store、store.$state，与PiniaCustomProperties不同的是，只接受State泛型S */
+  export interface PiniaCustomStateProperties<S> {
+    hello: string
+  }
+
+  /* ⛳标注options内部的类型: 只暴露了State和Store */
+  export interface DefineStoreOptionsBase<S, Store> {
+    debounce?: Partial<Record<keyof StoreActions<Store>, number>>
+  }
+}
+```
 <!-- tabs:end -->
+
+## 在组件外使用store
+
+说明：
+- pinia store依靠pinia实例在所有调用中共享同一个store实例
+- 使用store时，直接调用相关的useXxxStore()即可，若在组件之外（比如ts中）调用useXxxStore()函数，必须在app.use(pinia)之后才能调用成功，因为先挂载pinia之后才能使用pinia
+
+<!-- tabs:start -->
+
+<!-- tab:单页面应用 -->
+```typescript
+// main.ts
+import { useUserStore } from './store/user'
+import { createApp } from 'vue'
+import App from './App.vue'
+
+// 此处调用失败，因为是在use pinia之前
+const userStore = useUserStore()
+
+const pinia = createPinia()
+const app = createApp(App)
+app.use(pinia)
+
+// 此处调用成功，因为在use之后
+const userStore = useUserStore()
+
+// router.ts
+import { createRouter } form 'vue-router'
+
+const router = createRouter({
+  // xxx
+})
+
+// 失败，因为不知道router对象是在use pinia之前还是之后引入的
+const store = useStore()
+
+router.beforeEach((to) => {
+  // 成功，因为路由器是在安装之后才开始导航，此时pinia已经被挂载
+  const store = useUserStore()
+
+  if (to.meta.requiresAuth && !store.isLoggedIn) {
+    return '/login'
+  }
+})
+```
+
+<!-- tab:服务端渲染 -->
+```typescript
+/**
+ * 必须把pinia实例传递给useStore()，这样可以防止pinia在不同的应用实例之间共享全局状态
+ */
+```
+
+<!-- tabs:end -->
+
+## 其他
+
+### 热更新
+
+目前，构建工具中只有vite被支持，不过任何实现import.meta.hot规范的构建工具都应该能正常工作。
+
+webpack可能使用的是import.meta.webpackHot而非import.meta.hot
+
+例子：
+
+```typescript
+// store/auth.ts
+import { defineStore, acceptHMRUpdate } from 'pinia'
+
+const useAuth = defineStore('auth', {
+  // 配置
+})
+
+// 确保传递正确的store声明，比如上面的useAuth
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuth, import.meta.hot))
+}
+```
+
+### 组合式store
+
+组合式store是可以互相调用的，但遵循：
+- 如果两个或更多的store相互调用，不可以通过getters或actions创建一个无限循环
+- 如果两个或更多的store相互调用，不可以同时在他们的setup函数中直接互相读取对方的state
+
+```typescript
+const useX = defineStore('x', () => {
+  // 此处是sutup函数内部
+
+  // 在setup函数中调用y，同时y的setup函数中调用x，这是不允许的
+  y.name
+
+  function doSomething () {
+    // 这是可以的,函数作用域
+    const yname = y.name
+  }
+
+  return {
+    name: ref('x')
+  }
+})
+
+const useY = defineStore('y', () => {
+  // 此处是sutup函数内部
+
+  // 在setup函数中调用x，同时x的setup函数中调用y，这是不允许的
+  x.name
+
+  function doSomething () {
+    // 这是可以的,函数作用域
+    const xname = x.name
+  }
+
+  return {
+    name: ref('y')
+  }
+})
+```
+
+嵌套的store，如果一个store使用了另一个store，可以直接导入，并在actions和getters中调用useXXX函数
+
+<!-- tabs:start -->
+
+<!-- tab:函数参数用法 -->
+
+```typescript
+import { useUserStore } from './user'
+
+export const useCartStore = defineStore('cart', () => {
+  // 在store函数顶部引入store
+  const user = useUserStore()
+
+  const list = ref([])
+
+  // 直接使用store函数顶部的store
+  const summary = computed(() => {
+    return user.name
+  })
+
+  function purchase () {
+    return apiPureChase(user.id, this.list)
+  }
+
+  return {
+    summary,
+    purchase
+  }
+})
+```
+
+<!-- tab:对象参数用法 -->
+```typescript
+import { defineStore } from 'pinia'
+import { useUserStore } from './user'
+
+export const userCartStore = defineStore('cart', {
+  getters: {
+    summary (state) {
+      const user = useUserStore()
+      return user.name
+    }
+  },
+  actions: {
+    async orderCart () {
+      const user = useUserStore()
+      try {
+        await apiOrderCart(user.token, this.items)
+      } catch (err) {
+        displayError(err)
+      }
+    }
+  }
+})
+```
+
+<!-- tabs:end -->
+
+### 处理组合式函数
+
+在option stores（即参数是对象形式）的store中，可以在state属性上调用组合式函数，但只能调用返回可写的状态（比如ref）的组合式函数
+
+在setup stores（即函数形式的参数）的store中，可以是在任意位置使用任何组合式函数
+
+```typescript
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    // 调用useLocalStorage
+    user: useLocalStorage('pinia/auth/login', 'bob')
+  })
+})
+```
