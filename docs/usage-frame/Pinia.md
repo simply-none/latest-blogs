@@ -1,12 +1,53 @@
 # Pinia
 
+## 回顾
+
+pinia的特性：
+- 所见即所得：和组件类似的Store
+- 类型安全：自动推断类型，提供自动补全
+- 开发工具支持：支持vue devtools钩子，能够追踪actions、mutations的时间线、在组件中展示它们所用到的Store、让调试更容易的time travel(vue3不支持)
+- 可扩展：通过插件（比如事务、同步本地存储等方式）扩展pinia，以响应store的变更
+- 模块化设计：可构建多个Store，允许打包工具自动拆分它们
+- 极致轻量化：大小只有1kb左右
+- 热更新：步重载页面即可修改Store、开发时可保持当前的Store
+- 支持服务端渲染
+
+pinia的目的：设计成一个拥有组合式API的vue状态管理库
+
+**Store**：
+
+定义：
+- 它是一个保存状态和业务逻辑的实体，不与组件树绑定，承载全局状态。
+- 像永远存在的组件，每个组件都可以读取、写入它
+- 三个概念：state（data）、getter（computed）、action（methods）
+
+使用场景：
+- 存放包含可以在整个应用中/许多地方访问的数据，比如用户信息、通过页面保存的数据、多步骤表单等
+- 避免在store中引入可以放在组件中保存的数据，比如某组件中元素的显隐
+
+**pinia vs vuex（vuex3->vue2、vuex4->vue3）**：
+- 相比于vuex
+  - pinia提供了更简单的API、更符合组合式API风格的API，能够搭配ts提供类型推断支持
+  - 弃用了冗余的mutation
+  - 不需要创建自定义的复杂包装器来支持ts，现在一切都可标注类型，忽视类型使用any或添加`@ts-ignore`注释
+  - 没有太多的魔法字符串注入，只要导入函数调用它们，就能享受自动补全
+  - 不需动态添加store，默认就是动态的
+  - 没有嵌套结构的模块，可以通过导入和使用另一个store来隐含地嵌套stores空间。能够在store之间交叉组合，甚至store间循环依赖
+  - 没有可命名的模块，store的命名取决于定义的时候
+
 ## 准备工作
+
+> 注意：若项目报错，先查看插件版本兼容性，以及插件是否需要其他插件
 
 **安装pinia**：
 - npm install pinia
+- yarn add pinia
+- vue2.7以下版本需要: @vue/composition-api
 
 **创建pinia（根store）**：
 
+<!-- tabs:start -->
+<!-- tab:vue3 -->
 ```typescript
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
@@ -14,6 +55,22 @@ import { createApp } from 'vue'
 const app = createApp()
 app.use(createPinia()).mount('#app')
 ```
+
+<!-- tab:vue2 -->
+```typescript
+import { createPinia, PiniaVuePlugin } from 'pinia'
+import Vue from 'vue'
+
+Vue.use(PiniaVuePlugin)
+const pinia = createPinia()
+
+new Vue({
+  el: '#app',
+  pinia
+})
+```
+
+<!-- tabs:end -->
 
 ## 基础用法实例
 
@@ -26,13 +83,45 @@ import { defineStore } from 'pinia'
 // 导入其他组件
 import { useCounterStore2 } from './useCounterStore2'
 
-// 保持第一个参数counter的唯一性
+/**
+ * defineStore
+ * 
+ * 第一个参数name：表示store id，保持唯一性，必须传入；
+ *    pinia用它来连接store和devtools
+ *    建议name的值和defineStore的返回值useNameStore直接使用相同的名字
+ * 
+ * 第二个参数：setup函数（组合式语法，需要返回一个对象），或options对象（选项式语法）
+ *    在ssr中使用时，setup函数会让其变得更复杂
+ */
+interface State {
+  userList: UserInfo[]
+  user: UserInfo | null
+}
+
+interface UserInfo {
+  name: string
+  age: number
+}
+
 export const useCounterStore = defineStore('counter', {
   state: () => {
     return {
-      count: 0
+      count: 0,
+      // pinia会自动推断state的类型，有些情况需要使用as
+      // 将userList断言成UserInfo[]类型
+      userList: [] as UserInfo[],
+      // 对于尚未加载的数据
+      user: null as UserInfo | null
     }
   },
+  // 单独定义一个接口State
+  state: (): State => {
+    return {
+      userList: [],
+      user: null
+    }
+  },
+  // 在vue2中使用时，规则和vue的data一样，新增不存在的属性，需要使用Vue.set()
   // state简化
   state: () => ({
     count: 0,
@@ -40,31 +129,42 @@ export const useCounterStore = defineStore('counter', {
     nextId: 0
   }),
   getters: {
-    // getter接收一个参数state，鼓励使用箭头函数
+    // getter接收一个参数state，鼓励使用箭头函数，自动推断类型
     double: (state) => state.count * 2,
+    // 自动推导类型
     finishedTodos (state) {
       return state.todos.filter(todo => todo.isFinished)
     },
-    // 定义一个常规函数时，可以通过this访问整个store实例，ts中还需要定义返回类型
-    doublePlus () {
+    // 定义一个常规函数时，可以通过this访问整个store实例，ts中还需要（在使用this的普通函数的getter）定义返回类型，避免ts的已知缺陷，手动设置类型（在js中需要使用JSdoc）
+    doublePlus (): number {
       return this.count * 2 + 9
     },
     // 返回一个函数，让其可以接收参数
+    // 使用的时候类似函数调用语法doublePlusSet.value(2)，而若返回值，直接doublePlusSet就行
+    // 这种形式，getter将不再被缓存，不过可以在return语句之前缓存一些内容，性能更好一些
     doublePlusSet () {
+      // 缓存内容
+      // xxx
       return plus => this.count * plus
     },
-    // 可以访问其他的getters
+    // 可以访问本Store中其他的getters
     doublePlusCopy () {
       return this.doublePlus
     },
-    // 访问其他组件的getters
+    // 访问其他Store中的getters
     getOthersGetter (state) {
       // 先获取整个store对象
       const useCounterStore2F = useCounterStore2()
       return this.count + useCounterStore2F.count
     }
   },
+  /**
+   * actions相当于method（可以和方法一样被调用），是定义业务逻辑的完美选择
+   * 可通过this访问整个store实例，支持完整的类型标注和自动补全
+   * actions可以是异步的，可以在里面await调用任何api和其他的action
+   */
   actions: {
+    // 接收任何数量的参数，返回一个promise或不返回
     increment () {
       this.count++
     },
@@ -85,6 +185,10 @@ export const useCounterStore = defineStore('counter', {
         throw new Error('auth is not')
       }
     }
+  },
+  // 其他的选项options，比如自定义一个debounce
+  debounce: {
+    search: 300
   }
 })
 
@@ -108,6 +212,11 @@ export const useCounterStore = defineStore('counter', () => {
     count,
     increment
   }
+}, {
+  // options自定义选项
+  debounce: {
+    search: 300
+  }
 })
 
 ```
@@ -126,20 +235,27 @@ import { storeToRefs } from 'pinia'
 
 export default {
   setup () {
+    // 作用：创建store实例。在调用这句之前，store是不会创建的
+    // 可以（在不同文件中）定义任意多的store，然后使用类似的下面语法调用它
     const useCounterStoreF = useCounterStore()
 
-    // 注意：不能对useCounterStoreF进行解构，因为他是一个用reactive包装的对象，否则会失去响应性
+    // 注意：对于响应式状态（state、getter），不能直接对useCounterStoreF进行解构，因为他是一个用reactive包装的对象，否则会失去响应性
     // 这是错误的：const { count } = useCounterStoreF
     
-    // 若想保持响应性，需使用 storeToRefs()函数
+    // 若想保持响应性，需使用 storeToRefs()函数，该函数会跳过所有的action和非响应式（非ref、rective等）的属性
     const { count, double } = storeToRefs(useCounterStoreF)
 
-    // 对state进行操作，直接操作
+    // 对于action，直接解构
+    const { increment } = useCounterStoreF
+
+    // 修改state，直接操作，不解构的情况
     function countPlus () {
       useCounterStoreF.count++
     }
 
-    // 对state进行操作，使用$patch，参数为对象形式
+    // 修改state，使用$patch，参数为对象形式，一次更新多个属性
+    // 对象形式语法允许将多个变更归入devtools的同一个条目中（和下面函数的区别），可以进行time travel（vue2）
+    // 这种语法，对于有些变更（数组的添加、移除、splice都需要创建一个新的集合）很难实现或很耗时
     function countPlus2 () {
       useCounterStoreF.$patch({
         count: useCounterStoreF.count + 1,
@@ -147,7 +263,8 @@ export default {
       })
     }
 
-    // 对state进行操作，使用$patch，参数为函数形式
+    // 修改state，使用$patch，参数为函数形式，一次更新多个属性
+    // 推荐
     function countPlus3 () {
       useCounterStoreF.$patch(state => {
         state.count ++
@@ -165,29 +282,63 @@ export default {
 
     // 替换整个state：$state
     function replaceState () {
-      // 这会用下面整个对象替换之前定义时的state
+      // 这会用下面整个对象替换之前定义时的state，这时会破坏响应性
       useCounterStoreF.$state = {
+        name: 'jade',
+        age: 27
+      }
+      // 推荐
+      useCounterStoreF.$patch = {
         name: 'jade',
         age: 27
       }
     }
 
-    // 查看state的状态变更：$subscribe
+    import { MutationType } from 'pinia'
+    // 侦听state的状态变更：$subscribe（类似vuex的subscribe方法）
+    // 和普通的watch()的区别在于，$subscribe在（函数参数的）patch之后只触发一次监听
     function subscribeState () {
       useCounterStoreF.$subscribe((mutation, state) => {
-        // xxx
+        // 值：'direct' | 'patch object' | 'patch  function'
+        console.log(mutation.type)
+        // mutation.storeId === useCounterStoreF.$id -> true
+        console.log(mutation.storeId)
+        // 传递给useCounterStoreF.$patch()的补丁对象，只有mutation.type === 'patch object'时可用
+        console.log(mutation.payload)
+
+        // 在状态变化时，将整个state存到本地storage
+        localStorage.setItem('xxx', JSON.stringify(state))
       }, {
-        // 默认情况下，组件卸载后，这些监听会被删除，若想保留，则需
+        // 默认情况下，state subscription会被绑定到当前组件中。当组件卸载后，这些监听会被删除
+        // 若想保留，则需设置detached属性，将subscription从当前组件分离
         detached: true
       })
     }
+
+    // 对于state的监听，还可以使用watch
+    // 监听整个state
+    watch(useCounterStoreF.$state, (newVal, oldVal) => {
+      // 操作
+    },
+    {
+      deep: true
+    })
+
+    // 监听一个state
+    watch(() => useCounterStoreF.count, (newVal, oldVal) => {
+      // 操作
+    })
 
     // 使用action
     function increment () {
       useCounterStoreF.increment()
     }
 
-    // 观察actions及其结果
+    /**
+     * store.$onAction：监听actions及其结果，回调函数会在action本身之前执行
+     * 
+     * 执行unsubscribe()可以手动删除监听器
+     */
     const unsubscribe = useCounterStoreF.$onAction((
       // action的名称
       name,
@@ -195,9 +346,9 @@ export default {
       store,
       // 传给action的参数
       args,
-      // action返回或resolve的时候执行
+      // 允许在action成功并完全运行后执行的回调函数，等待这任何返回的promise
       after,
-      // action抛出错误或reject的时候执行
+      // action抛出错误或reject的时候执行（追踪运行时错误）
       onError
     ) => {
       // 下面这2行会在action执行之前运行
@@ -219,7 +370,7 @@ export default {
     )
 
     return {
-      // 之后就能够在模板中使用:
+      // 之后就能够在template、methods、computed等地方使用:
       // state: useCounterStoreF.count
       // getter: useCounterStoreF.double
       // action: useCounterStoreF.increment()
@@ -238,7 +389,7 @@ export default {
   computed: {
     // 从setup导出的store可在组件其他位置使用，因为setup选项早于其他选项
     tripleCounter () {
-      return useCounterStoreF.count * 1000
+      return this.useCounterStoreF.count * 1000
     }
   }
 }
@@ -248,7 +399,7 @@ export default {
 ```typescript
 // 选项式API方式使用
 
-// 通过mapState会映射为只读属性
+// 通过mapState会映射为只读属性，对于数组的更新方法（push等），还是能修改的，因为是一个引用
 // 通过mapWritableState映射为可读写属性，其参数和mapState类似
 // mapState可以映射state和getter，写法一致
 import { mapState, mapWritableState, mapActions } from 'pinia'
@@ -266,8 +417,9 @@ export default {
     ...mapState(useCounterStore, {
       // 可以通过this.myCount访问useCounterStore.count
       myCount: 'count',
-      // 对useCounterStore中进行求值，注意mapWritableState不能使用这个（即传递一个函数）
-      myDouble: store => store.count * 2
+      // 对useCounterStore中进行求值，注意mapWritableState不能使用这个（即传递一个函数），同时可以使用this
+      // mapWritableState和mapState的区别就在这，其他写法都一样
+      myDouble: store => store.count * 2  + this.count
     })
     
   },
@@ -277,4 +429,148 @@ export default {
   }
 }
 ```
+<!-- tabs:end -->
+
+
+## 插件
+
+pinia支持扩展的内容，不限于下面这些：
+- 给store添加新属性、新方法
+- 定义store时增加新选项
+- 包装现有的方法
+- 改变或取消action
+- 实现副作用，比如本地存储
+- 仅在特定store中应用插件
+
+语法：通过`pinia.use()`添加到pinia实例上
+
+说明：
+- 
+
+场景：
+- 添加全局对象，比如路由器、modal、toast管理器
+
+举例：返回一个对象将一个静态属性添加到所有store
+
+<!-- tabs:start -->
+
+<!-- tab:vue3中使用 -->
+
+```typescript
+// main.ts
+import { createPinia } from 'pinia'
+import type { PiniaPluginContext } from 'pinia'
+
+/**
+ * pinia插件是一个函数，可以选择性 【返回要添加到store的属性】，
+ * 
+ * 接收一个可选参数context
+ *    context的属性：
+ *      pinia：用createPinia创建的pinia实例
+ *      app：用createApp创建的当前应用实例（vue3）
+ *      store：该插件想扩展的store
+ *      options：定义传给defineStore()的store的(和state、getters、actions同级的）可选对象
+ * 
+ * 创建每个store时都会添加一个叫secret的属性
+ * 安装此插件后，插件可以保存在不同文件中
+ * 
+ * 注意：
+ *    插件上的state变更、添加（包括调用$patch）都是发生在store激活之前（useXXX()），这不会触发任何订阅函数
+ */
+function SecretPiniaPlugin (context: PiniaPluginContext) {
+  return {
+    secret: 'hhhh'
+  }
+}
+
+// 直接在store上设置该属性，如果可以，请使用返回对象的方法（上面的例子（能够被devtools追踪），或者添加一些增强代码
+function SecretPiniaPlugin ({ store, options }) {
+  /* 第一种： */
+  // 每个store都被reactive包装过，所以可以自动解包任何它包含的refs（ref、computed等），不需要使用.value
+  store.hello = ref('hello')
+  // 增强代码，确保能被devtools追踪
+  if (process.env.NODE_ENV === 'development') {
+    store._customProperties.add('hello')
+  }
+
+  /* 第二种： */
+  // 确保没重写store中的secret
+  if (!Object.prototype.hasOwnProperty(store.$state, 'secret')) {
+    const secret = ref('hhh')
+    // 在$state上设置该属性，可以在devtools中使用它，在ssr时被正确序列化
+    store.$state.secret = secret
+  }
+  // 将ref从state转移到store上
+  // 这样store.hasError、store.$state.hasError都可以正确访问，并且都是访问的同一个变量
+  // 这时，不要返回，不然会显示2次
+  store.hasError = toRef(store.$state, 'secret')
+
+  // 添加一个外部属性，比如router对象
+  // 这时需要使用markRaw包装一下，再传给pinia store
+  // import { markRaw } from 'vue'
+  store.router = markRaw(router)
+
+  // 在插件中调用$subscribe和$onAction
+  store.$subscribe(() => {
+    // xxx
+  })
+  store.$onAction(() => {
+    // xxx
+  })
+
+  // 添加一个防抖选项，实现防抖效果
+  // import debounce from 'loadsh/debounce'
+  // 假设已经定义了options: debounce: { search: 300 }
+  if (options.debounce) {
+    return Object.keys(options.debounce).reduce((debouncedActions, action) => {
+      debouncedActions[action] = debounce(
+        store[action],
+        options.debounce[action]
+      )
+      // 给每个action都加上防抖
+      return debouncedActions
+    }, {})
+  }
+
+
+}
+
+const pinia = createPinia()
+
+// 使用插件，将插件交给pinia
+// 插件只会应用于 在pinia传递给应用后app.use(pinia)创建的store
+pinia.use(SecretPiniaPlugin)
+
+// 假设定义了一个useSecretStore的store文件
+import { useSecretStore } from './xxx.ts'
+
+const useSecretStoreF = useSecretStore()
+
+// 这样是可以输出 hhh 的
+console.log(useSecretStoreF.secret)
+```
+
+<!-- tab:vue2中使用 -->
+```typescript
+// main.ts
+import { set, toRef } from '@vue/composition-api'
+import { createPinia } from 'pinia'
+import Vue from 'vue'
+
+const pinia = createPinia()
+
+pinia.use(({ store }) => {
+  // vue < 2.7使用@vue/composition-api
+  // vue = 2.7使用Vue.set()
+  const secretRef = ref('secret')
+  set(store.$state, 'secret', secretRef)
+  set(store, 'secret', secretRef)
+})
+
+new Vue({
+  el: '#app',
+  pinia
+})
+```
+
 <!-- tabs:end -->
