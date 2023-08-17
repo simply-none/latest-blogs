@@ -173,3 +173,10 @@ module.exports = {
 - 在固定vue和vue-template-compilier的版本后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失
 - 在取消上述两个的版本固定后，同时删除node_modules、package-lock.json之后，再次安装运行，错误消失（莫名奇妙哦，错误就没了，hhhh）
 
+## 报错14：刷新页面出现404 Not Found，The requested URL 'xxx' was not found on this server.
+
+问题：在配置了vue.config.js的代理之后，部分命中了该代理的页面出现了上述报错
+
+排错思路：有可能是vue.config.js缓存有关，有可能是和其他内容有关，比如本例中安装了mockjs。
+
+解决：删除vue.config.js修改的相关内容后，电脑关机，重启运行项目，错误消失。
