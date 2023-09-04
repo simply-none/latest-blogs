@@ -2396,6 +2396,19 @@ render() {
 - 可以同时使用多个修饰符
 - 使用修饰符时，需要注意调用顺序，修饰符的作用顺序是从左往右的，顺序不一样，效果不一样
 - 不要同时使用prevent和passive
+- capture、once、passive三个修饰符与addEventListener函数的第三个参数选项对象对应
+
+```javascript
+eventTarget.addEventListener(type, listener, options/useCapture)
+options = {
+  // 在事件的捕获阶段触发listener，useCapture就是该选项的值
+  capture: true,
+  // 只调用一次
+  once: true,
+  // 永远不会调用preventDefault()，即使listener内部调用了也不生效
+  passive: true,
+}
+```
 
 **浏览器事件的默认行为**：
 
