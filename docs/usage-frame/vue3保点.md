@@ -78,10 +78,21 @@ typescript用法：
 - 例如，定义ref节点，`const formRef = ref<HTMLElement | null>(null)`
 - 例如，定义组件，`const child = ref<Child | null>(null)`
 
+```typescript
+// 使用InstanceType定义组件的类型
+import Child from './child.vue'
+import {ElImage} from 'element-plus'
+
+type ElImageCtx = InstanceType<typeof ElImage>;
+type ChildCtx = InstanceType<typeof Child>;
+
+let childRef = ref<ElImageCtx | null>(null)
+```
+
 在组件中使用：
 - `<input ref="input"/>`结合`const input = ref(null)`一起使用
 - `<input :ref="el => {// 组件每次更新都会被调用，用于元素赋值}"/>`
-- ref也可直接作用在组件上，用于调用子组件expose（即`defineExpose({})`导出的方法（只在使用了script setup时）
+- ref也可直接作用在组件上，用于调用子组件expose（即`defineExpose({})`导出的）暴露的方法（只在使用了script setup时）
 
 定义：
 - 创建一个响应式的引用，然后可以在任何地方起作用（通过value属性访问）
@@ -232,7 +243,7 @@ const ref1 = toRef(1)
 
 定义：
 - 将一个响应式对象转换为一个普通对象，普通对象的每个属性都是指向源对象相应的**ref**。每个单独的ref都是使用toRef创建的
-- 用途是解构、展开返回的对象不会失去响应性
+- 用途是解构/展开返回的对象时不会失去响应性
 
 ```typescript
 const person = reactive({
@@ -766,7 +777,7 @@ const { qux } = useC(baz)
   - 响应性系统运行时会自动收集computed和watch的依赖（无需手动）
   - 无需手动缓存回调函数来避免不必要的组件更新
 
-### setup组件选项
+### 🛑setup组件选项
 
 定义：setup选项在组件被创建之前执行，一旦props被解析完成，它就将被作为组合式api的入口
 
