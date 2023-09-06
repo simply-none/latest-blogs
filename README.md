@@ -1,6 +1,12 @@
 #### 每日十五谏
  
-> 本博客运行依赖：`npm i docsify-cli -g --registry=https://registry.npmmirror.com`     
+> 本博客运行依赖：`npm i docsify-cli -g --registry=https://registry.npmmirror.com`    
+
+> **注意事项**    
+> ❌：表示实际上和记录有误或不一致的内容    
+> 🟢：表示不太熟悉且重要的内容     
+> 😢：表示尚未搞懂的内容   
+> 🛑：阅读中断标志    
 
 ##### 害怕改变，没有勇气及时止损。
 

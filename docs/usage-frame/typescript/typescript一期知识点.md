@@ -7,6 +7,13 @@
 > 注意：可能有些过时内容    
 > 😢😢😢表示文中不明白的，未记录的内容
 
+
+> **注意事项**    
+> ❌：表示实际上和记录有误或不一致的内容    
+> 🟢：表示不太熟悉且重要的内容     
+> 😢：表示尚未搞懂的内容   
+> 🛑：阅读中断标志
+
 ## 变量声明
 
 var、let、const比较：
@@ -54,8 +61,8 @@ function f(x: number) {
 ```typescript
 // 解构数组
 let input = [1, 2]
-// 这里的分号不能省略
 let [first, second] = input;
+// 上面的分号不能省略，或者这里的开头添加分号，不然会变成input[first, second]的情形
 [first, second] = [second, first]
 console.log(first, second)
 ```
@@ -114,7 +121,7 @@ import logo from './assets/logo.png'
 1. `unknown`类型
 定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 使用：
-- 若想缩小改类型的范围（类型收窄），可以使用条件语句+逻辑判断（typeof、比较符、类型检查、类型断言），之后就只能使用范围下类型的方法/属性
+- 若想缩小改类型的范围（类型收窄），可以使用条件语句+逻辑判断（typeof、比较符、类型检查、类型断言），之后就只能使用该范围内的类型方法/属性
 
 注意：
 -unknown只能赋值给unknown和any
@@ -126,7 +133,7 @@ import logo from './assets/logo.png'
 - 用于旧项目迁移到typescript项目
 
 注意：
-- 声明且没对变量赋值，若未指定类型，会被识别为 any 类型，但是不能调用该值没有的方法或属性
+- 声明且没对变量赋值，若未指定类型，会被识别为 any 类型，但是不能调用该值没有的方法或属性。比如它的类型可能是undefined，故在赋值之前不能调用某些方法，比如toString。
 
 ```typescript
 let a;
@@ -180,6 +187,8 @@ a.concat([])
 
 9.  `bigint`类型
 
+- 后缀以n结尾，环境必须是es2020+
+
 10. `string`类型
 
 语法：
@@ -220,11 +229,14 @@ interface IArguments {
 // 非具名元素，可选参数
 const tuple: [string, number, boolean?] = ['1', 1, true]
 // 非具名元素，可选参数，剩余参数
-const tuple1: [string, number?, any[]] = ['1', 1, 2, {}]
+const tuple1: [string, number?, ...any[]] = ['1', 1, 2, {}]
 // 具名元素，可选参数
 const tuple2: [a: string, b: number, c?: boolean] = ['1', 1, true]
 // 只读元素，不能修改元素的值
 const tuple3: readonly [...any[]] = [1, 2, 3]
+
+// 解构元组: a: '1', b: 1, c: [2, {}]
+const [a, b, ...c] = tuple1
 ```
 
 **注意**：
@@ -262,7 +274,7 @@ enum Color { Red = 1, Blue, Green }
 type enumChildType = Color.Red
 // Type 'Color.Blue' is not assignable to type 'Color.Red'.
 let a: enumChildType = Color.Blue
-// 而下面的就没错，因为是同一种类型（类型兼容），可以进行赋值操作
+// 而下面的就没错，因为是同一种类型（类型兼容），可以进行赋值操作，貌似在演练场是报错的，报错同上❌
 let a: enumChildType = 23
 ```
 <!-- tabs:end -->
@@ -272,16 +284,31 @@ let a: enumChildType = 23
 - 枚举成员可以使用常量枚举表达式（表达式字面量、对前面枚举成员的引用、一元运算符、二元运算符、计算值等）初始化
 - 若枚举常量表达式的结果为NaN或infinite，则会在编译阶段出错；直接赋值NaN或infinite不会出错
 - 枚举是一个在运行时真正存在的对象，故而在兼容的情况下，枚举可以赋值给对象
-- 可以使用`keyof typeof enumVal`获取enumVal里面所有字符串的类型
+- 可以使用`keyof typeof enumVal`获取enumVal里面所有枚举成员的键的字符串字面量的类型联合
 - 数字枚举成员具有反向映射，例如`enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`
 
+```typescript
+// 关于keyof和typeof解释
+enum Color { Red = 1, Blue, Green }
 
-14. `object`类型
+// 类型为：{Red: 1, Blue: 2, Green: 3}
+// 顾名思义，typeof即获取右侧值的类型
+type ColorType = typeof Color
+// 故而赋值时，值和类型是相等的，不能多也不能少
+let c: ColorType = {Red: 1, Blue: 2, Green: 3}
+
+// 而keyof即获取值或类型的属性的字面量集合，即：'Red' | 'Blue' | 'Green'
+type ColorKeyType = keyof ColorType
+let k: ColorKeyType = 'Red'
+```
+
+
+1.  `object`类型
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
 **object vs Object vs {}**：
 - 只有非原始类型（null、undefined、boolean、number、string、symbol、bigint）才能赋给object类型
-- 所有类型都能够赋值给Object和{}类型
+- 所有类型都能够赋值给Object和{}类型，undefined和null除外
 - Object是object的父类型，也是object的子类型
 
 15. 构造函数类型
@@ -433,7 +460,7 @@ person.on('firstNameChanged', (newName) => {
 })
 person.on('ageChanged', (newAge) => {
   // 此处能够自动推断出，newAge的类型是person[age]，即数字字面量类型，所以下面的条件判断不会报错
-  if (newAge < 0>) {
+  if (newAge < 0) {
     console.warn('warning!')
   }
 })
@@ -475,7 +502,7 @@ console.log(c[getClassNameSymbol](), 'get c')
 定义：使用`&`分隔类型，一般用于联合类型、接口交叉，若两者之间无交集，则该值为never类型
 
 使用：
-- 交叉类型常用来定义公共的部分
+- 交叉类型**常用来定义公共的部分**
 - 原子类型合并成交叉类型，得到的类型是never，因为不能同时满足这些原子类型
 - 交叉类型常用于将多个接口类型合并为一个类型，等同于接口继承（合并接口类型）
 
@@ -590,7 +617,7 @@ function assertNever (x: never): never {
 }
 ```
 
-## 索引类型（index types）
+## 🟢索引类型（index types）
 
 定义：使用索引类型后，编译器就能够检查使用了动态属性名（即属性不确定的类对象）的代码
 
@@ -617,8 +644,8 @@ interface Car {
   year: number
 }
 let taxi: Car = {
-  manufacturer: 'toyota'
-  model: 'camry'
+  manufacturer: 'toyota',
+  model: 'camry',
   year: 2014
 }
 // 值为'manufacturer' | 'model' | 'year'
@@ -643,7 +670,7 @@ function getValue<T extends object, K extends keyof T>(o: T, k: K) {
 }
 ```
 
-<!-- tab:字符串索引签名与其的使用 -->
+<!-- tab:字符串索引签名与keyof的使用 -->
 ```typescript
 interface Dictionary<T> {
   // 字符串索引签名的类型
@@ -651,11 +678,11 @@ interface Dictionary<T> {
 }
 // 值为string | number,这个特性和js一致，因为对象可以通过字符串引用，也能通过数字引用，效果一致；当同时出现相同的字符串和数字时会报错的
 let key: keyof Dictionary<number>
-// 这里面Dictionary<number>其实是T，而['foo']是K，合起来就是T[K]，值为number
+// 这里面Dictionary<number>其实是{ [key: string]: number }，而['foo']是属性[key: string]的一个表示，合起来就是值的类型，即number
 let value: Dictionary<number>['foo']
 ```
 
-<!-- tab:数字索引签名与其的使用 -->
+<!-- tab:数字索引签名与keyof的使用 -->
 ```typescript
 interface Dictionary<T> {
   // 数字索引签名的类型
@@ -679,7 +706,7 @@ let value: Disctionary<number>[42]
 
 注意：
 - 若想给映射类型添加新成员，需要结合交叉类型一起使用
-- 对于同态转换（Readonly、Partial、Pick，指的是需要输入类型来拷贝属性，Record不是，因为他不需要输入类型），编译器知道在添加任何新属性之前拷贝所有存在的属性修饰符
+- 对于同态转换（Readonly、Partial、Pick，指的是需要输入类型来拷贝属性，类似下面示例中的`T[P]`，Record不是，因为他不需要输入类型），编译器知道在添加任何新属性之前拷贝所有存在的属性修饰符
 
 <!-- tabs:start -->
 <!-- tab:Readonly -->
@@ -715,7 +742,7 @@ type Record<K extends keyof any, T> = {
 3. `Readonly<Type>`：表只读，构造一个所有属性均为只读的类型Type
 4. `Record<Keys, Type>`：构造一个类型，他的属性名为联合类型Keys（一般是字符串字面量类型的联合，其中类型string也可看做所有字符串的联合类型）的因子类型K（`keyof Keys`），属性值的类型为Type
 5. `Pick<Type, Keys>`：表挑选，从类型Type中挑选只存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
-6. `Omit<Type, keys>`：表剔除，从类型Type中剔除存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
+6. `Omit<Type, keys>`：表剔除，从类型Type(一般是对象接口类型)中剔除存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
 7. `Exclude<Type, ExcludedUnion>`：表排斥，从联合类型Type中剔除能够赋值给联合类型ExcludedUnion的因子类型T后，构造一个新的类型
 8. `Extract<Type, Union>`：表提取，从联合类型Type中提取能够赋值给联合类型Union的因子类型T，构造一个新的类型
 9. `NonNullable<Type>`：从类型Type中剔除null和undefined后，构造一个新的类型
@@ -952,10 +979,30 @@ type TitleGreeting = Uncapitalize<Greeting>
 
 **typeof**:
 
-定义：获取变量或属性的类型
+定义：
+- 获取右侧标识符（变量或属性值）的类型
+- 对于获取有些表达式、函数调用、类型的类型会报错，即不能使用typeof XXX的形式
 
 语法：
-- `type DivType = typeof document.createElement('div')`：获取dom元素div的类型
+```typescript
+// 报错，获取dom元素div的类型（右侧不能是函数调用）
+type DivType = typeof document.createElement('div')
+
+// 获取接口类型
+interface Person {
+  name: string;
+  age: number;
+}
+// 报错，右侧不能是类型，应该是具体的值或变量
+type PersonType = typeof Person
+
+let p: Person = {
+  name: 'jade',
+  age: 27
+}
+// 此次是正确的
+type pType = typeof p
+```
 
 **infer**：
 
@@ -968,27 +1015,27 @@ type TitleGreeting = Uncapitalize<Greeting>
 ```typescript
 // 推断数组/元组的类型，infer U获取的就是数组的元素类型联合
 type InferArray<T> = T extends (infer U)[] ? U : never;
-type I0 = InferArray<[number, string]>; // infer U : string | number;
+type I0 = InferArray<[number, string]>; // infer U 或者说 I0: string | number;
 
 // 推断第一个元素的类型，反过来就是推断最后一个元素类型
 type InferFirst<T extends unknown[]> = T extends [infer P, ...infer _] ? P : never;
-type I1 = InferFirst<[3, 2, 1]> // infer P: 3
+type I1 = InferFirst<[3, 2, 1]> // infer P 或者说 I1: 3
 
 // 推断函数类型的参数(元组类型)
 type InferParam<T extends Function> = T extends (...args: infer R) => any ? R : never
-type I2 = InferParam<((string, number) => any)>;  // infer R: [string, number]
+type I2 = InferParam<((string, number) => any)>;  // infer R 或者说 I2: [string, number]
 
 // 推断函数类型的返回值
 type InferReturn<T extends Function> = T extends (...args: any) => infer R ? R : never;
-type I3 = InferReturn<((string, number) => string)>;  // infer R: string
+type I3 = InferReturn<((string, number) => string)>;  // infer R 或者说 I3: string
 
 // 推断Promise成功值的类型
 type InferPromise<T> = T extends Promise<infer U> ? U: never;
-type I4 = InferPromise<Promise<string>>;  // infer U: string
+type I4 = InferPromise<Promise<string>>;  // infer U 或者说 I4: string
 
 // 推断字符串字面量类型的第一个字符对应的字面量类型
 type InferString<T extends string> = T extends `${infer First}${infer _}` ? First : [];
-type I5 = InferString<'Hello, jade'>; // infer First: 'H'
+type I5 = InferString<'Hello, jade'>; // infer First 或者说 I5: 'H'
 ```
 
 **extends**：
@@ -1009,20 +1056,24 @@ type User = { name: string, age: number }
 ```
 
 ### 类型声明
-定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，反之不可。因为子类有父类所有方法/属性，能够被调用
+
+定义：只能够将大的结构类型赋值给小的结构类型。比如只能将子类赋值给父类，因为子类有父类所有方法/属性，能够被调用；反之不可，因为父类可能没有子类的某个方法，调用时会报错。
 
 ### 类型推断
-定义：typescript 会在无明确类型（比如初始化赋值、有默认值的函数参数、函数返回值的类型）时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性     
+
+定义：typescript 会在无明确类型（比如初始化赋值、有默认值的函数参数、函数返回值的类型）时按照类型推断规则推测出该值的类型，以帮助我们保持代码精简和高可读性
+
 上下文归类：类型推断的反方向，通常会在包含函数的参数、赋值表达式右侧、类型断言、对象成员和数组字面量、返回值语句中用到
 
 ### 类型断言
+
 定义：手动指定一个值的类型，就可以调用该类型的方法而不在编译时报错（但在运行时该报错还是会报错）
 
 语法：
 - `value as type`
 - `<type>value`
-- `value!`：后缀表达式操作符`!`，用于①排除该值可能是null、undefined，以及②表明value会被明确的赋值
-- `value as Type1 as OtherType`：双重断言，先将value断言为type1（比如any，因为any可以断言为任何类型，同时任何类型都可以断言为any），然后又将type1的类型断言为OtherType
+- `value!`：后缀表达式操作符`!`，用于1️⃣排除该值可能是null、undefined，以及2️⃣表明value会被明确的赋值
+- `value as Type1 as OtherType`：双重断言，先将value断言为type1（比如any或unknown，因为any可以断言为任何类型，同时任何类型都可以断言为any），然后又将type1的类型断言为OtherType
 
 ```typescript
 // 第一种方式：<type>value
@@ -1070,7 +1121,7 @@ if ((pet as Fish).swim) {
 ```
 
 **扩展**：
-- 类型拓宽：在var、let定义的变量中，若未显式声明类型，该变量的类型会被自动推断并拓宽，比如`let a = 1`，则a的类型会扩宽为number，同时值为null/undefined，会被拓宽为any（即使是严格空值模式下，可能有些老浏览器不支持）。所以这将可能导致一些错误，即将这种未显式声明类型的变量赋值给某些特定的类型时，会发生错误（比如扩宽为string的变量，就不能赋值给具体类型`'1' | '2'`的变量
+- 类型拓宽：在var、let定义的变量中，若未显式声明类型，该变量的类型会被自动推断并拓宽，比如`let a = 1`，则a的类型会扩宽为number，同时值为null/undefined，会被拓宽为any（即使是严格空值模式下，可能有些老浏览器不支持）。将这种未显式声明类型的变量（或者是更宽泛的类型）赋值给某些具体的类型时，会发生错误（比如扩宽为string的变量，就不能赋值给具体类型`'1' | '2'`的变量。反之可以将具体的类型赋值给符合条件的更宽泛的类型。
 - 类型缩小：使用类型守卫、`===`、其他控制流语句（if、三目运算符、switch）将宽泛的类型收敛为更具体的类型
 
 ```typescript
@@ -1096,11 +1147,10 @@ const obj3 = {
 
 ### 类型兼容
 
-定义：
-- 由于typescript使用的是结构类型的系统，当比较两种不同的类型时，并不在乎他们从何而来，只会比较他们的结构是否兼容（包含或被包含），若两者之间所有成员的类型都是兼容的，则他们也是兼容的
-- 对于值来说，当前有两个结构x和y，若想x兼容y（例如将y类型赋值给x类型的变量），则必须保证y类型必须包含（多于）x类型的结构（只能多，但不能少），即结构多的赋值给结构少的
-- 对于函数来说，当前有两个函数x和y，他们除函数参数外其余都相等，若想x兼容y，必须保证y的函数参数被包含（小于）x的函数参数，即参数少的，可以赋值给参数多的，相当于调用的时候，可以省略参数
-- 对于函数来说，当前有两个函数x和y，他们除返回值外其余都相等，若想x兼容y，和值兼容类似，则必须保证y类型必须包含（多余）x类型的结构（只能多，不能少），即结构多的赋值给结构少的
+定义：由于typescript使用的是结构类型的系统，当比较两种不同的类型时，并不在乎他们从何而来，只会比较他们的结构是否兼容（包含或被包含），若两者之间所有成员的类型都是兼容的，则他们也是兼容的
+- 对于**值**来说，当前有两个结构x和y，若想x兼容y（例如将y类型赋值给x类型的变量），则必须保证y类型必须包含（多于）x类型的结构（只能多，但不能少），即结构多的赋值给结构少的
+- 对于**函数**来说，当前有两个函数x和y，他们除函数参数外其余都相等，若想x兼容y，必须保证y的函数参数被包含（小于）x的函数参数，即参数少的，可以赋值给参数多的，*相当于调用的时候，可以省略参数*
+- 对于**函数**来说，当前有两个函数x和y，他们除返回值外其余都相等，若想x兼容y，和值兼容类似，则必须保证y类型必须包含（多余）x类型的结构（只能多，不能少），即结构多的赋值给结构少的
 - 当成员的修饰符为private、protected时，只有他们来自同一处声明时（实例的继承链都继承自同一个对象、都是某个对象的实例），他们的类型才是兼容的
 
 函数参数的双向协变：定义一个函数，该函数含有一个函数类型的参数，且该参数是非具体的（泛的），当调用时，却传入了一个具体的函数类型的参数，它是不稳定的，这就叫做函数的双向协变。可以启用`strictFunctionTypes`选项，让typescript在这种情形下报错。
@@ -1204,7 +1254,7 @@ y = x;
 ```
 <!-- tabs:end -->
 
-### 类型守卫
+### 🛑类型守卫
 
 前景：
 - 联合类型中，若要访问非共同拥有的成员，每次调用都需要使用类型断言才会工作
