@@ -1526,11 +1526,8 @@ watchPostEffect(() => {
 ```
 
 **watch vs watchEffect**:
-- watch能够懒执行，immediate的功劳
-- watch更加明确哪个状态触发的变更
-- watch可以访问状态变更前的值
-- watchEffect会在回调函数内部的响应式依赖变更时，就执行监听
-- watchEffect在同步执行过程中，自动追踪所有能访问到的响应式依赖
+- watch能够懒执行(immediate选项)、知道哪个状态触发的变更、可以访问状态变更前的值
+- watchEffect会在回调函数内部的响应式依赖变更时就执行监听、在同步执行过程中自动追踪所有能访问到的响应式依赖
 
 ### template中的ref引用
 
@@ -1608,11 +1605,11 @@ export default {
     // return () => {
     //   // 渲染函数用法
     //   // h函数用法参数依次为：元素标签名，元素属性与值对象，元素内部包裹的内容
-    //   h('div', { ref: root })
+    //   h('div', { ref: divRef })
     // }
 
     // JSX中的用法
-    return () => <div ref={root} />
+    return () => <div ref={divRef} />
   }
 }
 ```
@@ -1686,7 +1683,7 @@ import ComponentA from './ComponentA.vue'
 </script>
 ```
 
-**dom模板解析注意事项**：仅在dom中直接写vue模板生效（例如html，引入vue文件后进行使用），在vue单文件组件、内联模板字符串template选项、`<script type="text/x-template>`不需注意，有如下限制：
+**dom模板解析注意事项**：仅在dom中直接写vue模板生效（例如html类型的文件，引入vue文件后进行使用），在vue单文件组件、内联模板字符串template选项、`<script type="text/x-template>`不需注意，有如下限制：
 - 在dom中，使用小写形式
 - 在dom中，使用闭合标签，即`</div>`
 - 特定元素仅在特定元素内部，比如tr在table内部，若想使用自定义组件替换tr，应使用`<tr is="vue:自定义组件名"></tr>`，在原生元素上is必须加前缀vue才会解析为一个vue组件。
@@ -2595,7 +2592,7 @@ function handleClick (arg) {
 - 若想更改props，应该根据该props重新定义一个响应式变量（ref、reactive、computed）去修改
 - 子组件能够修改对象或数组的props内的元素，因为这两个是引用传递，不建议这样做，会有很大性能损耗。修改props的最佳方式是子组件用emit抛出一个事件去通知父组件修改
 - defineProps中的参数不可访问script setup中的其他变量，因为在编译时整个表达式会被移到外部函数中
-- 未传递的boolean类型的props默认值为false，其他类型则是undefined，默认值可通过default进行修改
+- 未传递的boolean类型的props默认值为false，其他类型则是undefined，默认值可通过default属性进行修改
 
 <!-- tabs:start -->
 
@@ -2850,7 +2847,7 @@ export default {
 - 若想修改插槽内的样式（使用该组件时传过来的插槽内容，是由使用该组件的地方控制样式的，非该组件本身能控制），故而可以通过`:slotted(选择器)`伪类实现
 - 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global(选择器)`伪类实现
 - 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
-- 小心递归组件中的后代选择器😢😢😢，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
+- 小心递归组件中的后代选择器，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
 
 <!-- tabs:start -->
 <!-- tab:deep()函数 -->
@@ -3115,7 +3112,7 @@ export default {
 
 定义：
 - 从运行时props选项对象提取props类型，提取的类型是面向内部的，即组件接收到的是解析后的props
-- 提取面向外部的pros，即父组件允许传递的props，应使用ExtraPublicPropTypes
+- 提取面向外部的props，即父组件允许传递的props，应使用ExtraPublicPropTypes
 
 ```typescript
 const propsOptions = {
@@ -3172,7 +3169,7 @@ declare module 'vue' {
 
 **CSSProperties**
 
-定义：扩展在样式属性绑定上允许的值的类型
+定义：扩展在样式属性绑定的允许的值的类型
 
 ```typescript
 declare module 'vue' {
@@ -3958,7 +3955,7 @@ function onEnter (el, done) {
   &-move,
   &-enter-active,
   &-leave-active {
-*     transition: all .5s ease;
+    transition: all .5s ease;
   }
 
   &-enter-from,
