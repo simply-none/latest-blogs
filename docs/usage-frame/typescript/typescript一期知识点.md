@@ -1254,7 +1254,7 @@ y = x;
 ```
 <!-- tabs:end -->
 
-### 🛑类型守卫
+### 类型守卫
 
 前景：
 - 联合类型中，若要访问非共同拥有的成员，每次调用都需要使用类型断言才会工作
@@ -1400,7 +1400,7 @@ let v = new ScientificCalculator(2)
 - 接口 interface 可用于定义对象的类型，且对象的属性个数必须完全和接口的属性个数相同（不能增加、减少属性），除非：
   1. 接口属性是可选属性`name?:string;`（减少）。
   2. 若接口包括一个任意类型的属性`[propName: string]: string | number;`，则对象属性可以有无限多个（增加），此时接口中与任意类型属性的 key`propName`同类型`string`的属性，必须是那个任意类型`string | number`的子类型`string`或`number`
-  3. 特例，使用变量的方式，将变量传给参数，而不是直接在参数定义一个变量字面量
+  3. 特例，使用变量的方式，将变量传给参数，而不是直接在参数定义一个变量字面量（对象字面量）
 - 接口可用于描述JavaScript各种类型，不管是普通的对象，也可以是函数
 
 <!-- tabs:start -->
@@ -1460,7 +1460,7 @@ let mySquare = createSquare(squareOptions);
 
 使用：
 - 可选属性可以对可能存在的属性进行预定义
-- 可以捕获引用了不存在的属性时的错误。当明确了改类型是某个接口时，只能引用该接口已有的属性
+- 可以捕获引用了不存在的属性时的错误。当明确了该类型是某个接口时，只能引用该接口已有的属性
 
 ```typescript
 interface SquareConfig {
@@ -1561,7 +1561,7 @@ interface NotOkay {
   [x: number]: Animal;
   [x: string]: Dog;
 }
-// 正确用法，数字索引签名的值，必须是字符串索引签名的值的子类型
+// ✅正确用法，数字索引签名的值，必须是字符串索引签名的值的子类型
 // 因为Dog是Animal的子类，所以Animal必须是字符串索引
 interface Okay {
   [x: string]: Animal;
@@ -1779,7 +1779,7 @@ const obj: AddT = {
 - 函数无返回值，其返回值类型为`void`
 - 函数参数的默认值`(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用`undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
 - 函数定义中参数也可用剩余参数，必须在参数的最后一个`(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
-- 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，若多个函数定义有包含关系，需要把精确的函数定义写在前面
+- 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把精确的函数定义写在前面*
 - 异步函数的返回值，用`Promise<T>`定义，这个适用于promise和async...await
 
 <!-- tabs:start -->
@@ -2060,12 +2060,10 @@ function identity <T> (args: T): T {
 
 // 正确的使用：将泛型变量T当作类型的一部分使用，而非整个类型，增加了灵活性
 function identity <T> (args: T[]): T[] {
-  // Property 'length' does not exist on type 'T'.
   console.log(args.length)
   return args
 }
 function identity <T> (args: Array<T>): Array<T> {
-  // Property 'length' does not exist on type 'T'.
   console.log(args.length)
   return args
 }
@@ -2117,7 +2115,7 @@ myGenericNumber.add = function(x, y) { return x + y; };
 
 在泛型约束中使用类型参数：声明一个类型参数，其被另一个类型参数所约束
 
-在泛型中使用类类型：😢😢😢类类型语法为`new (x: number) => Point`等同于`{ new (x: number): Point }`，表示返回一个包含类型为Point的构造函数的对象类型，默认类的构造函数类型为其本身
+在泛型中使用类类型：类类型语法为`new (x: number) => Point`等同于`{ new (x: number): Point }`，表示返回一个包含类型为Point的构造函数的对象类型，默认类的构造函数类型为其本身
 
 
 <!-- tabs:start -->
