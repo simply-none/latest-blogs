@@ -892,7 +892,7 @@ export interface OutputOptions {
 
 ### esbuild
 
-**esbuild**主要用于开发环境（npm run dev）（比如依赖预构建、文件编译等），而生产环境（npm run build）使用的是rollup（在build.rollupOptions字段中配置）进行代码构建的，出现此类缘故是esbuild的生态还不够完备。
+由于esbuild的生态还不够完备，**esbuild**主要用于开发环境（npm run dev）中（比如依赖预构建、文件编译等），而生产环境（npm run build）使用的是rollup（在build.rollupOptions字段中配置）进行代码构建的。
 
 对于非JSX项目来说，在使用vue3+vite的项目中，esbuild目前可用于在**构建生产代码之前删除**项目中的debugger和console，对于console来说，可全部清除，也可以特定删除console的部分api（比如console.log、console.error、console.info等），用法如下所示：
 
@@ -939,7 +939,7 @@ export default ({command, mode}: ConfigEnv): UserConfig => {
 } 
 ```
 
-**依赖预构建**：在vue项目启动之前，因为vite的开发服务器会将所有代码都视为原生ESM模块，因此vite必须先将用CommonJS、UMD模块发布的依赖项（devDependencies、dependencies）转为ESM模块；同时vite将含有大量的模块依赖关系（通过import进行导入）的模块（比如lodash-es库，内置了大量的常用函数模块）转成单个模块，减少http请求数量，提升页面加载性能。这个过程仅在开发环境下执行。
+**依赖预构建**：在vue项目启动之前，因为vite的开发服务器会将所有代码都视为原生ESM模块，因此vite必须先将用CommonJS、UMD模块发布的依赖项（devDependencies、dependencies）转为ESM模块；同时vite会将含有大量的模块依赖关系（通过import进行导入）的模块（比如lodash-es库，内置了大量的常用函数模块）转成单个模块，以此来减少http请求数量，提升页面加载性能。这个过程仅在开发环境下执行。
 
 <details> 
   <summary>
@@ -1575,7 +1575,7 @@ export default ({command, mode}: ConfigEnv): UserConfig => {
     // 该字段配置的内容自动会作为静态资源进行处理，返回解析后的路径
     assetsInclude: ['**/*.gltf'],
     json: {
-      // 支持按名导入json文件的字段，比如`import { name } from 'package.josn'
+      // 支持按名导入json文件的字段，比如`import { name } from 'package.json'
       namedExports: true,
       // 不支持按名导入，而是会将josn导入为默认导入，即`import pkg from 'package.json'，开启此项，按名导入会被禁用
       stringift: false,
