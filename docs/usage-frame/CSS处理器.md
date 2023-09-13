@@ -12,6 +12,17 @@ sass --watch xxx.scss xxx.css
 // 导入
 @import "./global.scss";
 
+// 使用@use导入
+@use "./global.scss" as globalVars;
+.main {
+  color: globalVars.$color;
+}
+
+@use "./global.scss" as *;
+.main {
+  color: $color;
+}
+
 // 嵌套
 .main {
   boder: 1px solid red {
