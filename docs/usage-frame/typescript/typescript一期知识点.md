@@ -202,7 +202,7 @@ const str: string = `这是一个模板字符串，当前时间：${new Date()}`
 ```typescript
 // 类型 + 方括号
 let a: (number | string)[] = [1, "2"];
-// 数组泛型
+// 数组泛型，此处是一个包装类型，类似泛型，支持传递参数，用于内容约束
 let b: Array<number | string> = [1, "2"];
 // 接口
 let c: {
@@ -497,7 +497,7 @@ console.log(c[getClassNameSymbol](), 'get c')
 
 ## 交叉类型
 
-通俗理解：交叉类型，将多个类型合并为一个类型，包含了所有类型的特性，同时拥有所有类型的成员
+通俗理解：交叉类型，将多个类型合并为一个类型，包含了所有类型的特性（属性），同时拥有所有类型的成员（属性）
 
 定义：使用`&`分隔类型，一般用于联合类型、接口交叉，若两者之间无交集，则该值为never类型
 
@@ -505,6 +505,7 @@ console.log(c[getClassNameSymbol](), 'get c')
 - 交叉类型**常用来定义公共的部分**
 - 原子类型合并成交叉类型，得到的类型是never，因为不能同时满足这些原子类型
 - 交叉类型常用于将多个接口类型合并为一个类型，等同于接口继承（合并接口类型）
+- 若接口交叉时，属性相同，属性类型不相同，比如string和number，则合并的类型可以是never，也可以是该相同属性为never类型的对象类型；比如string和boolean，则合并的类型只能是never类型
 
 ```typescript
 // 普通类型交叉，无交集，类型为never
@@ -526,6 +527,7 @@ interface X {
 }
 
 interface Y {
+  // 此处的c类型若为boolean，则 X & Y，必然是never，而非下列的结果
   c: number;
   e: string
 }
@@ -566,13 +568,52 @@ let abc: ABC = {
 
 ## 联合类型
 
-通俗理解：联合类型，即`存异`，可以是某种类型，也可以是另一种类型
+通俗理解：联合类型，即`存异`，可以是某种类型，也可以是另一种类型；是多个类型中的某一个（可以只满足一种类型即可），只能访问所有类型的共有属性
 
 定义：union，使用`|`分隔类型`string | number`，其值可以是声明类型的某一种`string`或者`number`。
 
 使用：
 - 当不能（用类型推断）确定联合类型属于某一具体类型时，只能访问所有类型共有方法/属性。
 - 只有确定具体类型`if (typeof xxx === 'number') { xxx.toFixed() }`之后（比如使用条件语句、类型推断），才能访问特定类型的方法/属性
+
+```typescript
+// 对于变量的联合
+type A = string | number;
+// 这里的a可以是字符串，也可以是数字
+let a: A = 1
+
+// 对于接口的联合
+interface X {
+  a: string;
+  b: number;
+}
+
+interface Y {
+  c: string;
+}
+
+type XY = X | Y;
+// 这里的xy，只需要满足X，或者满足Y即可
+let xy: XY = {
+  a: '1',
+  b: 1
+}
+```
+
+类型缩减：typescript会把字面量类型和枚举成员类型缩减掉，只剩下原始类型和枚举类型
+
+```typescript
+// A的类型是string，因为string包括了'a'字面量类型的所有字面量
+type A = 'a' | string;
+
+enum U {
+  A,
+  B
+}
+// UU的类型是U，因为U包括了枚举成员类型U.A
+type UU = U.A | U
+
+```
 
 ### 可辨识联合
 
@@ -1013,27 +1054,34 @@ type pType = typeof p
 - infer得到的类型只能在true（即X）语句中使用
 
 ```typescript
-// 推断数组/元组的类型，infer U获取的就是数组的元素类型联合
+// 推断数组/元组的类型，在下列类型别名中，(infer U)[]可知其为某种类型的数组
+// infer U推断出U的类型 就是 数组的元素类型联合
 type InferArray<T> = T extends (infer U)[] ? U : never;
+// 在使用上述类型获取新类型时，I0的类型就是上述的U，即(infer U)[]当中的(infer U)，肉眼可知其类型为[number, string]
 type I0 = InferArray<[number, string]>; // infer U 或者说 I0: string | number;
 
 // 推断第一个元素的类型，反过来就是推断最后一个元素类型
+// 在下列类型可知，[infer P, ...infer _]是一个不定长度的数组，其中infer P推断出P的类型是第一个数组元素类型，infer _是一个元组类型(有限长度的数组)
 type InferFirst<T extends unknown[]> = T extends [infer P, ...infer _] ? P : never;
 type I1 = InferFirst<[3, 2, 1]> // infer P 或者说 I1: 3
 
 // 推断函数类型的参数(元组类型)
+// (...args: infer R) => any即函数类型，而infer R可知R是元组类型
 type InferParam<T extends Function> = T extends (...args: infer R) => any ? R : never
 type I2 = InferParam<((string, number) => any)>;  // infer R 或者说 I2: [string, number]
 
 // 推断函数类型的返回值
+// (...args: any) => infer R即函数类型，而infer R可知R是函数的返回值类型
 type InferReturn<T extends Function> = T extends (...args: any) => infer R ? R : never;
 type I3 = InferReturn<((string, number) => string)>;  // infer R 或者说 I3: string
 
 // 推断Promise成功值的类型
+// Promise<infer U>是一个promise类型，而infer U可知U是promise的返回值类型
 type InferPromise<T> = T extends Promise<infer U> ? U: never;
 type I4 = InferPromise<Promise<string>>;  // infer U 或者说 I4: string
 
 // 推断字符串字面量类型的第一个字符对应的字面量类型
+// `${infer First}${infer _}`是一个模板字面量类型，而infer First可知First是字面量第一个元素类型
 type InferString<T extends string> = T extends `${infer First}${infer _}` ? First : [];
 type I5 = InferString<'Hello, jade'>; // infer First 或者说 I5: 'H'
 ```
@@ -2010,9 +2058,24 @@ let point3d: Point3d = {x: 1, y: 2, z: 3};
 
 ## 泛型
 
-定义：使用泛型来定义可重用的组件，一个组件可以支持多个类型的数据（不仅是目前的，还可能是未来的），这样用户就可以以自己的数据类型来使用组件
+> 参考：    
+> https://zhuanlan.zhihu.com/p/149767010    
+> https://zhuanlan.zhihu.com/p/141887346    
+
+定义：
+- 使用泛型来定义可重用的组件，一个组件可以支持多个类型的数据（不仅是目前的，还可能是未来的），这样用户就可以以自己的数据类型来使用组件
+- 泛型，即类型的函数（使用类似函数的用法，比如接收多个类型变量作为参数），声明一个类型变量，在类型函数代码中使用这个类型变量。
+- 只有在泛型调用的时候，才给定该泛型实际的类型
 
 类型变量：是一种特殊的变量，只用于表示类型，而不是值（比如下面的T）
+
+匿名函数泛型：和匿名函数类似
+
+泛型分类：
+- 函数泛型
+- 接口泛型
+- 类泛型
+- 类型别名泛型
 
 <!-- tabs:start -->
 <!-- tab:类型变量 -->
@@ -2031,6 +2094,23 @@ function identity <T> (args: T): T {
 let output = identity<string>('mystring')
 // 2. 类型推断，若不能自动推断类型，必须显式声明
 let output = identity('mystring')
+```
+
+<!-- tab:匿名函数泛型 -->
+```typescript
+// 即不使用接口或者类型别名的形式定义，而是直接定义
+// 比如：<T>(val: T[]) => T[]
+let getVal: <T>(val: T[]) => T[] = info => {
+  return info
+}
+
+// 该种形式可使用接口形式定义
+interface GetVal<T> {
+  (val: T[]): T[];
+}
+
+// 或使用类型别名的形式定义
+type GetVal<T> = (val: T[]) => T[]
 ```
 
 <!-- tabs:end -->
@@ -2054,6 +2134,7 @@ let output = identity('mystring')
 // 错误的使用
 function identity <T> (args: T): T {
   // Property 'length' does not exist on type 'T'.
+  // 报错原因：T理论上可以是任何类型（但又和any不一样），故而只能调用所有类型的共有方法，此处需要将其进行类型约束到特定的范围，去使用该范围内的方法
   console.log(args.length)
   return args
 }
@@ -2111,9 +2192,20 @@ myGenericNumber.add = function(x, y) { return x + y; };
 ```
 <!-- tabs:end -->
 
-泛型约束：定义一个接口来描述约束条件，让泛型继承（extends）这个接口实现约束。在定义了约束的泛型之后，传入的值必须要兼容这个约束类型
+泛型约束：定义一个接口来描述约束条件，让泛型继承（使用关键字extends）这个接口实现约束。在定义了约束的泛型之后，传入的值（以及泛型参数的默认类型）必须要兼容这个约束类型
 
 在泛型约束中使用类型参数：声明一个类型参数，其被另一个类型参数所约束
+
+泛型约束的使用场景：
+- 确保是否存在某属性，例如`T extends string[]`，之后就能够使用数组类型的方法（属性）了
+- 检查对象是否存在某key，例如`T extends keyof Person`，这时T的类型就是Person类型的属性key的联合类型
+
+泛型参数默认类型：可以为泛型的类型参数指定默认类型，当使用时未直接指定类型参数或者说从实际值无法推导类型时，默认类型就会起作用。默认类型的设置和普通函数的默认值相似，即`<T = Type>`
+- 有默认类型的类型参数是可选的，即在设置成实际类型时不必传入类型参数，比如泛型`B<T = string>`，使用时，可以直接使用`B`，也可使用其他类型，比如`B<number>`
+- 必选的类型参数必须在可选类型参数之前
+- 默认类型比如满足类型参数的约束
+
+泛型条件类型：`T extends U ? X : Y`，尽管使用了extends，但是不一定要满足继承关系，只需要满足条件即可，通常会结合infer一起使用
 
 在泛型中使用类类型：类类型语法为`new (x: number) => Point`等同于`{ new (x: number): Point }`，表示返回一个包含类型为Point的构造函数的对象类型，默认类的构造函数类型为其本身
 
@@ -2164,6 +2256,139 @@ class BeeKeeper {
 
 createInstance(Bee).Keeper.hasMask
 ```
+
+<!-- tab:泛型与构造函数结合使用1 -->
+```typescript
+// 类实现接口时，应该分别定义接口的属性和构造函数类型（两者不能放在一个接口中）
+// 定义接口属性
+interface Point {
+  x: number;
+  y: number;
+
+  // 下面这行放在这是错的，需注释掉
+  // new (x: number, y: number): Point;
+}
+// 定义构造函数
+interface PointConstructor {
+  new (x: number, y: number): Point;
+}
+
+// 类实现接口
+class Point2D implements Point {
+  readonly x: number;
+  readonly y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x
+    this.y = y
+  }
+}
+
+// 传入子类生成一个父类
+function newPoint (
+  pointConstructor: PointConstructor,
+  x: number,
+  y: number
+): Point {
+  return new pointConstructor(x, y)
+}
+
+let point: Point = newPoint(Point2D, 1, 2)
+```
+
+<!-- tab:泛型与构造函数结合使用2 -->
+```typescript
+// 泛型T不能用作值new T()，下面这个是错的
+class GenericCreator<T> {
+  create() : T {
+    return new T();
+  }
+}
+
+// 正确用法
+class GenericCreator<T> {
+  create<T>(c: { new (): T }): T {
+    return new c()
+  }
+  // 若有参数
+  create<T>(c: { new (a: number): T }, num: number): T {
+    return new c(num)
+  }
+}
+
+class FirstClass {
+  id: number | undefined;
+}
+
+let creator = new GenericCreator<FirstClass>()
+let firstClass: FirstClass = creator.create(FirstClass)
+
+```
+<!-- tabs:end -->
+
+注意事项：
+
+<!-- tabs:start -->
+
+<!-- tab: 泛型间赋值 -->
+```typescript
+type A<T = {}> = {
+  name: T;
+}
+
+// 错误赋值
+type B = A;
+// 正确赋值
+type B<T> = A<T>
+
+// Type 'B' is not generic.
+let a: B;
+```
+
+<!-- tabs:泛型学习1 -->
+```typescript
+type FC<p = {}> = FunctionComponent<P>
+
+interface FunctionComponent<P = {}> = {
+  // 表明FunctionComponent是一个函数类型
+  (props: PropsWithChildren<P>, context?: any): ReactElement<any, any> | null;
+  // 定义了一个静态类属性
+  displayName?: string;
+}
+```
+
+<!-- tab:泛型嵌套 -->
+```tpyescript
+type A<Tuple extends any[]> = B<C<D<Tuple>>>
+```
+
+<!-- tab:泛型递归 -->
+```typescript
+// 单链表
+type ListNode<T> = {
+  data: T;
+  next: ListNode<T> | null;
+}
+
+// HTMLElement的递归声明
+declare var HTMLElement: {
+  prototype: HTMLElement;
+  new(): HTMLElement;
+}
+```
+
+<!-- tab:递归调用 -->
+```typescript
+// 将对象所有（包括嵌套）属性变为可选
+type DeepPartial<T> = T extends Function
+  ? T
+  : T extends object
+  ? { [P in keyof T]?: DeepPartial<T[P]> }
+  : T;
+
+type PartialWindow = DeepPartial<Window>
+```
+
 <!-- tabs:end -->
 
 ## 生成器和迭代器
