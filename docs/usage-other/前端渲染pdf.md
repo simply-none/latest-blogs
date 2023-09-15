@@ -30,7 +30,7 @@
 
 ### 插件渲染用法及试错
 
-> vue-pdf-embed、vue-pdf-app、pdfh5的使用请见官方文档
+> vue-pdf-embed、vue-pdf-app、pdfh5、vue-office的使用请见官方文档
 
 ##### pdfvuer、vue-pdf
 
