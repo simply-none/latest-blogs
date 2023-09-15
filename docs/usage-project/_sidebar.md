@@ -3,6 +3,7 @@
   - [项目启动时依赖安装失败问题汇总](docs/usage-project/项目启动安装依赖失败问题汇总.md)
   - [项目package.json介绍](docs/usage-project/项目package.json介绍.md)
   - [项目gitignore规则解析](docs/usage-project/gitignore规则.md)
+  - [项目editorconfig规则解析](docs/usage-project/editorconfig.md)
   - [项目npmrc规则解析](docs/usage-project/npmrc规则.md)
   - [项目git历史大文件删除追踪](docs/usage-project/git历史大文件删除追踪.md)
   - [electron-vue依赖升级](docs/usage-project/electron-vue依赖升级.md)

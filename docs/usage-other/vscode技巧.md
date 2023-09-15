@@ -1,5 +1,50 @@
 # vscode技巧
 
+## 插件推荐
+
+- koroFileHeader，自动生成代码文件头注释，函数注释
+- 
+
+## .vscode目录
+
+定义：存放工作区的项目配置和工具相关文件
+
+目录文件：
+- setting.json：会覆盖掉vscode编辑器的全局配置
+- extensions.json：用来设置项目用到的插件推荐列表
+
+<!-- tabs:start -->
+
+<!-- tab:setting.json -->
+```json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "stylelint.validate": ["css", "less", "scss", "vue"]
+}
+
+```
+
+<!-- tab:extensions.json -->
+```json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Vue.volar"
+  ]
+}
+
+```
+
+<!-- tabs:end -->
+
+
 ## vscode 代码图片
 
 > polacode
@@ -277,3 +322,11 @@
 ### 注意事项
 
 1. 在setting.json设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置
+
+
+## setting.json设置
+
+> 参考：    
+> https://code.visualstudio.com/docs/getstarted/settings    
+> https://juejin.cn/post/7276628114981388349    
+

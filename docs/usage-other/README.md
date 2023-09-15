@@ -1,6 +1,6 @@
 - 其他工作相关
   - [前端工具函数](docs/usage-other/前端工具函数.md)
-  - [vscode技巧](docs/usage-other/vscode代码格式化.md)
+  - [vscode技巧](docs/usage-other/vscode技巧.md)
   - [前端渲染pdf](docs/usage-other/前端渲染pdf.md)
   - [pdfjs本地化部署](docs/usage-other/pdfjs本地部署.md)
   - [docker打包electron](docs/usage-other/Linux-docker打包electron.md)
