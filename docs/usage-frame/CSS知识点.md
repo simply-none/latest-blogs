@@ -119,6 +119,161 @@
 }
 ```
 
+## 多列布局
+
+定义：多列布局，就是一大块内容带到多个列中，类似报纸
+
+多列布局属性：
+- column-count：指定内容的列数
+- column-width：指定理想的列宽，列数由浏览器决定，通常为(`Math.floor(totalWidth / columnWidth)`)
+- column-rule：`column-rule-width column-rule-style column-rule-color`的简写，类似border属性
+- column-gap：指定列与列之间的间隙，默认为1em
+- column-span：让column多列布局内部的某个元素跨越所有的列，值为all
+
+注意：
+- 在使用多列布局时，其内容无法定位，也无法为单个列指定样式，所有列都将保持相同的大小。但可通过column-*相关的属性定义对应的规则
+
+## position定位
+
+> 参考：    
+> https://developer.mozilla.org/zh-CN/docs/Web/CSS/position#%E8%AF%AD%E6%B3%95      
+> https://juejin.cn/post/6844903973627887624    
+> https://juejin.cn/post/6953145161895378951    
+
+position属性：
+- static：元素在文档常规流中当前的布局位置，是元素使用的正常布局行为，默认值
+- relative：元素相对自身位置进行定位
+- absolute：元素被移出正常文档流，通过指定元素相当于**最近的非static定位祖先元素**的偏移去确定元素的位置
+- fixed：元素被移出正常文档流，通过指定元素相对于**屏幕视口**的位置来确定元素的位置
+- sticky：粘性布局，根据正常文档流定位，相对它的最近滚动祖先和最近块级祖先，基于top、right、bottom、left的值进行偏移，然后固定在离他最近的一个拥有滚动机制的祖先元素上
+
+注意：
+- sticky的约束：
+  - sticky最初处于正常文档流位置，然后慢慢的随着滚动而移动，直到移动到其定位后的位置（根据top、right、left、bottom确定）后进行固定，类似于先相对relative，后固定fixed。然后当粘性元素的父元素慢慢远离屏幕可视区域时，它的活动就由固定fixed，变成相对relative（因为父元素的视口可见高度不足以显示其定位高度了），然后随着父元素完全消失在视口，其也消失在视口区域
+  - 当最近祖先元素的overflow属性为auto、scroll、overlay时，必须指定其高度，否则粘性布局失效
+  - 多个粘性布局元素作用时，会发生重叠效果，可指定z-index确定上下层显示状态
+- sticky的应用：
+  - 列表锚点，固定列表分类的标题
+  - 侧边栏固定，用于展示广告信息
+  - 头部、尾部固定
+  - 进度条...
+
+<!-- tabs:start -->
+
+<!-- tab:粘性布局sticky的应用 -->
+```vue
+<!-- 列表锚点 -->
+<template>
+   <div>
+      <dl v-for="item in list" :key="item.id">
+         <!-- 设置dt为粘性定位 -->
+         <dt>{{ item.title }}</dt>
+         <dd v-for="desc in item" :key="desc.id">{{ desc.name }}</dd>
+      </dl>
+   </div>
+</template>
+
+<style>
+dl {
+   margin: 0;
+   padding: 24px 0 0 0;
+}
+
+dt {
+   background: red;
+   border-bottom: 1px solid;
+   border-top: 1px solid;
+   color: #fff;
+   margin: 0;
+   padding: 2px 0 0 12px;
+   position: sticky;
+   top: -1px;
+}
+
+dd {
+   margin: 0;
+   padding: 0 0 0 12px;
+   white-space: nowrap;
+}
+
+dd + dd {
+   border-top: 1px solid;
+}
+</style>
+```
+
+
+<!-- tabs:end -->
+
+
+## 媒体查询
+
+> 参考：    
+> https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_media_queries/Using_media_queries     
+> https://juejin.cn/post/7097213453768589320?searchId=202309181548321C9E4D9F178E08EB3779     
+
+定义：
+
+媒体类型：
+- all：适用于所有设备，默认值
+- print：适用于在打印预览模式下在屏幕上查看的分页材料和文档
+- screen：适用于屏幕设备
+- speech：适用于语音合成器
+
+媒体特性：媒体类型的具体特征，有：
+- height、max-height
+- width、max-width
+- ...
+
+逻辑操作符：用于联合类型、特性构造复杂的媒体查询，有：
+- and：当前后规则都为真时，才生效
+- `,`或or：有一条规则为真时，就生效
+- only：仅在所有规则都为真时，才生效
+- not：不满足该规则时，就生效
+
+```css
+/* and */
+@media screen and (min-width: 900px) {
+   div {}
+}
+
+/* ,  */
+@media screen, pring {
+   div {}
+}
+
+/* only */
+@media only screen and (min-width: 300px) and (max-width: 500px) and (resolution: 150dpi) {
+   div {}
+}
+
+/* not：注意，not应该应用在一条完整的规则之上，即通过,或or分割，但是包含and */
+/* 正确的表示 */
+@media not all and (monochrome), print {
+   div {}
+}
+@media not(all and (monochrome)), print {
+   div {}
+}
+/* 错误的表示 */
+@media (not all) and (monochrome) {
+   div {}
+}
+
+/* 否定多个属性 */
+@media (not(color) or (hover)) {
+   div {}
+}
+
+/* 第四版新增 */
+@media (height > 600px) {
+   div {}
+}
+@media (400px <= width <= 700px) {
+   div {}
+}
+```
+
 ## 小特性
 
 ### 单行省略
@@ -151,6 +306,10 @@ column-gap：设置列与列之间的间隔，可为normal(1em)、长度单位�
 注意：使用多列布局时，应当给包裹菜单项的父元素设置最大高度
 
 ### 鼠标滚轮横向滚动页面
+
+## 注意事项
+
+- 尽量不要使用inline-block布局，该布局很难掌控，会发生一些意想不到的bug，请用其他布局代替
 
 ## 样式风暴
 

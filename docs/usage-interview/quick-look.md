@@ -1,11 +1,155 @@
 # 速记手册
 
-> 网站集合：
-> https://fe.ecool.fun/
-> 参考：
-> https://juejin.cn/post/7204594495996198968
+> 网站集合：    
+> https://fe.ecool.fun/   
+> 参考：    
+> https://juejin.cn/post/7204594495996198968       
 
-## 1. 对象的数据属性和访问器属性
+## html
+
+### src、url、href的全称
+
+- src：source，资源
+- href：hypertext reference，超文本引用
+- url：uniform resource locator，统一资源定位符
+
+## css
+
+> 参考：    
+> https://juejin.cn/post/6854573212337078285?searchId=20230918161839BB14B00D6457CDEF6F9A    
+
+### css的三大特性
+
+三大特性：
+- 层叠：指浏览器通过一定规则确定当多个css规则应用于同一个元素时，哪个规则优先级最高，以此来确定元素样式。元素的层叠等级从上往下依次为：
+  - z-index为正值，在最上面
+  - z-index: 0、auto，或者未设值
+  - 行内元素
+  - 浮动元素
+  - 块级元素
+  - z-index为负值
+  - background/border，背景和边框在最下面
+- 继承：父子间样式的继承规则，`text-*`,`font-*`,`line-*`,`color`都可被继承
+- 优先级：样式的权重
+  - *：0,0,0,0
+  - tag: 0,0,0,1
+  - (pseudo-)class:0,0,1,0
+  - id:0,1,0,0
+  - 行内样式：1,0,0,0
+  - !important: +∞
+
+### css属性继承
+
+所有元素都可继承的：
+- visibility
+- cursor
+
+子元素可继承的：
+- letter-spacing、word-spacing、white-spacing
+- line-height
+- font、color
+- text-(decoration、transform、indent、align)、direction
+
+列表元素可继承的：
+- list-style
+
+表格元素可继承的：
+- border-collapse
+
+不可继承的属性，若想和父元素保持一致，可将该属性设置为inherit
+
+### css选择器分类
+
+- 基础选择器：
+  - 标签选择器（元素选择器，`div`）
+  - id选择器（`#title`）
+  - class选择器（`.title`）
+  - 通配符选择器（`*`）
+  - 群组选择器（逗号选择器，`div, p, span`）
+- 关系选择器：
+  - 后代选择器（空格选择器，`.parent .child`）
+  - 子代选择器（大于号选择器，`div>.first`）
+  - 相邻选择器（加号选择器，`.first+.second`）
+  - 兄弟选择器（选择器，`div~p`）
+- 属性选择器：
+  - `div[class]`
+  - `div[class='parent']`
+  - `div[class^='par']`
+  - `div[class$='par']`
+  - `div[class*='par']`，属性值里面包含该字符串即可
+  - `div[class~='par']`，属性值必须完全匹配
+  - `div[class|='par']`，匹配以par或par-开头的
+- 伪类选择器：用于选择元素
+  - :first-child, :nth-child(n)
+  - :first-of-type(表示第一个子元素)，:nth-of-type(n)
+  - :not()
+  - :link, :visited, :hover, :active
+- 伪元素选择器
+  - :before, :after
+  - ::first-letter, ::first-line(分别表示第一个字母和第一行)
+
+### 重绘repaint和重排reflow(回流)
+
+重绘：结构未变化，只是改变了某个元素的外观风格，而不影响周围或内部的布局时，会发生重绘，情况有：
+- 改变背景属性
+- 改变字体颜色
+- visibility属性变化
+- box-shadow变更
+
+重排：结构、尺寸、排版发生了变化，或者说页面上元素的占位面积、定位方式、边距等发生了变化，会引起重排，情况有：
+- 网页初始化时
+- 增删dom节点时
+- 移动dom节点、给dom节点添加动画
+- 窗口大小发生变化时、页面滚动时
+- 元素内容发生变化时、元素尺寸发生变化时、元素字体大小种类变化时
+- 查询调用某些属性时（offsetxxx、scrollXXX、clientXXX、设置style属性、调用getComputedStyle）
+
+注意：
+- **重排一定会引发重绘**，因为得重新定义结构布局，然后渲染css样式
+
+优化技巧：
+- 不适应table布局，table布局的一个改动会造成整个table重新布局
+- 读、写操作不放在同一个语句
+- 不一条条修改dom样式（不如修改css class）
+- 复杂动画的元素使用绝对定位，脱离文档流，不影响其他节点
+- 使用虚拟dom
+- 避免使用css表达式
+
+### 使用css隐藏元素
+
+- `visibility: hidden`：隐藏元素，继续在文档流中占位，仅触发重绘，隐藏后不能触发点击事件
+- `display: none`：从页面中删除元素，触发重排，进而触发重绘。但是其在html源码中未实际删除
+- `opacity: 0`：让元素变得透明，继续在文档流中占位，仅触发重绘，子元素会继承。
+- `rgba(0,0,0,0)`：让元素变得透明，仅触发重绘，子元素不会继承
+
+### 格式化上下文（formatting context）
+
+**BFC**(Block formatting context)：块级格式化上下文
+- 该特性的元素看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素
+- 内部的box在垂直方向上一个接一个放置
+- 内部的box在垂直方向的距离由其margin决定，相邻元素的相邻margin会发生合并（无内容、border的元素上下margin也会发生合并）
+- bfc的区域不会和float box发生重叠
+
+触发BFC的方式：
+- body根元素
+- float：left、right
+- position：absolute、fixed
+- diaplay：inline-block、flex、inline-flex、grid、inline-grid、table-cells、table-caption
+- overflow：hidden（在父级元素设置，用于清除浮动造成的塌陷）、auto、scroll
+- column-count、column-width：值不为auto，多列布局
+
+**IFC**(inline formatting context)：行内格式化上下文
+- box一个一个水平摆放，容器不够时换行，每一行称为一个行盒（line box）
+- 会计算水平方向上的margin、border、padding、content的长度
+- 垂直方向上，可使用vertical-align设置对齐方式
+
+**ZFC**(z-index formatting context)：层叠上下文
+
+**GFC**(grid formatting context)：网格元素格式化上下文
+
+## JavaScript
+
+### 对象的数据属性和访问器属性
 
 数据属性：
 - writable：值是否可写
@@ -24,7 +168,7 @@
 - `Object.defineProperties(obj, { key: { // descriptor obj}, ...})`
 - `Object.getOwnPropertyDescriptor(obj, key)`
 
-## 2. toString()和valueOf()
+### toString()和valueOf()
 
 toString:
 - 将对象转成一个原始值
@@ -38,7 +182,7 @@ valueOf:
 - String()、alert()优先调用对象的toString()，
 - 强制类型转换的地方有：在进行`+`、`==`运算时，一方有非数字类型
 
-## 3. 如何实现设置localStorage的有效期？
+### 如何实现设置localStorage的有效期？
 
 实现思路：
 - 第一种：
@@ -47,14 +191,7 @@ valueOf:
   3. 清空逻辑有：比如定时器、用户操作时、窗口聚焦时、鼠标滚动时等
 - 第二种：查看是否有开源的组件，进行调用
 
-## 4. 浏览器的缓存策略（强缓存和协商缓存）？
-
-> 参考：
-> https://www.jianshu.com/p/2961ce10805a
-> https://blog.csdn.net/Huangmiaomiao1/article/details/125862342
-> https://blog.csdn.net/m0_65335111/article/details/127348516
-
-## 5. 数组的常用方法
+### 数组的常用方法
 
 修改数组：
 - fill(value, start, end)
@@ -92,7 +229,7 @@ valueOf:
 - Array.from(arr, newArrCallback)：对类数组/可迭代对象转为数组，同时对新数组进行map回调，返回返回新的值
 - Array.of(value, ...):将参数表列转为一个数组
 
-## 6. 异步编程
+### 异步编程
 
 包含：
 - Promise
@@ -102,7 +239,7 @@ valueOf:
 - 事件监听
 - 发布订阅模式（观察者模式）
 
-## 7. 闭包
+### 闭包
 
 > 参考：  
 > https://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html   
@@ -117,7 +254,7 @@ valueOf:
 - 由于只有函数内部的子函数才能够读取函数的局部变量，故闭包可以理解为定义在一个函数内部的函数
 - 闭包是指一个函数可以记住其外部变量并可以访问这些变量
 
-## 8. 引入css和执行js会阻塞html的渲染吗？
+### 引入css和执行js会阻塞html的渲染吗？
 
 从浏览器输入url到页面渲染的过程中，html通过html解析器生产DOM树，css通过css解析器解析成css对象，然后组成CSSOM树，解析过程互不影响，是并行解析的。**但是**，渲染树需要结合DOM树和CSSOM树才能够生成，这一步会阻塞html的渲染。
 
@@ -125,7 +262,7 @@ valueOf:
 - async：脚本返回后，若html未解析完，浏览器会暂停解析html，先让js引擎执行代码，这时会阻塞html的渲染
 - defer：脚本返回后，若html未解析完，浏览器会继续解析html，在html解析完毕后再执行js代码，不会阻塞html的渲染
 
-## 9. 类型判断的方式
+### 类型判断的方式
 
 typeof：
 - 能准确判断所有基础数据类型，引用类型会判断为object
@@ -139,39 +276,9 @@ instanceof：
 `Object.prototype.toString.call(value)`：
 - 能够获取到所有准确的数据类型
 
-## 10. css选择器分类
+### 深拷贝和浅拷贝
 
-- 基础选择器：
-  - 标签选择器（元素选择器，`div`）
-  - id选择器（`#title`）
-  - class选择器（`.title`）
-  - 通配符选择器（`*`）
-  - 群组选择器（逗号选择器，`div, p, span`）
-- 关系选择器：
-  - 后代选择器（空格选择器，`.parent .child`）
-  - 子代选择器（大于号选择器，`div>.first`）
-  - 相邻选择器（加号选择器，`.first+.second`）
-  - 兄弟选择器（选择器，`div~p`）
-- 属性选择器：
-  - `div[class]`
-  - `div[class='parent']`
-  - `div[class^='par']`
-  - `div[class$='par']`
-  - `div[class*='par']`，属性值里面包含该字符串即可
-  - `div[class~='par']`，属性值必须完全匹配
-  - `div[class|='par']`，匹配以par或par-开头的
-- 伪类选择器：用于选择元素
-  - :first-child, :nth-child(n)
-  - :first-of-type(表示第一个子元素)，:nth-of-type(n)
-  - :not()
-  - :link, :visited, :hover, :active
-- 伪元素选择器
-  - :before, :after
-  - ::first-letter, ::first-line(分别表示第一个字母和第一行)
-
-## 11. 深拷贝和浅拷贝
-
-## 12. 原型链图
+### 原型链图
 
 原型：
 - 原型（prototype）是函数function对象的一个属性，它定义了构造函数制造出来的对象（new运算符调用的函数）的公共祖先
@@ -184,27 +291,171 @@ instanceof：
 
 ![](images/原型链图.png)
 
-## 13. css属性继承
+### 宏任务、微任务、同步任务
 
-所有元素都可继承的：
-- visibility
-- cursor
+事件循环的本质
+- 作为单线程js对异步事件的处理机制
+- 仅有一个主线程js的处理逻辑，保证主线程有序、高效、非阻塞的处理
 
-子元素可继承的：
-- letter-spacing、word-spacing、white-spacing
-- line-height
-- font、color
-- text-(decoration、transform、indent、align)、direction
+事件循环处理逻辑：
+- 同步任务、异步任务（又分为微任务、宏任务，且宏任务优先级高）分别进入不同的执行场所
+- 同步任务直接在主线程执行，异步任务则在事件队列event queue中等待
+- 当全部同步任务执行完毕后，再去event queue中执行异步回调的函数，异步回调的函数进入到主线程执行
+- 异步任务内部的内容，又依次进行上述步骤，这样的机制，叫做事件循环
 
-列表元素可继承的：
-- list-style
+执行顺序：
+- 代码执行顺序：同步任务 -> 微任务 -> 宏任务
+- 微任务执行顺序：process.nextTick -> Promise
+- 宏任务执行顺序：setImmediate -> setTimeout -> setInterval -> I/O操作 -> ajax
 
-表格元素可继承的：
-- border-collapse
+微任务：
+- Promise里面的(then、catch、finally)
+- async/await
+- process.nextTick
+- Object.observe(实时监测js对象的变化)
+- MutationObserver(监听DOM树的变化)
 
-不可继承的属性，若想和父元素保持一致，可将该属性设置为inherit
+宏任务：
+- 整体代码script
+- setTimeout、setInterval、setImmediate
+- I/O操作（输入输出，比如文件读取、网络请求）
+- ui render（dom渲染）
+- ajax
 
-## 15. vue组件通信方式
+注意：
+- vue.nextTick用于在下次dom更新（宏任务）循环结束后执行的延迟回调，在修改数据之后立即使用 nextTick 来获取更新后的 DOM。 nextTick主要使用了宏任务和微任务。 根据执行环境分别尝试采用Promise（微）、MutationObserver（微）、setImmediate（宏），如果以上都不行则采用setTimeout定义了一个异步方法，多次调用nextTick会将方法存入队列中，通过这个异步方法清空当前队列
+
+### 事件委托、事件冒泡、事件捕获
+
+事件委托（事件代理）：
+- 即事件（比如点击事件、鼠标移动事件等）本来是加在子元素上，却加在父祖元素上来监听，利用了事件冒泡的原理，因为事件最终都会加在父级上触发执行效果
+- 事件委托的好处是减少事件注册，节省内存占用，新增节点时，后续节点自动拥有之前绑定的事件
+- 事件委托的缺陷是逻辑变多时，可能会出现事件误判
+
+事件冒泡：
+- 事件会从目标节点流向文档根节点，途中会经过目标节点的各个父级节点，
+
+事件捕获：
+- 事件从文档根节点流向目标节点，途中会经过目标节点的各个父级节点
+
+注意：
+- 事件的处理过程：先捕获，后冒泡
+- 事件处理过程中，若某个节点定义了多个同类型事件，某个事件使用了`event.stopImmediatePropagation()`，其他同类型事件不会执行
+- 阻止事件的默认操作（比如点击a标签会跳转，点击提交按钮会将数据提交到服务器等）可以用`event.preventDefault();`来阻止
+- 阻止事件冒泡和事件捕获：`e.stopPropagation()`
+- `addEventListener(event,fn,useCapture)`：第三个参数表示是否触发事件捕获过程
+- addEventListener和on的区别：on事件会被后面的on事件覆盖，前者不会
+
+### 防抖和节流
+
+定义：
+- **防抖**：在规定的时间内，若上一次的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则取消上一次内容的执行（比如清除定时器），转而执行当前次的操作*
+- **节流**：在规定的时间内，若上一个的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则不做任何操作（即退出函数，忽略当前次操作），而上一次操作正常执行*
+
+**应用场景**：
+- 防抖：输入框输入内容后请求api获取结果
+- 节流：输入联想、内容拖动、滚动条滚动、计算鼠标移动的距离，此时需要在一段时间内触发操作，节流比较适合，使用防抖时会一直取消上一次操作，可能在这段时间内不会返回任何内容，影响用户观感
+
+<!-- tabs:start -->
+
+<!-- tab:防抖 -->
+```javascript
+function debounce (fn, delay = 200) {
+  let timer = 0
+  return function () {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, arguments)
+      timer = 0
+    }, delay)
+  }
+}
+```
+
+<!-- tab:节流 -->
+```javascript
+function throttle (fn, delay = 200) {
+  let timer = 0
+  return function () {
+    if (timer) {
+      return false
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, arguments)
+      timer = 0
+    }, delay)
+  }
+}
+```
+<!-- tabs:end -->
+
+### Object.defineProperty和Proxy的区别
+
+**Object.defineProperty(obj, prop, desc)**:
+
+定义：
+- 直接在一个对象上定义一个新属性，或者修改对象的已有属性，返回该对象
+
+作用：
+- 在vue2中，对于未初始化的对象属性，不能进行直接赋值，可通过$set或Object.assign进行赋值
+- 不能监听数组变化：在vue2中，不能直接对数组下标进行赋值，不能直接修改数组长度，可通过$set（赋值）、splice（赋值，修改长度）正常操作
+- 必须（深层）遍历（嵌套）对象：只能劫持对象的属性，所以需要对每个属性进行遍历，而属性若是对象，则需深度遍历
+- 兼容性好，能够兼容ie
+
+**new Proxy(target, handler)**：
+
+定义：
+- 创建一个对象的代理，实现对对象基本操作的拦截和自定义（属性查找、赋值、枚举、函数调用等）
+
+作用：
+- 能够针对整个对象，而非对象的某个属性
+- 拦截处理函数handler有13种之多
+- 返回一个新对象，而不是原有对象
+
+### for...in和for...of
+
+**for...in**：
+- 以任意顺序遍历一个对象的除Symbol以外的（包括继承的）可枚举的属性（指的是对象属性描述符enumerable设置为true的）
+- 该结构主要用于对象，为了对象而构建的
+
+**for...of**：
+- 在可迭代对象（具有iterator接口的）上创建一个迭代循环，遍历他的值
+
+## 浏览器
+
+### 浏览器的缓存策略（强缓存和协商缓存）？
+
+> 参考：
+> https://www.jianshu.com/p/2961ce10805a
+> https://blog.csdn.net/Huangmiaomiao1/article/details/125862342
+> https://blog.csdn.net/m0_65335111/article/details/127348516
+
+## Nodejs
+
+### process.cwd()和__dirname的区别
+
+**process.cwd()**: 返回当前工作目录，比如调用node命令执行脚本时的目录
+
+**__dirname**：返回源代码所在的目录
+
+```javascript
+// 比如在d:\\process/index.js中
+console.log(process.cwd())
+console.log(__dirname)
+```
+
+| 命令 | process.cwd() | \_\_dirname |
+| --- | --- | --- |
+| node index.js | d:\\process | d:\\process |
+| node process\\index.js | d: | d:\\process |
+
+
+
+## vue
+
+### vue组件通信方式
 
 vue2：
 - 父子通信：
@@ -249,68 +500,44 @@ this.$bus.$emit('receiveParams', data)
 ```
 <!-- tabs:end -->
 
-## 16. 重绘repaint和重排reflow(回流)
+### vue diff算法原理
 
-重绘：结构未变化，只是改变了某个元素的外观风格，而不影响周围或内部的布局时，会发生重绘，情况有：
-- 改变背景属性
-- 改变字体颜色
-- visibility属性变化
-- box-shadow变更
+> https://juejin.cn/post/7204594495996198968#heading-14
 
-重排：结构、尺寸、排版发生了变化，或者说页面上元素的占位面积、定位方式、边距等发生了变化，会引起重排，情况有：
-- 网页初始化时
-- 增删dom节点时
-- 移动dom节点、给dom节点添加动画
-- 窗口大小发生变化时、页面滚动时
-- 元素内容发生变化时、元素尺寸发生变化时、元素字体大小种类变化时
-- 查询调用某些属性时（offsetxxx、scrollXXX、clientXXX、设置style属性、调用getComputedStyle）
+### vue中key的作用和原理
 
-注意：
-- **重排一定会引发重绘**，因为得重新定义结构布局，然后渲染css样式
+- key作为vue中vnode标记的唯一id，在patch过程中通过key判断两个vnode是否相同，使diff操作更准确快速
+- 不加key，vue可能会根据就地更新的策略选择复用节点，导致保留了之前节点的状态
+- 尽量不要使用索引作为key
 
-优化技巧：
-- 不适应table布局，table布局的一个改动会造成整个table重新布局
-- 读、写操作不放在同一个语句
-- 不一条条修改dom样式（不如修改css class）
-- 复杂动画的元素使用绝对定位，脱离文档流，不影响其他节点
-- 使用虚拟dom
-- 避免使用css表达式
+### vuex中actions和mutations的区别
 
-## 17. 宏任务、微任务、同步任务
+**mutations**：
+- 能够直接修改state
+- 同步
 
-事件循环的本质
-- 作为单线程js对异步事件的处理机制
-- 仅有一个主线程js的处理逻辑，保证主线程有序、高效、非阻塞的处理
+**actions**：
+- 需调用mutations，间接修改state
+- 能够执行异步操作
 
-事件循环处理逻辑：
-- 同步任务、异步任务（又分为微任务、宏任务，且宏任务优先级高）分别进入不同的执行场所
-- 同步任务直接在主线程执行，异步任务则在事件队列event queue中等待
-- 当全部同步任务执行完毕后，再去event queue中执行异步回调的函数，异步回调的函数进入到主线程执行
-- 异步任务内部的内容，又依次进行上述步骤，这样的机制，叫做事件循环
+### Vue SSR的理解
 
-执行顺序：
-- 代码执行顺序：同步任务 -> 微任务 -> 宏任务
-- 微任务执行顺序：process.nextTick -> Promise
-- 宏任务执行顺序：setImmediate -> setTimeout -> setInterval -> I/O操作 -> ajax
+概念：
+- SSR（服务端渲染），将vue在客户端把标签渲染成html的工作放在服务端完成，然后再把html直接返回给客户端
 
-微任务：
-- Promise里面的(then、catch、finally)
-- async/await
-- process.nextTick
-- Object.observe(实时监测js对象的变化)
-- MutationObserver(监听DOM树的变化)
+优点：
+- SSR有着更好的SEO，直接返回的就是渲染好的页面，搜索引擎能直接爬取到，而SPA的内容是通过ajax请求获取到的文件（比如js等），搜索引擎爬取不到
+- 首屏加载速度更快，直接返回渲染后的html结构（直接就是完整的html页面），而SPA需要等待所有vue编译后的js文件都下载完成后，才开始进行页面的渲染（页面的渲染是通过js文件进行的）
 
-宏任务：
-- 整体代码script
-- setTimeout、setInterval、setImmediate
-- I/O操作（输入输出，比如文件读取、网络请求）
-- ui render（dom渲染）
-- ajax
+缺点：
+- 需要足够的服务器负载，因为渲染操作是在服务器上进行的，可使用缓存策略
+- 部分vue api不支持
 
-注意：
-- vue.nextTick用于在下次dom更新（宏任务）循环结束后执行的延迟回调，在修改数据之后立即使用 nextTick 来获取更新后的 DOM。 nextTick主要使用了宏任务和微任务。 根据执行环境分别尝试采用Promise（微）、MutationObserver（微）、setImmediate（宏），如果以上都不行则采用setTimeout定义了一个异步方法，多次调用nextTick会将方法存入队列中，通过这个异步方法清空当前队列
+### Composition API和Options API的区别
 
-## 18. css样式隔离
+> https://juejin.cn/post/7204594495996198968#heading-24
+
+### css样式隔离
 
 样式隔离方案：
 - scoped：例如vue中的`<style scoped>`
@@ -321,51 +548,24 @@ this.$bus.$emit('receiveParams', data)
 - 预处理器
 - shadow DOM（比如微前端）
 
-## 19. 事件委托、事件冒泡、事件捕获
 
-事件委托（事件代理）：
-- 即事件（比如点击事件、鼠标移动事件等）本来是加在子元素上，却加在父祖元素上来监听，利用了事件冒泡的原理，因为事件最终都会加在父级上触发执行效果
-- 事件委托的好处是减少事件注册，节省内存占用，新增节点时，后续节点自动拥有之前绑定的事件
-- 事件委托的缺陷是逻辑变多时，可能会出现事件误判
+## 前端综合与业务
 
-事件冒泡：
-- 事件会从目标节点流向文档根节点，途中会经过目标节点的各个父级节点，
-
-事件捕获：
-- 事件从文档根节点流向目标节点，途中会经过目标节点的各个父级节点
-
-注意：
-- 事件的处理过程：先捕获，后冒泡
-- 事件处理过程中，若某个节点定义了多个同类型事件，某个事件使用了`event.stopImmediatePropagation()`，其他同类型事件不会执行
-- 阻止事件的默认操作（比如点击a标签会跳转，点击提交按钮会将数据提交到服务器等）可以用`event.preventDefault();`来阻止
-- 阻止事件冒泡和事件捕获：`e.stopPropagation()`
-- `addEventListener(event,fn,useCapture)`：第三个参数表示是否触发事件捕获过程
-- addEventListener和on的区别：on事件会被后面的on事件覆盖，前者不会
-
-## 20. 遇到的难解决的问题
-
-难解决的问题分为两种：
-1. 业务问题，需求不清。这时需要拉上懂业务的同事理清需求，必要的时候需要调整设计。同时自主学习，增强对业务的了解。
-2. 技术问题，可能是由于之前技术栈限制导致需求难以实现，或者说现有技术导致实现需求会有性能、可维护性问题，或者是自身储备或者周边资源不足(比如说没有现成的组件库)导致工期比预想长。可以通过最小限度实现需求、请教公司或同项目组的同事寻找合适的工具、交叉集成其他框架等方式解决，但最重要的是及早沟通。
-
-注意：
-- 遵循star法则回答
-
-## 21. 前端模块化
+### 前端模块化
 
 > 参考：  
 > https://juejin.cn/post/7193887403570888765  
 > https://juejin.cn/post/6844903744518389768  
 > https://juejin.cn/post/7166046272300777508  
 
-## 22. 前端性能优化
+### 前端性能优化
 
 > 参考：  
 > https://juejin.cn/post/7188894691356573754  
 > https://juejin.cn/post/7080066104613142559  
 
 
-## 23. token刷新
+### token刷新
 
 解决方案：
 - 后端返回过期时间，前端判断token过期时间，去调用刷新token接口
@@ -385,7 +585,7 @@ this.$bus.$emit('receiveParams', data)
 
 > 参考：https://juejin.cn/post/6844904034181070861
 
-## 24. Tree-shaking
+### Tree-shaking
 
 > 参考:   
 > https://juejin.cn/post/7109296712526594085    
@@ -465,7 +665,7 @@ module.exports = {
 - 优化导出值的粒度,在exports中,不能进行赋值/初始化操作,应该初始化赋值完毕后,再用exports将该变量导出
 - 使用支持tree shaking的包,比如使用lodash-es替代lodash
 
-## 25. 虚拟dom和真实dom的区别
+### 虚拟dom和真实dom的区别
 
 背景:
 - DOM的缺陷:dom节点的操作会影响到渲染流程,同时Dom节点的增删改都会触发样式计算、布局、绘制等任务（重排的过程），同时还会触发重绘
@@ -476,7 +676,7 @@ module.exports = {
 2. 调整虚拟DOM的内部状态
 3. 虚拟DOM收集到足够多改变时，再将变化一次性应用到真实的DOM上（也是调用dom操作的一步，若直接操作真实dom，就没有前面2步，会发生频繁的重排重绘操作）
 
-## 26. 组件封装的一些技巧
+### 组件封装的一些技巧
 
 1. 插槽的用法：组件封装时，需要考虑到通用性。比如一个dialog组件，需要显示中间的信息和底部的操作按钮。此时需要考虑的场景是当组件使用时，是否需要中间/底部栏，则在封装组件的时候，通过`v-if='$slot.name'`判断用户是否使用了相应的中间/底部栏，否则会一直展示中间/底部栏的位置。
 2. 组件封装时，组件通信的技巧：通过vue语法糖`.sync`来进行组件间的传值，用法如下：使用该组件时：`:data.sync="sync"`，自定义组件内部通过某些点击事件来传送该值到父组件中：`this.$emit('update:data', value)`
@@ -485,134 +685,13 @@ module.exports = {
 5. 输入框组件封装重点：`v-model`的使用技巧。使用组件时：`v-model="value"`，自定义组件内部：`:value="value" @input="handleInput" handleInput (e) { this.$emit('input', e.target.value) }`，这样才能实现数据的双绑定。
 6. 输入框组件密码显隐：展示密码和展示右侧的图标。密码的显隐切换是由type类型来控制的，故当传入密码显示属性`password`时，type应进行判断，有password则通过password来判断是否在password和text之间切换，无password属性则直接为password。控制password的变化需要在自定义组件内部加一个passwordVisible属性来切换
 
-## 27. 防抖和节流
+## 其他
 
-定义：
-- **防抖**：在规定的时间内，若上一次的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则取消上一次内容的执行（比如清除定时器），转而执行当前次的操作*
-- **节流**：在规定的时间内，若上一个的操作未执行（或未执行完毕）（通过一个标志变量来判断是否执行完毕），*则不做任何操作（即退出函数，忽略当前次操作），而上一次操作正常执行*
+### 遇到的难解决的问题
 
-**应用场景**：
-- 防抖：输入框输入内容后请求api获取结果
-- 节流：输入联想、内容拖动、滚动条滚动、计算鼠标移动的距离，此时需要在一段时间内触发操作，节流比较适合，使用防抖时会一直取消上一次操作，可能在这段时间内不会返回任何内容，影响用户观感
+难解决的问题分为两种：
+1. 业务问题，需求不清。这时需要拉上懂业务的同事理清需求，必要的时候需要调整设计。同时自主学习，增强对业务的了解。
+2. 技术问题，可能是由于之前技术栈限制导致需求难以实现，或者说现有技术导致实现需求会有性能、可维护性问题，或者是自身储备或者周边资源不足(比如说没有现成的组件库)导致工期比预想长。可以通过最小限度实现需求、请教公司或同项目组的同事寻找合适的工具、交叉集成其他框架等方式解决，但最重要的是及早沟通。
 
-<!-- tabs:start -->
-
-<!-- tab:防抖 -->
-```javascript
-function debounce (fn, delay = 200) {
-  let timer = 0
-  return function () {
-    if (timer) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      fn.apply(this, arguments)
-      timer = 0
-    }, delay)
-  }
-}
-```
-
-<!-- tab:节流 -->
-```javascript
-function throttle (fn, delay = 200) {
-  let timer = 0
-  return function () {
-    if (timer) {
-      return false
-    }
-    timer = setTimeout(() => {
-      fn.apply(this, arguments)
-      timer = 0
-    }, delay)
-  }
-}
-```
-<!-- tabs:end -->
-
-## 28. Object.defineProperty和Proxy的区别
-
-**Object.defineProperty(obj, prop, desc)**:
-
-定义：
-- 直接在一个对象上定义一个新属性，或者修改对象的已有属性，返回该对象
-
-作用：
-- 在vue2中，对于未初始化的对象属性，不能进行直接赋值，可通过$set或Object.assign进行赋值
-- 不能监听数组变化：在vue2中，不能直接对数组下标进行赋值，不能直接修改数组长度，可通过$set（赋值）、splice（赋值，修改长度）正常操作
-- 必须（深层）遍历（嵌套）对象：只能劫持对象的属性，所以需要对每个属性进行遍历，而属性若是对象，则需深度遍历
-- 兼容性好，能够兼容ie
-
-**new Proxy(target, handler)**：
-
-定义：
-- 创建一个对象的代理，实现对对象基本操作的拦截和自定义（属性查找、赋值、枚举、函数调用等）
-
-作用：
-- 能够针对整个对象，而非对象的某个属性
-- 拦截处理函数handler有13种之多
-- 返回一个新对象，而不是原有对象
-
-
-## 29. vue diff算法原理
-
-> https://juejin.cn/post/7204594495996198968#heading-14
-
-## 30. vue中key的作用和原理
-
-- key作为vue中vnode标记的唯一id，在patch过程中通过key判断两个vnode是否相同，使diff操作更准确快速
-- 不加key，vue可能会根据就地更新的策略选择复用节点，导致保留了之前节点的状态
-- 尽量不要使用索引作为key
-
-## 31. vuex中actions和mutations的区别
-
-**mutations**：
-- 能够直接修改state
-- 同步
-
-**actions**：
-- 需调用mutations，间接修改state
-- 能够执行异步操作
-
-## 32. Vue SSR的理解
-
-概念：
-- SSR（服务端渲染），将vue在客户端把标签渲染成html的工作放在服务端完成，然后再把html直接返回给客户端
-
-优点：
-- SSR有着更好的SEO，直接返回的就是渲染好的页面，搜索引擎能直接爬取到，而SPA的内容是通过ajax请求获取到的文件（比如js等），搜索引擎爬取不到
-- 首屏加载速度更快，直接返回渲染后的html结构（直接就是完整的html页面），而SPA需要等待所有vue编译后的js文件都下载完成后，才开始进行页面的渲染（页面的渲染是通过js文件进行的）
-
-缺点：
-- 需要足够的服务器负载，因为渲染操作是在服务器上进行的，可使用缓存策略
-- 部分vue api不支持
-
-## 33. Composition API和Options API的区别
-
-> https://juejin.cn/post/7204594495996198968#heading-24
-
-## 34. for...in和for...of
-
-**for...in**：
-- 以任意顺序遍历一个对象的除Symbol以外的（包括继承的）可枚举的属性（指的是对象属性描述符enumerable设置为true的）
-- 该结构主要用于对象，为了对象而构建的
-
-**for...of**：
-- 在可迭代对象（具有iterator接口的）上创建一个迭代循环，遍历他的值
-
-## 35. process.cwd()和__dirname的区别
-
-**process.cwd()**: 返回当前工作目录，比如调用node命令执行脚本时的目录
-
-**__dirname**：返回源代码所在的目录
-
-```javascript
-// 比如在d:\\process/index.js中
-console.log(process.cwd())
-console.log(__dirname)
-```
-
-| 命令 | process.cwd() | \_\_dirname |
-| --- | --- | --- |
-| node index.js | d:\\process | d:\\process |
-| node process\\index.js | d: | d:\\process |
+注意：
+- 遵循star法则回答
