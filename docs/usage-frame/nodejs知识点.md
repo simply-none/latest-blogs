@@ -1,5 +1,13 @@
 # Node.js知识点
 
+## 文件的增删改查操作
+
+- 读取：`fs.readFile(path, cb(err, data) {})`, `data = fs.readFileSync(path)`，sync为同步方法，下面的都具备
+- 改动：appendFile、writeFile
+- 删除：`fs.unlink(path, cb(err){})`
+- 创建/写入：`fs.appendFile(path, data, cb(err) {})`, `fs.open(path, data, cb(err, data) {})`, `fs.writeFile(path, data, cb(err) {})`
+- 重命名：`fs.rename(oldpath, newpath, cb(err) {})`
+
 ## require.resolve用法
 
 > 参考来源：    
