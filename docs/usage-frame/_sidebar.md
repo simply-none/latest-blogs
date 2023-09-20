@@ -26,6 +26,8 @@
       - [基础能力](docs/usage-frame/wechat-mini-program/基础能力.md)
       - [自定义组件](docs/usage-frame/wechat-mini-program/自定义组件.md)
       - [内置组件](docs/usage-frame/wechat-mini-program/组件.md)
+    - uniapp
+      - [速记](docs/usage-frame/uniapp/速记.md)
   - react
     - [基础知识](docs/usage-frame/react/react.md)
     - [高级指引](docs/usage-frame/react/高级指引.md)
