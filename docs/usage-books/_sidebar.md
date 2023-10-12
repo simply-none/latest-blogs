@@ -1,6 +1,7 @@
 
 - [usage-books](docs/usage-books/README.md)
   - [写给大家看的设计书](docs/usage-books/写给大家看的设计书.md)
+  - [学习力：颠覆职场学习的高效方法](docs/usage-books/学习力：颠覆职场学习的高效方法.md)
 
 - ECMAScript
   - [01.let和const.md](docs/usage-books/ECMAScript入门/01.let和const.md)
