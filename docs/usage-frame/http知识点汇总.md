@@ -40,3 +40,24 @@ value2
 --boundary--
 ```
 <!-- tabs:end -->
+
+### Content-Type
+
+定义：Content-Type实体头部用于指示资源的MIME类型（media type）
+- 在响应（response headers）中，是服务器实际返回内容的类型
+- 在请求（request headers）中，是客户端发送给服务器的数据类型
+
+表示结构：`Content-Type: type/subtype;parameter=value`，即包括资源类型，字符编码标准，boundary（传输表单或部分数据时有用）
+
+web中重要的MIME类型：
+- `text/plain`：文本文件默认值
+- `text/css`：
+- `text/html`：
+- `text/javascript`：
+- `application/json`：
+- 图片类型：`image/gif`, `image/png`等
+- 音视频类型：`audio/wav`, `audio/webm`, `audio/ogg`, `video/webm`, `video/ogg`等
+- `application/octet-stream`：二进制文件的默认值，一般用于文件下载
+- `application/x-www-form-urlencoded`：使用url编码的方式（view source中用&分隔键值对，用=连接键值对，例如`name=jade&sex=man`，view parsed中是一个对象形式）编码表单，默认值
+- `multipart/form-data`：用于将html表单（通常是二进制文件）发送给服务器，是多部分文档格式，由边界线(--开始的字符串)划分出不同的部分，每部分都有实体、http请求头、Content-Disposition、Content-Type
+- `multipart/byteranges`：把部分的响应报文发送给浏览器
