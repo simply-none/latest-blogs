@@ -32,6 +32,8 @@ module.exports = {
     { name: '新增笔记' },
     { name: '删除笔记' },
     { name: '配置文件' },
+    { name: '添加文档功能' },
+    { name: '修复文档功能' },
     { name: '其他' }
   ],
   allowCustomScopes: true,

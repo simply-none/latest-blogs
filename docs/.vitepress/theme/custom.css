@@ -1,6 +1,5 @@
 :root {
   --vcp-c-brand: #cdcdcd;
-  --vp-c-brand-1: red;
 }
 
 .algolia [command-item][aria-selected='true'], .algolia [command-item]:hover {
@@ -10,5 +9,5 @@
 
 .search-dialog div[command-item] mark {
   background: yellow;
-  color: var(--vp-c-brand-1);
+  color: red;
 }

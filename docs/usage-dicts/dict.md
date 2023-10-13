@@ -18,10 +18,10 @@
   </code>
 </pre>
 
-<!-- <script type="text/javascript">
+<script setup>
 const dictNumber = document.querySelectorAll('#main > div.table-wrapper > table > tbody > tr').length
-document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
-</script> -->
+// document.querySelector('#vocabulary-total').innerHTML = dictNumber + " words"
+</script>
 
 |词汇|词义|读音|
 |:-|:-|:-|

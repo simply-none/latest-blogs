@@ -48,3 +48,9 @@
 出现原因：网上的答案基本上大都不相同，后解决的根本还是按照qiankun官网进行严格的配置。
 
 解决方案：严格按照官网文档进行配置，比如主应用子应用挂载节点必须一致，不然有可能出现上述问题。在进行了严格相同的配置之后，若出现问题，再去寻找解决之道。
+
+## 报错7：Could not resolve "@vue/reactivity", You can mark the path "@vue/reactivity" as external to exclude it from the bundle, which will remove this error.
+
+出现场景：在vitepress中使用element-plus出现的错误
+
+解决：安装该包即可，`npm i @vue/reactivity`

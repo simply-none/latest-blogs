@@ -12,12 +12,12 @@ export default defineConfig({
   base: "/latest-blogs/",
   title: "璎耜",
   description: "Vite 和 Vue 强力驱动的静态网站生成器",
-  head: [["link", { rel: "icon", href: "/vitepress/logo.png" }]],
+  head: [["link", { rel: "icon", href: "/icon.svg" }]],
   ignoreDeadLinks: true,
   lastUpdated: true,
   themeConfig: {
     // https://skewb.gitee.io/vitepress/reference/default-theme-config
-    logo: "/logo.png",
+    logo: "/icon.svg",
     lastUpdated: {
       text: "上次更新",
     },
@@ -42,6 +42,9 @@ export default defineConfig({
   },
   lang: "zh-cn",
   vite: {
+    esbuild: {
+      // exclude: '@vue/reactivity'
+    },
     plugins: [
       pagefindPlugin({
         btnPlaceholder: "搜索",
