@@ -1390,8 +1390,8 @@ type Yikes = Array<Yikes>
 
 **类型别名 vs 接口**：
 - 两者都能描述对象/函数的类型：
-  - 接口：`interface Itf = { (n: number): void }
-  - 类型别名：`type Itf = (n: number) => void
+  - 接口：`interface Itf = { (n: number): void }`
+  - 类型别名：`type Itf = (n: number) => void`
 - 接口无法描述一个原始值、联合类型、元组类型，但类型别名可以
 - 接口可以定义多次并自动合并为单个接口，类型别名不可以
 - 两者都能进行扩展，且能相互扩展，比如`interface Itf {x: number }`：
@@ -1543,7 +1543,7 @@ let p: Point = { x: 10, y: 20 }
 p.x = 20
 ```
 
-引申：ReadonlyArray<T>类型，只读数组类型，和上面定义类似，只能读取，且不能赋值给Array<T>类型
+引申：`ReadonlyArray<T>`类型，只读数组类型，和上面定义类似，只能读取，且不能赋值给`Array<T>`类型
 
 ```typescript
 let a: number[] = [1, 2, 3]

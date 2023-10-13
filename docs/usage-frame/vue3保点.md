@@ -103,7 +103,7 @@ let childRef = ref<ElImageCtx | null>(null)
 ref解包（即不需要使用.value进行访问）：
 - 定义：当ref变量直接作为setup函数返回对象（注：非setup环境，而在setup环境中，作为一个顶级变量时）的第一级属性时，在模板template中访问会自动浅层次解包它内部的值，即可不带.value直接访问到；
 - 
-- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了；或者是直接解构该对象，得到一个顶层的响应式对象；仅包含一个文本插值而无相关运算时（比如`{{ pureObj.refValue }}`）也会被自动解包，相当于`{{ pureObj.refValue.value }}`
+- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了；或者是直接解构该对象，得到一个顶层的响应式对象；仅包含一个文本插值（用`{{}}`表示）而无相关运算时（比如`pureObj.refValue`）也会被自动解包，相当于`pureObj.refValue.value`
 - 若ref变量作为响应式对象reactive的属性，当他被访问或被修改后，会自动解包他的内部值（即不需要通过.value的形式访问）。同时ref变量和响应式对象reactive的属性是互相影响的（引用地址相同），当属性重新赋值之后，他们就互不相关了（修改不会影响对方）。只有当嵌套在深层响应式对象内才会进行解包，在浅层响应式对象shallowXxx中不会。
 - ref解包仅发生在响应式对象reactive（类型为普通Object对象）嵌套（ref作为属性）的时候，当ref变量作为其他原生集合类型Map或Array的属性或元素时，不会进行解包，这时仍然要通过.value进行访问
 
@@ -2152,10 +2152,6 @@ render () {
   return h(this.bold ? 'strong' : 'em')
 }
 ```
-<!-- tab:xxx -->
-```xxx
-
-```
 <!-- tabs:end -->
 
 ### 在渲染函数中使用指令
@@ -2892,7 +2888,7 @@ export default {
 
 ```typescript
 <template>
-  <p :class="$style.red">
+  <p :class="$style.red"></p>
 </template>
 
 <script>
@@ -3075,7 +3071,7 @@ exprot default defineComponent({
 
 ### typescript工具类型
 
-**PropType<T>**
+**`PropType<T>`**
 
 定义：给运行时props（props分运行时声明、类型声明）标注复杂的类型
 
@@ -3096,19 +3092,19 @@ export default {
 
 ```
 
-**MaybeRef<T>**
+**`MaybeRef<T>`**
 
 定义：
-- T | Ref<T>的别名
+- `T | Ref<T>`的别名
 - 用于标注组合式函数的参数（v3.3+）
 
-**MaybeRefOrGetter<T>**
+**`MaybeRefOrGetter<T>`**
 
 定义：
-- T | Ref<T> | (() => T)的别名
+- `T | Ref<T> | (() => T)`的别名
 - 用于标注组合式函数的参数（v3.3+）
 
-**ExtractPropTypes<T>**
+**`ExtractPropTypes<T>`**
 
 定义：
 - 从运行时props选项对象提取props类型，提取的类型是面向内部的，即组件接收到的是解析后的props
@@ -3134,7 +3130,7 @@ type Props = ExtractPropTypes<typeof propsOptions>
  */
 ```
 
-**ExtractPublicPropTypes<T>**
+**`ExtractPublicPropTypes<T>`**
 
 定义：从运行时的props选项对象中提取面向外部的（父组件传递的）prop，用法同上
 

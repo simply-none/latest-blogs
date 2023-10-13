@@ -397,14 +397,14 @@ runAfterFirstMounted(() => startMonitor())
   - 类型为`MicroApp`
   - 表示一个微应用实例
   - 其属性有：
-    - mount(): Promise<null>
-    - unmount(): Promise<null>
-    - update(customProps: object): Promise<any>
+    - mount(): `Promise<null>`
+    - unmount(): `Promise<null>`
+    - update(customProps: object): `Promise<any>`
     - getStatus(): | "NOT_LOADED" | "LOADING_SOURCE_CODE" | "NOT_BOOTSTRAPPED" | "BOOTSTRAPPING" | "NOT_MOUNTED" | "MOUNTING" | "MOUNTED" | "UPDATING" | "UNMOUNTING" | "UNLOADING" | "SKIP_BECAUSE_BROKEN" | "LOAD_ERROR";
-    - loadPromise: Promise<null>
-    - bootstrapPromise: Promise<null>
-    - mountPromise: Promise<null>
-    - unmountPromise: Promise<null>
+    - loadPromise: `Promise<null>`
+    - bootstrapPromise: `Promise<null>`
+    - mountPromise: `Promise<null>`
+    - unmountPromise: `Promise<null>`
 
 ```javascript
 // 微应用中：微应用的入口，一般是main.js

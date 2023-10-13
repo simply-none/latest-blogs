@@ -95,7 +95,7 @@ degit user/repo#1fd41saf4
 - `git stash`：把本地的改动暂存起来
 - `git stash save 'message'`：把本地的改动暂存起来，添加备注，方便查找
 - `git stash pop`：应用最近一次暂存的修改，同时删除暂存记录
-- `git stash apply stash@{$num}`：无参数默认使用stash@{0}
+- `git stash apply stash@{$num}`：无参数默认使用`stash@{0}`
 - `git stash list`：查看当前stash缓存列表
 - `git stash clear`：删除所有stash缓存
 

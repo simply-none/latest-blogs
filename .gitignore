@@ -1,3 +1,5 @@
-node_modules/
-ji-*/
-ji-de/*
+.DS_Store
+.vscode
+node_modules
+cache
+docs/.vitepress/dist

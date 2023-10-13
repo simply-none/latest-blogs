@@ -12,16 +12,18 @@
   },
   "scripts": {
     "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "commit": "git pull && node ./time.js && git add . && git-cz",
+    "commit": "git pull && git add . && git-cz",
     "r": "standard-version && git push --follow-tags origin master",
     "prepare": "husky install",
-    "init": "npm i docsify-cli -g --registry=https://registry.npmmirror.com",
-    "time": "node ./time.js",
-    "dev": "node ./time.js & docsify serve --port 9275"
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress build docs && vitepress preview docs"
   },
   "dependencies": {
     "@commitlint/format": "^17.4.4",
-    "shelljs": "^0.8.5"
+    "pagefind": "^1.0.3",
+    "shelljs": "^0.8.5",
+    "vitepress-plugin-pagefind": "^0.2.10"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.5",
@@ -35,6 +37,7 @@
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
     "standard-version": "^9.5.0",
+    "vitepress": "^1.0.0-beta.7",
     "vue-router": "^4.2.2"
   },
   "standard-version": {

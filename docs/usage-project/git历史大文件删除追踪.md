@@ -46,7 +46,7 @@ git filter-repo：使用用户指定的过滤器快速重写整个存储库历�
 主要使用：
 1. 命令`git filter-repo --analyze`：分析存储库历史并创建一个报告，该报告可能有助于确定在后续运行中过滤什么，生成的报告在`.git\filter-repo`目录下
 2. 针对example参考进行删除（可能需要强制删除--force）就行了，然后：
-   1. git需要重新git remote add origin <git-repo-url>
+   1. git需要重新`git remote add origin <git-repo-url>`
    2. 可能需要重新设置git config user（也可能不需要）
    3. 需要强制推送（--force），且每个分支都需要强制推送一次到远程，不然其他分支可能未删除那些大文件
 3. 保险方案，可以新建一个repo进行这项操作
@@ -124,7 +124,7 @@ BFG使用体验：
 
 用法：
 1. 下载bfg jar包：https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
-2. 克隆一个新的裸repo副本：git clone --mirror <git-reop-url>
+2. 克隆一个新的裸repo副本：`git clone --mirror <git-reop-url>`
 3. 在运行第四步前，可能需要运行命令：`git gc`，不然可能不会执行第四步操作
 4. 运行命令：`java -jar bfg.jar --strip-blobs-bigger-than 100M some-big-repo.git`，此步骤不会删除指定文件
 5. 进入repo目录删除文件：`git reflog expire --expire=now --all && git gc --prune=now --aggressive`
