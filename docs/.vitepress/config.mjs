@@ -12,7 +12,7 @@ export default defineConfig({
   base: "/latest-blogs/",
   title: "璎耜",
   description: "Vite 和 Vue 强力驱动的静态网站生成器",
-  head: [["link", { rel: "icon", href: "/icon.svg" }]],
+  head: [["link", { rel: "icon", href: "/latest-blogs/icon.svg" }]],
   ignoreDeadLinks: true,
   lastUpdated: true,
   themeConfig: {
