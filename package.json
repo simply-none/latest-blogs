@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@commitlint/format": "^17.4.4",
+    "generate-random-gradient": "^1.0.2",
     "pagefind": "^1.0.3",
     "shelljs": "^0.8.5",
     "vitepress-plugin-pagefind": "^0.2.10"
