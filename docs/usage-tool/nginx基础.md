@@ -24,10 +24,9 @@ _nginx无法正常停止的方法_：
 > nginx的配置文件位于：`conf/nginx.conf`
 
 详细配置如下：
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:nginx配置示例1 -->
-```conf
+```conf [nginx配置示例1]
 # 开启gzip压缩服务
 gzip on;
 
@@ -85,8 +84,7 @@ gzip_vary on;
 gzip_disable "MSIE [1-6]\.";
 ```
 
-<!-- tab:nginx配置示例2 -->
-```conf
+```conf [nginx配置示例2]
 #user  nobody;
 worker_processes  1;
 
@@ -261,7 +259,7 @@ http {
 }
 ```
 
-<!-- tabs:end -->
+:::
 
 配置完成后，必须重启nginx，若重启失败/失效，可先停止nginx进程，然后再次启动nginx
 

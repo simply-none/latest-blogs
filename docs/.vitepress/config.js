@@ -30,10 +30,11 @@ export default defineConfig({
     darkModeSwitchLabel: "外观",
     sidebarMenuLabel: "菜单",
     returnToTopLabel: "返回顶部",
+    externalLinkIcon: true,
     nav: nav(),
     sidebar: sidebar(),
     socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+      { icon: "github", link: "https://github.com/simply-none/latest-blogs/" },
     ],
     footer: {
       copyright: "内容整理权归解璎所有 Copyright © 2022-present",

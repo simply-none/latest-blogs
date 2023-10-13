@@ -43,9 +43,8 @@
 5. 命名空间与函数合并：可以给函数添加一些属性，保证类型安全
 6. 命名空间与枚举类型合并：扩展枚举类型，这里的扩展，更多的是对枚举类型的应用罢了
 
-<!-- tabs:start -->
-<!-- tab:接口合并 -->
-```typescript
+::: code-group
+```typescript [接口合并]
 interface Document {
   createElement (tagName: any): Element
 }
@@ -67,8 +66,7 @@ interface Document {
 }
 
 ```
-<!-- tab:命名空间与类合并 -->
-```typescript
+```typescript [命名空间与类合并]
 class Album {
   // 使用命名空间中的类
   label: Album.AlbumLabel
@@ -77,8 +75,7 @@ namespace Album {
   export class AlbumLabel {}
 }
 ```
-<!-- tab:命名空间与函数合并 -->
-```typescript
+```typescript [命名空间与函数合并]
 function buildLabel (name: string): string {
   // 使用命名空间中的属性
   return buildLabel.prefix + name + buildLabel.suffix
@@ -89,8 +86,7 @@ namespace buildLabel {
 }
 console.log(buildLabel('sam smith'))
 ```
-<!-- tab:命名空间扩展枚举类型 -->
-```typescript
+```typescript [命名空间扩展枚举类型]
 enum Color {
   red = 1,
   green = 2
@@ -106,7 +102,7 @@ namespace Color {
 // 使用，得出一个新的值罢了（所谓的扩展？😢😢😢）
 console.log(Color.mixColor('yellow'))
 ```
-<!-- tabs:end -->
+:::
 
 **声明合并注意事项**：
 - 类不能与其他类或变量合并
@@ -120,9 +116,8 @@ console.log(Color.mixColor('yellow'))
 - 定义两个基类，然后定义一个子类implements两个基类，然后定义一个函数，将基类的原型prototype的方法实现/复制到子类的原型prototype中
 - 定义两个基类，然后定义一个子类，并定义一个同名子类的接口extendds两个基类，然后定义一个函数，将基类的原型prototype的方法实现/复制到子类的原型prototype中
 
-<!-- tabs:start -->
-<!-- tab:implements -->
-```typescript
+::: code-group
+```typescript [implements]
 class Basic1 {
   isBasic1: boolean
   setBasic1 () {
@@ -152,8 +147,7 @@ function mixins (child: any, basics: any[]) {
 
 mixins(Child, [Basic2, Basic1])
 ```
-<!-- tab:extends -->
-```typescript
+```typescript [extends]
 class Basic1 {
   isBasic1: boolean
   setBasic1 () {
@@ -186,7 +180,7 @@ function mixins (child: any, basics: any[]) {
 
 mixins(Child, [Basic2, Basic1])
 ```
-<!-- tabs:end -->
+:::
 
 
 注意事项：
@@ -203,9 +197,8 @@ implements：一个新的类，从父类或接口实现所有的属性和方法�
 
 extends：一个新的接口或类，从父类或者接口继承所有的属性和方法，不能重写属性，可以重写方法
 
-<!-- tabs:start -->
-<!-- tab:类声明 -->
-```typescript
+::: code-group
+```typescript [类声明]
 // 声明类Point，同时也声明了一个类类型Point
 class Point {
   x: number
@@ -234,7 +227,7 @@ printPoint(new Point(2, 3))
 
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 三斜线指令
 
@@ -351,17 +344,15 @@ import vclass from 'modult-path'
 - 模块加载器会通过requie被动态调用，只在被需要时加载
 - 为了确保类型安全，可以使用typeof在表示类型的地方使用，用于表示模块的类型
 
-<!-- tabs:start -->
-<!-- tab:NodeJS动态模块加载 -->
-```typescript
+::: code-group
+```typescript [NodeJS动态模块加载]
 declare function require (moduleName: string): any
 import { Zip } from './zip'
 if (xxx) {
   let validator: typeof Zip = require('./zip')
 }
 ```
-<!-- tab:RequireJS动态模块加载 -->
-```typescript
+```typescript [RequireJS动态模块加载]
 declare function require (moduleNames: string[], onLoad: (...args: any[]) => void): void
 import * as Zip from './zip'
 if (xxx) {
@@ -370,8 +361,7 @@ if (xxx) {
   })
 }
 ```
-<!-- tab:SystemJS动态模块加载 -->
-```typescript
+```typescript [SystemJS动态模块加载]
 declare const System: any
 import { Zip } from './zip'
 if (xxx) {
@@ -380,7 +370,7 @@ if (xxx) {
   })
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### JavaScript库的使用
 
@@ -466,9 +456,8 @@ export { test } from './cal.ts'
 - 仅可以对模块中已经存在的声明进行扩展
 - 不能扩展模块的默认导出
 
-<!-- tabs:start -->
-<!-- tab:模块扩展 -->
-```typescript
+::: code-group
+```typescript [模块扩展]
 // obse.ts
 export class Obse<T> {}
 
@@ -488,8 +477,7 @@ import './map.ts'
 let o: Obse<number>
 o.map(x => x.toFixed())
 ```
-<!-- tab:全局扩展 -->
-```typescript
+```typescript [全局扩展]
 // obse.ts
 export class Obse<T> {}
 declare global {
@@ -500,7 +488,7 @@ declare global {
 }
 Array.property.toObse = function () {}
 ```
-<!-- tabs:end -->
+:::
 
 ## 模块解析
 

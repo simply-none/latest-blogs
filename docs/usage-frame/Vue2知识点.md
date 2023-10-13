@@ -49,10 +49,9 @@ computed: {
 1. vuex的数据更新必须遵守vue的响应规则
 
 操作流程如下：
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:store.js -->
-```vue
+```vue [store.js]
 state: {
   count: 0
 },
@@ -75,8 +74,7 @@ actions: {
 }
 ```
 
-<!-- tab:组件中使用 -->
-```vue
+```vue [组件中使用]
 // 直接访问
 this.$store.state.count
 this.$store.getters.getCount
@@ -115,7 +113,7 @@ methods: {
 
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 基本用法
 

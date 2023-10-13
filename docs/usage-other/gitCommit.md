@@ -1,10 +1,8 @@
 # git commit 提交脚本
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:bash-shell -->
-
-```bash
+```bash [bash-shell]
 # 新建文件
 touch gitCommit.sh
 # 设置脚本执行权限
@@ -14,9 +12,7 @@ chmod 777 ./gitCommit.sh
 ```
 
 
-<!-- tab:gitCommit.sh -->
-
-```sh
+```sh [gitCommit.sh]
 git status
 # 修复 bug：            :bug:
 # 提升性能              :zap:“:racehorse:
@@ -77,4 +73,4 @@ else
 fi
 ```
 
-<!-- tabs:end -->
+:::

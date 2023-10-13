@@ -6,10 +6,9 @@
 - 不支持base属性，通过路由模式函数的第一个参数替代
 - 不支持fallback属性，可以直接使用[html5 history api](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)进行历史会话访问
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:创建路由 -->
-```typescript
+```typescript [创建路由]
 // 第1步：定义路由文件router/index.ts
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 
@@ -28,8 +27,7 @@ app.use(router)
 app.mount('#app')
 ```
 
-<!-- tab:使用路由 -->
-```vue
+```vue [使用路由]
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
 // 1. 使用useRoute
@@ -48,7 +46,7 @@ function toogleRoute() {
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 **单页面应用基路径设置**：
 - 基础路径作为路由模式函数的第一个参数传入，之后匹配的路由都会加上这个基础路径前缀
@@ -158,10 +156,9 @@ router.go(-100)
 - sensitive：路由匹配是否区分大小写，默认为false，表示不区分大小写，比如默认情况下`/user:id`可以匹配`/user12`, `/USeR12`，为true时，则只能匹配`/user12`
 - strict：路由匹配是否严格检查路由末尾是否有尾部斜线，默认为false，比如默认情况下`/user:id`可以匹配`/user12`, `/user12/`，为true时，则只能匹配`/user12`，此处的严格检查表示路由匹配加了尾部斜线，你就能够匹配有尾部斜线的路由，反之为true时，就匹配不了含尾部斜线的路由
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:路由捕获示例1 -->
-```javascript
+```javascript [路由捕获示例1]
 // 路径对象
 const routes = [
   // 表示可重复patchmatch 0次以上，同时patchMatch的值可以是任意值，例如匹配/, /12ad, /23/fda/f等，可通过$route.params.patchMatch获取
@@ -182,7 +179,7 @@ const location = router.resolve({
 })
 router.push(location)
 ```
-<!-- tabs:end -->
+:::
 
 注意：
 - routes中，路径对象的顺序不重要
@@ -515,10 +512,9 @@ export default {
 - 单独设置路由的过渡，使用动态的name即可，比如该动态name通过route.meta内的属性决定，而meta的内容，亦可以通过导航守卫afterEach通过to.meta.xxx进行重新设置
 - 相同的视图，若想强制进行过渡，可以在component组件中设置其key属性为route.path(通过key的不同重新渲染，进而会有重新过渡动画)
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:动态过渡 -->
-```javascript
+```javascript [动态过渡]
 // 添加v-slot api，获取Component，route等内容
 <router-view v-slot="{ Component, route }">
   // 设置过渡动画类型
@@ -536,7 +532,7 @@ router.afterEach((to, from) => {
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 滚动行为
 
@@ -600,10 +596,9 @@ const router = createRouter({
 - 把不同路由对应的组件分割成不同代码块，当路由被访问时才加载对应组件，这样更高效
 - vue-router支持开箱即用的动态导入
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:动态导入 -->
-```javascript
+```javascript [动态导入]
 // component属性接收一个返回Promise的函数，所以可以使用更复杂的函数，只要他们返回promise
 // 1. 
 const User = () => import('./views/user.vue')
@@ -617,13 +612,11 @@ const routes = [{
 }]
 ```
 
-<!-- tab:webpack的动态导入 -->
-```javascript
+```javascript [webpack的动态导入]
 const User = () => import(/* webpackChunkName: 'group-user' */ './views/user.vue')
 ```
 
-<!-- tab:vite的动态导入 -->
-```javascript
+```javascript [vite的动态导入]
 // vite.config.js
 export default defineConfig({
   build: {
@@ -640,7 +633,7 @@ export default defineConfig({
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 导航故障
 
@@ -662,10 +655,9 @@ export default defineConfig({
   - `duplicated`：已在目标导航上，导航被阻止
   - redirected
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:导航故障检测1 -->
-```javascript
+```javascript [导航故障检测1]
 const result = await router.push('/user')
 if (result) {
   // 导航被阻止
@@ -674,8 +666,7 @@ if (result) {
 }
 ```
 
-<!-- tab:导航故障检测2 -->
-```javascript
+```javascript [导航故障检测2]
 import { NavigationFailureType, isNavigationFailure } from 'vue-router'
 
 const result = await router.push('/user')
@@ -684,7 +675,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
   // 导航被阻止
 }
 ```
-<!-- tabs:end -->
+:::
 
 **导航故障的属性**：
 - 所有导航失败，都会暴露to、from属性，以反映导航的当前位置和目标位置
@@ -768,11 +759,9 @@ if (router.currentRoute.value.redirectedFrom) {}
 
 用法：
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:定义一个自定义的router-link -->
-
-```vue
+```vue [定义一个自定义的router-link]
 <!-- custom-link -->
 <template>
 <!-- v-bind="$props":这里其实最重要的就是将里面的to传过去，哈哈哈，使用:to="xxx"效果也是一样的 -->
@@ -824,8 +813,7 @@ defineProps({
 </script>
 ```
 
-<!-- tab:使用自定义的router-link -->
-```vue
+```vue [使用自定义的router-link]
 <template>
   <CustomLink
     to="#"
@@ -849,8 +837,7 @@ const { route, href, isActive, isExactActive, navigate } = defaultPropsValue
 </script>
 ```
 
-<!-- tab:router-link组件类型追溯 -->
-```typescript
+```typescript [router-link组件类型追溯]
 /**
  * Component to render a link that triggers a navigation on click.
  */
@@ -980,8 +967,7 @@ export declare interface RouteLocationOptions {
     state?: HistoryState;
 }
 ```
-<!-- tab:useLink函数类型追溯 -->
-```typescript
+```typescript [useLink函数类型追溯]
 export declare function useLink(props: UseLinkOptions): {
     route: ComputedRef<RouteLocation & {
         href: string;
@@ -1151,4 +1137,4 @@ export declare interface RouteRecordNormalized {
 
 
 ```
-<!-- tabs:end -->
+:::

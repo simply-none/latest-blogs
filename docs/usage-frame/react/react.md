@@ -120,9 +120,8 @@ setInterval(hello, 1000)
   - 非受控组件的值，可由ref属性获取，这时需要将`this.state.cusFile = React.createRef()`中的cusFile赋值给ref属性，后面通过变量cusFile获取元素的值
 - 状态提升：将多个组件需要共享的state上移到最近的父组件上，这样便可实现state共享，此时需要将state和处理数据的handle函数作为prop传给子组件即可
 
-<!-- tabs:start -->
-<!-- tab:组件的定义和使用 -->
-```javascript
+::: code-group
+```javascript [组件的定义和使用]
 // 函数组件
 function Hello (props) {
   return <h1>hello, {props.name}</h1>
@@ -149,8 +148,7 @@ const element = <Hello className="page-title" id={pageId} name={name}/>
 root.render(element)
 ```
 
-<!-- tab:组件拆分和组合 -->
-```javascript
+```javascript [组件拆分和组合]
 // 定义一个评论组件：包含头像、用户名、评论内容、评论时间
 // 其结构为
 <div className="Comment">
@@ -209,8 +207,7 @@ function Comment (props) {
 }
 ```
 
-<!-- tab:状态提升 -->
-```javascript
+```javascript [状态提升]
 // 父组件
 import { Link } from 'react-router-dom'
 import React from 'react'
@@ -310,7 +307,7 @@ export default class JqForm extends React.Component {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 ## states和生命周期
 
@@ -404,9 +401,8 @@ root.render(<Clock/>)
 **refs转发**：将ref自动的通过组件传递到子组件的技巧（父组件能够操作子组件），这一功能对于可重用的组件库是很有用的
 - 使用forwardRef定义的组件的refs，可以转发给dom组件（原生元素），也能转发给class组件
 
-<!-- tabs:start -->
-<!-- tab:创建refs -->
-```javascript
+::: code-group
+```javascript [创建refs]
 // 方式一：使用React.createRef的方式
 Class MyComp extends React.Component {
   constructor(props) {
@@ -454,8 +450,7 @@ Class MyComp extends React.Component {
 }
 ```
 
-<!-- tab:refs转发 -->
-```javascript
+```javascript [refs转发]
 // 第一种方式：转发到dom组件上
 // 使用forwardRef函数构建组件FancyButton，这时FancyButton组件内部可以得到调用`<FancyButton ref={ref}/>`中的ref变量，并将其赋值给元素或转为其他命名（非ref）的prop传递给子组件
 const FancyButton = React.forwardRef((props, ref) => (
@@ -471,8 +466,7 @@ const ref = React.createRef()
 <FancyButton ref={ref}>click me</FancyButton>
 ```
 
-<!-- tab:在高阶函数中使用refs转发（透传） -->
-```javascript
+```javascript [在高阶函数中使用refs转发（透传）]
 // 若想将操作更深结构下的组件，可将ref透传
 class FancyButton extends React.Component {
   constructor (props) {
@@ -546,7 +540,7 @@ class UseHoc extends React.Component {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 ## 高阶组件(HOC)
 

@@ -70,9 +70,8 @@ vite [root] [options]
 - vite支持多个`.html`作为入口点的多页面应用模式
 - 可以直接使用`vite`或`npx vite`命令运行项目，见npm srcipts脚本。同时可以指定额外的命令行选项，比如`--port`、`--https`，使用`npx vite --help`获取更多内容
 
-<!-- tabs:start -->
-<!-- tab:vite命令创建 -->
-```bash
+::: code-group
+```bash [vite命令创建]
 # 根据提示创建
 npm create vite@latest
 yarn/pnpm create vite
@@ -81,8 +80,7 @@ yarn/pnpm create vite
 npm create vite@latest my-vite-app -- --template vue
 yarn/pnpm create vite my-vite-app --template vue
 ```
-<!-- tab:社区模板创建 -->
-```bash
+```bash [社区模板创建]
 # 使用digit工具
 npm install -g degit
 
@@ -104,8 +102,7 @@ degit anncwb/vue-vben-admin project-name
 # 若是安装错误： could not download https://github.com/simply-none/latest-blogs/archive/9d988374ad7495251f17133a934551956bccbfa2.tar.gz
 # 先将.tar.gz改成.zip,然后将文件下载下来解压缩，然后就可以了，直接使用了
 ```
-<!-- tab:package.json -->
-```json
+```json [package.json]
 {
   "scripts": {
     "dev": "vite",
@@ -114,7 +111,7 @@ degit anncwb/vue-vben-admin project-name
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 **注意**：
 - `index.html`：在项目的最外层而非public文件夹，这是有意为之的，在开发期间vite是一个服务器，而`index.html`是项目的入口文件
@@ -330,10 +327,9 @@ export default defineConfig({
 3. 此时展现了moduleA中mount挂载的根节点内容，但是不会展示`RouterView`节点内容，这时需要在`script setup`中使用路由跳转到当前位置`router.push(xxx)`
 4. 若想在moduleA中跳转到moduleB，重复第2、3步即可
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:viteconfig设置 -->
-```typescript
+```typescript [viteconfig设置]
 export default defineConfig({
   build: {
     rollupOptions: {
@@ -347,8 +343,7 @@ export default defineConfig({
 })
 ```
 
-<!-- tab:配置模块跳转 -->
-```vue
+```vue [配置模块跳转]
 <template>
   <div id="moduleA">
     <button @click="toModuleB">跳转到B</button>
@@ -369,7 +364,7 @@ function toModuleB () {
 }
 </script>
 ```
-<!-- tabs:end -->
+:::
 
 ### 缓存优化（实验性）
 

@@ -46,9 +46,8 @@ pinia的目的：设计成一个拥有组合式API的vue状态管理库
 
 **创建pinia（根store）**：
 
-<!-- tabs:start -->
-<!-- tab:vue3 -->
-```typescript
+::: code-group
+```typescript [vue3]
 import { createPinia, setMapStoreSuffix } from 'pinia'
 import { createApp } from 'vue'
 
@@ -72,8 +71,7 @@ declare module 'pinia' {
 
 ```
 
-<!-- tab:vue2 -->
-```typescript
+```typescript [vue2]
 import { createPinia, PiniaVuePlugin } from 'pinia'
 import Vue from 'vue'
 
@@ -86,13 +84,12 @@ new Vue({
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 基础用法实例
 
-<!-- tabs:start -->
-<!-- tab:对象形式创建pinia -->
-```typescript
+::: code-group
+```typescript [对象形式创建pinia]
 // 对象形式创建pinia
 // /src/stores/counter.js
 import { defineStore } from 'pinia'
@@ -209,8 +206,7 @@ export const useCounterStore = defineStore('counter', {
 })
 
 ```
-<!-- tab:函数形式创建pinia -->
-```typescript
+```typescript [函数形式创建pinia]
 // 函数形式（类似组件的setup）创建pinia
 // stores/counter.js
 import { defineStore } from 'pinia'
@@ -236,8 +232,7 @@ export const useCounterStore = defineStore('counter', () => {
 })
 
 ```
-<!-- tab:组合式API使用pinia -->
-```typescript
+```typescript [组合式API使用pinia]
 <template>
   <p>count is: {{ useCounterStoreF.count }}</p>
   <p>double is: {{ useCounterStoreF.double }}</p>
@@ -411,8 +406,7 @@ export default {
 }
 </script>
 ```
-<!-- tab:选项式API使用pinia -->
-```typescript
+```typescript [选项式API使用pinia]
 // 选项式API方式使用
 
 // 若向访问store的大部分内容，又不想映射store的每个属性，可以使用mapStores
@@ -449,7 +443,7 @@ export default {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 
 ## 插件
@@ -472,11 +466,9 @@ pinia支持扩展的内容，不限于下面这些：
 
 举例：返回一个对象将一个静态属性添加到所有store
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:vue3中使用 -->
-
-```typescript
+```typescript [vue3中使用]
 // main.ts
 import { createPinia } from 'pinia'
 import type { PiniaPluginContext } from 'pinia'
@@ -570,8 +562,7 @@ const useSecretStoreF = useSecretStore()
 console.log(useSecretStoreF.secret)
 ```
 
-<!-- tab:vue2中使用 -->
-```typescript
+```typescript [vue2中使用]
 // main.ts
 import { set, toRef } from '@vue/composition-api'
 import { createPinia } from 'pinia'
@@ -593,8 +584,7 @@ new Vue({
 })
 ```
 
-<!-- tab:添加类型 -->
-```typescript
+```typescript [添加类型]
 // 为新的store属性添加类型，需要扩展PiniaCustomProperties接口
 import 'pinia'
 import type { Ref } from 'vue'
@@ -636,7 +626,7 @@ declare module 'pinia' {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 ## 在组件外使用store
 
@@ -644,10 +634,9 @@ declare module 'pinia' {
 - pinia store依靠pinia实例在所有调用中共享同一个store实例
 - 使用store时，直接调用相关的useXxxStore()即可，若在组件之外（比如ts中）调用useXxxStore()函数，必须在app.use(pinia)之后才能调用成功，因为先挂载pinia之后才能使用pinia
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:单页面应用 -->
-```typescript
+```typescript [单页面应用]
 // main.ts
 import { useUserStore } from './store/user'
 import { createApp } from 'vue'
@@ -683,14 +672,13 @@ router.beforeEach((to) => {
 })
 ```
 
-<!-- tab:服务端渲染 -->
-```typescript
+```typescript [服务端渲染]
 /**
  * 必须把pinia实例传递给useStore()，这样可以防止pinia在不同的应用实例之间共享全局状态
  */
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 其他
 
@@ -758,11 +746,9 @@ const useY = defineStore('y', () => {
 
 嵌套的store，如果一个store使用了另一个store，可以直接导入，并在actions和getters中调用useXXX函数
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:函数参数用法 -->
-
-```typescript
+```typescript [函数参数用法]
 import { useUserStore } from './user'
 
 export const useCartStore = defineStore('cart', () => {
@@ -787,8 +773,7 @@ export const useCartStore = defineStore('cart', () => {
 })
 ```
 
-<!-- tab:对象参数用法 -->
-```typescript
+```typescript [对象参数用法]
 import { defineStore } from 'pinia'
 import { useUserStore } from './user'
 
@@ -812,7 +797,7 @@ export const userCartStore = defineStore('cart', {
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 ### 处理组合式函数
 

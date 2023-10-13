@@ -8,10 +8,9 @@
 4. typescript中若直接使用相等操作符与NaN进行比较会直接报错，同时提示用`Number.isNaN`代替
 5. 监视文件功能（即watch）使用文件系统事件（只对某些文件变动进行处理）代替原先的轮询（轮询所有的，定期检查），该功能是可配置的
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:satisfies运算符 -->
-```typescript
+```typescript [satisfies运算符]
 type Colors = 'red' | 'green' | 'blue'
 type RGB = [red: number, green: number, blue: number]
 
@@ -27,8 +26,7 @@ const palette = {
 const redComponent = palette.red.at(0)
 ```
 
-<!-- tab:自动存取器 -->
-```typescript
+```typescript [自动存取器]
 class Person {
   // 声明自动存取器
   accessor name: string;
@@ -47,4 +45,4 @@ class Person {
   }
 }
 ```
-<!-- tabs:end -->
+:::

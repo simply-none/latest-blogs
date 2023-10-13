@@ -356,10 +356,9 @@ instanceof：
 - 防抖：输入框输入内容后请求api获取结果
 - 节流：输入联想、内容拖动、滚动条滚动、计算鼠标移动的距离，此时需要在一段时间内触发操作，节流比较适合，使用防抖时会一直取消上一次操作，可能在这段时间内不会返回任何内容，影响用户观感
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:防抖 -->
-```javascript
+```javascript [防抖]
 function debounce (fn, delay = 200) {
   let timer = 0
   return function () {
@@ -374,8 +373,7 @@ function debounce (fn, delay = 200) {
 }
 ```
 
-<!-- tab:节流 -->
-```javascript
+```javascript [节流]
 function throttle (fn, delay = 200) {
   let timer = 0
   return function () {
@@ -389,7 +387,7 @@ function throttle (fn, delay = 200) {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### Object.defineProperty和Proxy的区别
 
@@ -483,10 +481,9 @@ vue3:
 - vuex
 - pinia
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:全局事件总线 -->
-```vue
+```vue [全局事件总线]
 new Vue({
   beforeCreate() {
     Vue.prototype.$bus = this
@@ -498,7 +495,7 @@ this.$bus.$on('receiveParams', data)
 // 2. 发送数据
 this.$bus.$emit('receiveParams', data)
 ```
-<!-- tabs:end -->
+:::
 
 ### vue diff算法原理
 
@@ -627,9 +624,8 @@ module.exports = {
 - 在package.json中设置一级字段`sideEffects`为一个数组，数组值表示会产生副作用的文件，此时数组内匹配到的文件将不会被tree shaking
 - 在webpack.config.js的rules字段中对应规则下设置sideEffects字段选择是否进行tree shaking
 
-<!-- tabs:start -->
-<!-- tab:package.json -->
-```json
+::: code-group
+```json [package.json]
 // package.json
 {
   // 所有的代码都不会被tree shaking
@@ -639,8 +635,7 @@ module.exports = {
 }
 ```
 
-<!-- tab:webpack.config.json -->
-```javascript
+```javascript [webpack.config.json]
 module.exports = {
   module: {
     rules: [
@@ -656,7 +651,7 @@ module.exports = {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 **tree shaking最佳实践**:
 - 避免无意义的赋值或引用,即被赋值的变量后续未被使用到

@@ -13,18 +13,16 @@
 - attachment：表示返回的消息体能够被下载
 - form-data：作为多部分主体的标头，在使用multipart/form-data格式提交表单时，每个部分都需要提供一个该标头，以提供相关信息
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:作为消息体的标头 -->
-```bash
+```bash [作为消息体的标头]
 Content-Disposition: inline
 Content-Disposition: attachment
 # 多个参数用分号隔开
 Content-Disposition: attachment; filename="filename.jpg"
 ```
 
-<!-- tab:作为多部分主体的标头 -->
-```bash
+```bash [作为多部分主体的标头]
 POST /test.html HTTP/1.1
 Host: example.org
 Content-Type: multipart/form-data;boundary="boundary"
@@ -39,7 +37,7 @@ Content-Disposition: form-data; name="field2"; filename="example.txt"
 value2
 --boundary--
 ```
-<!-- tabs:end -->
+:::
 
 ### Content-Type
 

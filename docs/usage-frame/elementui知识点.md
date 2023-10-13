@@ -1,25 +1,23 @@
 # element ui常见问题汇总
 
 ## 表单验证
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:验证单个字段 -->
-```javascript
+```javascript [验证单个字段]
 // validateField方法
 this.$refs.formContainer.validateField('filed1', errorInfo => {
   // 根据是否有errorInfo进行对应操作
 })
 ```
 
-<!-- tab:验证整个表单 -->
-```javascript
+```javascript [验证整个表单]
 // validate方法
 this.$refs.formContainer.validate(valid => {
   // 根据valid的布尔值判断
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 事件
 

@@ -34,9 +34,8 @@ loader的属性：
 - test：告诉webpack，当碰到`require()`或`import`语句时，如果该文件符合test的正则表达式，则在打包之前，会使用use属性的loader进行转换
 - use：对应符合文件需使用的loader
 
-<!-- tabs:start -->
-<!-- tab:常规 -->
-```javascript
+::: code-group
+```javascript [常规]
 module.exports = {
   module: {
     rules: [
@@ -48,8 +47,7 @@ module.exports = {
   }
 }
 ```
-<!-- tab:plugin和loader一起使用 -->
-```javascript
+```javascript [plugin和loader一起使用]
 // webpack.config.js
 // 第一种方式
 module.exports = {
@@ -72,7 +70,7 @@ module.exports = {
   plugins: [require('autoprefixer')]  // 引用该插件即可了
 }
 ```
-<!-- tabs:end -->
+:::
 
 ***插件(plugin)***:
 

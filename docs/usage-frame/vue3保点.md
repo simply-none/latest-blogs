@@ -110,10 +110,9 @@ ref解包（即不需要使用.value进行访问）：
 注意：
 - ref被传递给函数或从一般对象上（作为其属性）被解构时，不会丢失响应性
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:typescript用法 -->
-```vue
+```vue [typescript用法]
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Ref } from 'vue'
@@ -133,7 +132,7 @@ const year4 = ref<number>()
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 **reactive**：
 
@@ -147,10 +146,9 @@ const year4 = ref<number>()
 - reactive仅对对象（对象、数组、map、set等）类型有效，对原始类型（string、number等）无效
 - 对响应式对象重新赋值后，将丢失初始引用的响应性连接。也意味着将响应式对象的**属性**赋值给其他变量、进行属性解构、将属性传入一个函数时，将会失去响应性，即修改这三个条件对应的内容时，响应式对象不会同步变更
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基础用法 -->
-```vue
+```vue [基础用法]
 <script setup lang="ts">
 import { reactive } from 'vue'
 
@@ -168,9 +166,7 @@ const book2: Book = reactive({ title: 'vue3' })
 </script>
 ```
 
-<!-- tab:失去响应性的三种方式 -->
-
-```typescript
+```typescript [失去响应性的三种方式]
 // 失去响应性的三种方式
 const state = reactive({ count: 0 })
 
@@ -186,7 +182,7 @@ count++
 fn(state.count)
 ```
 
-<!-- tabs:end -->
+:::
 
 响应式状态解构：
 - 当想使用一个响应式对象的多个属性的时候，可通过对象解构获取内部的一些属性，若想使得解构后的属性变量与原响应式对象相关联（变化同步发生），必须对这个响应式对象用toRefs函数包裹后解构，否则引用关联会失效（改变一个，另一个不发生变化）
@@ -377,11 +373,9 @@ function changeStates () {
 - 接收一个工厂函数作为参数，该函数接受track、trigger两个函数作为参数，返回一个带有get、set的对象
 - 一般来说，track函数应该在get中被调用，trigger应该在set中调用。事实上何时调用、是否调用你都有控制权
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:防抖ref -->
-
-```typescript
+```typescript [防抖ref]
 // 创建一个防抖ref，只在最近一次set调用后的一段固定时间间隔后再调用
 import { customRef } from 'vue'
 
@@ -407,7 +401,7 @@ export function useDebouncedRef(value, delay = 200) {
 }
 ```
 
-```vue
+```vue [防抖ref]
 <!-- 使用useDebouncedRef -->
 <script setup>
 import { useDebouncedRef } from './debouncedRef'
@@ -424,8 +418,7 @@ const text = useDebouncedRef('hello')
 </template>
 ```
 
-<!-- tab:异步请求Ref -->
-```typescript
+```typescript [异步请求Ref]
 import { customRef } from 'vue'
 
 export default function fetchRef (value) {
@@ -465,7 +458,7 @@ export default function fetchRef (value) {
 }
 ```
 
-```vue
+```vue [异步请求Ref]
 <script setup>
 import fetchRef from './fetchRef'
 
@@ -487,7 +480,7 @@ function getNewObj () {
 </template>
 ```
 
-<!-- tabs:end -->
+:::
 
 **toRaw**
 
@@ -566,7 +559,7 @@ scope.stop()
 
 若要访问更新后的状态，可以调用nextTick函数后进行获取。
 
-```javascript
+```typescript
 import { nextTick } from 'vue'
 // 使用await形式
 // nexttick之前代码（此时DOM未更新）
@@ -612,11 +605,9 @@ nextTick(() => {
 - 每一个调用组合式函数的组件实例会创建其独有的状态拷贝，组件实例之间不会互相影响。若想在组件中共享状态，可使用状态管理相关的知识点。
 - 组合式函数可随意封装
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:普通的组合函数 -->
-
-```typescript
+```typescript [普通的组合函数]
 // useEventListener()
 import { onMounted, onBeforeUnmount } from 'vue'
 
@@ -626,7 +617,7 @@ export function useEventListener (target, event, callback) {
 }
 ```
 
-```typescript
+```typescript [普通的组合函数]
 // useMouse()
 import { ref } from 'vue'
 import { useEventListener } from './event'
@@ -645,7 +636,7 @@ export function useMouse () {
 }
 ```
 
-```vue
+```vue [普通的组合函数]
 <script setup>
 import { useMouse } from './mouse.js'
 
@@ -657,8 +648,7 @@ const { x, y } = useMouse()
 </template>
 ```
 
-<!-- tab:异步状态的组合函数 -->
-```typescript
+```typescript [异步状态的组合函数]
 import { ref, isRef, unref, watchEffect } from 'vue'
 
 export function useFetch (url) {
@@ -707,7 +697,7 @@ function timeout () {
 }
 ```
 
-```vue
+```vue [异步状态的组合函数]
 <script setup>
 import { ref, computed } from 'vue'
 import { useFetch } from './useFetch'
@@ -730,8 +720,7 @@ const { data, error, entry } = useFetch(url)
 </template>
 ```
 
-<!-- tab:在选项式中使用组合式函数 -->
-```vue
+```vue [在选项式中使用组合式函数]
 <script>
 import { useMouse } from './mouse'
 import { useFetch } from './fetch'
@@ -750,8 +739,7 @@ export default {
 </script>
 ```
 
-<!-- tab:组合式按时抽离 -->
-```typescript
+```typescript [组合式按时抽离]
 // 调用多个组合式函数
 import { useA } from './useA'
 import { useB } from './useB'
@@ -762,7 +750,7 @@ const { baz } = useB(foo)
 const { qux } = useC(baz)
 ```
 
-<!-- tabs:end -->
+:::
 
 **组合式函数 vs 其他模式**：
 - mixin的短板：不清晰的数据来源、命名空间冲突、隐式跨mixin交流
@@ -804,9 +792,8 @@ setup第二个参数context：
 - attrs和slots是有状态的对象，会随着组件更新而更新，所以应该避免对这两个属性对象进行解构，并始终用形如`attrs.xxx`的方式引用里面的属性
 - 和props不同的是，attrs和slots是非响应式的，若想通过这两者的更改操作内容，应当在`onBeforeUpdate`生命周期钩子中执行这些操作
 
-<!-- tabs:start -->
-<!-- tab:setup第一个参数props -->
-```typescript
+::: code-group
+```typescript [setup第一个参数props]
 import { toRefs, toRef } from 'vue'
 setup (props) {
   // 解构必填的props title
@@ -818,8 +805,7 @@ setup (props) {
   console.log(optionalTitle.value)
 }
 ```
-<!-- tab:setup第二个参数context -->
-```typescript
+```typescript [setup第二个参数context]
 setup(props, { attrs, slots, emit, expose }) {
   // attribute, 非响应式对象，等同于$attrs
   console.log(attrs)
@@ -834,7 +820,7 @@ setup(props, { attrs, slots, emit, expose }) {
   })
 }
 ```
-<!-- tabs:end -->
+:::
 
 #### setup内生命周期钩子
 
@@ -866,10 +852,9 @@ setup内其他钩子的使用：
 - 避免直接修改计算属性的值：应该视为只读的，即只更新它所依赖的原状态触发计算属性的更新。故而谨慎使用set/get的对象作为参数。
 
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基础用法 -->
-```typescript
+```typescript [基础用法]
 import { computed, reactive } from 'vue'
 
 const books = reactive(['科幻', '计算机', '文学'])
@@ -900,8 +885,7 @@ const setAndGetValByBooksLength = computed({
 })
 ```
 
-<!-- tab:typescript类型定义 -->
-```vue
+```vue [typescript类型定义]
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
@@ -914,7 +898,7 @@ const double = computed(() => count.value * 2)
 const double = computed<number>(() => count.value * 2)
 </script>
 ```
-<!-- tabs:end -->
+:::
 
 **setup中的生命周期钩子**：这些hooks接受一个回调函数，当钩子被组件调用时，回调函数将被执行
 - vue3中，在setup内使用生命周期钩子，需要先进行导入才能够使用
@@ -1128,10 +1112,9 @@ export default {
 **在typescript独有的功能**：
 - https://v3.cn.vuejs.org/api/sfc-script-setup.html#%E4%BB%85%E9%99%90-typescript-%E7%9A%84%E5%8A%9F%E8%83%BD
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:defineExpose用法 -->
-```vue
+```vue [defineExpose用法]
 <!-- 子组件 -->
 <script setup>
 import { ref, reactive } from 'vue'
@@ -1173,8 +1156,7 @@ onMounted(() => {
 </script>
 ```
 
-<!-- tab:defineSlots用法 -->
-```vue
+```vue [defineSlots用法]
 <script setup lang="ts">
 const slots = defineSlots<{
   // 默认插槽名称是default，默认插槽接收到的props是msg
@@ -1208,7 +1190,7 @@ defineProps<{
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 #### defineComponent
 
@@ -1260,10 +1242,9 @@ export default defineComponent {
 - 语法：`const foo = inject('key', default)`
 - 若默认值是一个函数，需要添加第三个参数为false
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:Inject基本用法 -->
-```vue
+```vue [Inject基本用法]
 <script setup>
 import { inject } from 'vue'
 import { fooSymbol } from './injectionSymbols'
@@ -1286,8 +1267,7 @@ const foo5 = inject('foo', () => {}, false)
 ```
 
 
-<!-- tab:应用层provide -->
-```typescript
+```typescript [应用层provide]
 import { createApp } from 'vue'
 
 const app = createApp({})
@@ -1296,9 +1276,7 @@ const app = createApp({})
 app.provide('注入名', value)
 ```
 
-<!-- tab:祖孙组件传递选项式 -->
-
-```typescript
+```typescript [祖孙组件传递选项式]
 // 基本用法
 // 父组件
 export default {
@@ -1326,9 +1304,7 @@ export default {
 }
 ```
 
-<!-- tab:祖孙组件传递typescript -->
-
-```typescript
+```typescript [祖孙组件传递typescript]
 // 基本用法
 // provide-const.ts
 import type { InjectionKey } from 'vue'
@@ -1369,7 +1345,7 @@ const todoLengthByComputed1 = inject(todoLengthByComputed)
 
 console.log(todoLength1, todoLengthByComputed1, '获取provide')
 ```
-<!-- tabs:end -->
+:::
 
 #### 在setup中使用
 
@@ -1556,9 +1532,8 @@ watchPostEffect(() => {
 与vue2的不同：
 - vue3中ref的本质是，将绑定元素赋值给一个变量保存起来，后面需要使用该元素的时候，则通过变量对应的索引或其他可识别的方式进行获取
 
-<!-- tabs:start -->
-<!-- tab:基础用法 -->
-```typescript
+::: code-group
+```typescript [基础用法]
 <template>
   <div ref="divRef">test</div>
 </template>
@@ -1596,8 +1571,7 @@ export default {
 }
 </script>
 ```
-<!-- tab:JSX中的用法 -->
-```typescript
+```typescript [JSX中的用法]
 import { h } from 'vue'
 export default {
   setup () {
@@ -1613,8 +1587,7 @@ export default {
   }
 }
 ```
-<!-- tab:结合v-for的用法 -->
-```typescript
+```typescript [结合v-for的用法]
 <template>
   // ref和v-for一起使用时，ref包含的值是一个数组，但该数组不与源数组保持相同的顺序
   <ul>
@@ -1648,7 +1621,7 @@ export default {
   }
 </script>
 ```
-<!-- tabs:end -->
+:::
 
 ## 组件
 
@@ -1720,9 +1693,8 @@ const view = Math.random() > 0.5 ? Foo : Bar
 defineAsyncComponent：创建一个只有在需要时才会加载的异步组件，
 - 可接收一个参数，其类型是返回promise的函数，或一个对象
 
-<!-- tabs:start -->
-<!-- tab:基本用法 -->
-```typescript
+::: code-group
+```typescript [基本用法]
 import { defineAsyncComponent } from 'vue'
 
 // 第一种
@@ -1737,8 +1709,7 @@ const AsyncComp =defineAsyncComponent(() => {
 
 app.component('async-component', AsyncComp)
 ```
-<!-- tab:对象格式参数 -->
-```typescript
+```typescript [对象格式参数]
 import { defineAsyncComponent } from 'vue'
 import ErrorComponent from './err.vue'
 import LoadingComponent from './loading.vue'
@@ -1778,7 +1749,7 @@ const asyncModalWithOptions = defineAsyncComponent({
 })
 ```
 
-<!-- tabs:end -->
+:::
 
 
 注意：
@@ -1797,10 +1768,9 @@ const asyncModalWithOptions = defineAsyncComponent({
 - 给app.config.globalProperties添加全局实例属性/方法
 - 包含上述三种功能的，比如vue-router
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:插件的两种格式 -->
-```typescript
+```typescript [插件的两种格式]
 // 第一种：导出一个函数，vue会直接调用这个函数
 // app：createApp函数生成的实例
 // options：插件初始化时的选项，是通过app.use的第二个参数传过来的
@@ -1832,17 +1802,16 @@ createApp(App).use(myPlugin, {
 }).mounted('#app')
 ```
 
-<!-- tabs:end -->
+:::
 
 附录：
 - 导入所有组件作为插件：https://juejin.cn/post/7137879039796051999
 
 下面是使用install方法进行单组件导入的用法：
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:定义组件 -->
-```vue
+```vue [定义组件]
 <template>
   {{ date }}
 </template>
@@ -1854,8 +1823,7 @@ const date = ref(Date.now())
 </script>
 ```
 
-<!-- tab:定义导出组件 -->
-```typescript
+```typescript [定义导出组件]
 import DateComp from './DateComp.vue'
 
 DateComp.install = (app, options) => {
@@ -1867,8 +1835,7 @@ export {
 }
 ```
 
-<!-- tab:使用 -->
-```vue
+```vue [使用]
 <template>
   <DateComp/>
 </template>
@@ -1878,7 +1845,7 @@ import { DateComp } from './DateComp.ts'
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 
 ## teleport
@@ -1901,10 +1868,9 @@ teleport元素具备以下属性：
 - Teleport挂载时，传送的to目标必须已经存在于DOM中，所以需要确保Teleport挂载之前to目标元素就已经被挂载
 - Teleport只是改变了渲染的DOM结构，但不会影响组件间的逻辑关系（使用Teleport的地方的父子关系不会改变，子组件将会在vue devtools中嵌套在父组件下面，而非to目标下面），即传入的props、触发的事件、父组件的注入都会按预期工作
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基本用法 -->
-```vue
+```vue [基本用法]
 <template>
   <teleport to='#root'>
     <div>A</div>
@@ -1921,8 +1887,7 @@ teleport元素具备以下属性：
 </template>
 ```
 
-<!-- tab:Teleport和Transition一起使用创建动态模态框 -->
-```vue
+```vue [Teleport和Transition一起使用创建动态模态框]
 <!-- 使用modal.vue -->
 <script setup>
 import Modal from './modal.vue'
@@ -2023,7 +1988,7 @@ const props = defineProps({
 </style>
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 实例property
 
@@ -2072,9 +2037,8 @@ h()函数：
 - 返回一个VNode数组（片段，无根节点）
 - 返回null（渲染成注释节点）
 
-<!-- tabs:start -->
-<!-- tab:基本语法 -->
-```typescript
+::: code-group
+```typescript [基本语法]
 import { h } from 'vue'
 export default {
   render () {
@@ -2098,8 +2062,7 @@ export default {
   }
 }
 ```
-<!-- tab:唯一的VNode -->
-```typescript
+```typescript [唯一的VNode]
 import { h } from 'vue'
 export default {
   render () {
@@ -2117,7 +2080,7 @@ export default {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### resolveComponent和resolveDynamicComponent
 
@@ -2136,9 +2099,8 @@ export default {
 **`<component :is="var">`**：
 - var可以是一个字符串，表示组件的名称，或者直接是一个组件名（通过import导入的名字）
 
-<!-- tabs:start -->
-<!-- tab:resolveDynamicComponent -->
-```typescript
+::: code-group
+```typescript [resolveDynamicComponent]
 // 基本用法
 render () {
   // <component :is="name"></component>
@@ -2152,7 +2114,7 @@ render () {
   return h(this.bold ? 'strong' : 'em')
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### 在渲染函数中使用指令
 
@@ -2168,9 +2130,8 @@ render () {
 | 修饰键：  
 `.ctrl`, `.alt`, `.shift`, `.meta` | `if (!event.ctrlKey) return` (将 `ctrlKey` 分别修改为 `altKey`, `shiftKey`, 或 `metaKey`) |
 
-<!-- tabs:start -->
-<!-- tab:在render中使用v-model -->
-```typescript
+::: code-group
+```typescript [在render中使用v-model]
 import { h } from 'vue'
 import MyComponent from './my-component.vue'
 export default {
@@ -2188,8 +2149,7 @@ export default {
   }
 }
 ```
-<!-- tab:在render中使用v-on -->
-```typescript
+```typescript [在render中使用v-on]
 // 省略其他代码，直接展示render内部内容
 // 相比模板语法，click事件，必须加前缀on，且是驼峰式写法
 render () {
@@ -2198,8 +2158,7 @@ render () {
   })
 }
 ```
-<!-- tab:在render中使用事件修饰符 -->
-```typescript
+```typescript [在render中使用事件修饰符]
 // 省略其他代码，直接展示render内部内容
 // 相比模板语法，click事件，必须加前缀on，且是驼峰式写法
 render () {
@@ -2225,7 +2184,7 @@ render () {
   })
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### 在渲染函数中使用插槽
 
@@ -2233,16 +2192,14 @@ render () {
 - 可以通过`this.$slots`访问静态插槽的内容，每个插槽都是一个VNode数组
 - 若想在渲染函数的插槽中使用resolveComponent函数，必须在h()函数之外（之前）进行调用，不能在插槽内部直接使用该函数（可以使用该函数的返回结果）
 
-<!-- tabs:start -->
-<!-- tab:基本用法 -->
-```typescript
+::: code-group
+```typescript [基本用法]
 render () {
   // 渲染成：<div><slot></slot></div>
   return h('div', {}, this.$slots.default())
 }
 ```
-<!-- tab:定义插槽变量text -->
-```typescript
+```typescript [定义插槽变量text]
 render () {
   // 渲染成：<div><slot :text="message"></slot></div>
   return h('div', {}， this.$slots.default({
@@ -2250,8 +2207,7 @@ render () {
   }))
 }
 ```
-<!-- tab:在父组件使用插槽定义的变量text -->
-```typescript
+```typescript [在父组件使用插槽定义的变量text]
 render () {
   // 这里的v-slot等同于v-slot:default
   // <div><child v-slot="props"><span>{{ props.text }}</span></child></div>
@@ -2267,8 +2223,7 @@ render () {
   ])
 }
 ```
-<!-- tab:插槽自定义 -->
-```typescript
+```typescript [插槽自定义]
 // 不做修改，直接将模板中的内容，都传递给子组件，子组件根据它的内容进行适配
 render () {
   return h(Panel, null, this.$slots)
@@ -2291,7 +2246,7 @@ render () {
   )
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### 在渲染函数中使用自定义指令
 
@@ -2402,7 +2357,7 @@ render() {
 - 不要同时使用prevent和passive
 - capture、once、passive三个修饰符与addEventListener函数的第三个参数选项对象对应
 
-```javascript
+```typescript
 eventTarget.addEventListener(type, listener, options/useCapture)
 options = {
   // 在事件的捕获阶段触发listener，useCapture就是该选项的值
@@ -2471,9 +2426,8 @@ function addOne () {
 - 虽然事件声明使用emits选项或defineEmits定义是可选的，但还是应该完整声明所有要触发的事件，以此作为文档记录组件的用法。同时也能够和透传attributes区分开
 - 若原生事件的名字（如click）被定义在emits选项中，则监听器只会监听组件触发的click，而不响应原生的click，否则会监听两次（即组件触发的和原生触发的）
 
-<!-- tabs:start -->
-<!-- tab:基础用法 -->
-```vue
+::: code-group
+```vue [基础用法]
 // emit代指将事件从组件（子）抛出去，让引用它的那个组件（父）接收
 <template>
   <!-- 第二步：触发并抛出事件到父组件 -->
@@ -2524,8 +2478,7 @@ function clickHandle (event: Event) {
   <SubCom @get-click="('接收事件参数') => { '处理' }"/>
 </template>
 ```
-<!-- tab:事件验证 -->
-```typescript
+```typescript [事件验证]
 export default {
   emits: {
     // 无验证
@@ -2542,8 +2495,7 @@ export default {
 }
 ```
 
-<!-- tab:事件触发次数 -->
-```vue
+```vue [事件触发次数]
 <!-- 子组件 -->
 <template>
   <button @click="$emit('click', 'sub-val')">触发事件</button>
@@ -2570,7 +2522,7 @@ function handleClick (arg) {
 }
 </script>
 ```
-<!-- tabs:end -->
+:::
 
 ### props
 
@@ -2590,10 +2542,9 @@ function handleClick (arg) {
 - defineProps中的参数不可访问script setup中的其他变量，因为在编译时整个表达式会被移到外部函数中
 - 未传递的boolean类型的props默认值为false，其他类型则是undefined，默认值可通过default属性进行修改
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:props定义 -->
-```typescript
+```typescript [props定义]
 // 方式1：字符串数组（运行时声明，即传递给defineProps的参数会作为运行时的props选项使用）
 const props = defineProps(['title'])
 
@@ -2649,15 +2600,14 @@ withDefaults(defineProps<Props>(), {
 
 
 ```
-<!-- tab:获取props -->
-```typescript
+```typescript [获取props]
 const props = defineProps(['title'])
 
 const newProp = ref(props.title)
 const newProps = computed(() => props.title)
 ```
 
-<!-- tabs:end -->
+:::
 
 **props校验**：
 
@@ -2718,10 +2668,9 @@ defineProps({
 注意：
 - 透传的attributes保留了原始attributes的大小写（即不会进行转换成小写形式），所以原来是怎么样的属性名，就得通过那样的形式去访问，而访问一个对象。但是事件名除外，事件名是onPascalCase的形式
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:透传属性基本用法 -->
-```vue
+```vue [透传属性基本用法]
 <!-- 子组件 -->
 <template>
   <!-- 注意，此处是直接通过attrs获取id的，故而在useAttrs中仍然能够访问到id -->
@@ -2759,8 +2708,7 @@ const attrs = useAttrs()
 <SubCom id="Date.now()"></SubCom>
 ```
 
-<!-- tab:使用inheritAttrs -->
-```vue
+```vue [使用inheritAttrs]
 <!-- 子组件 -->
 <template>
   <div class="wrapper">
@@ -2782,7 +2730,7 @@ export default {
   <SubCom class="sub sub2" id="subid"></SubCom>
 </template>
 ```
-<!-- tabs:end -->
+:::
 
 ## vue自定义渲染器
 
@@ -2845,9 +2793,8 @@ export default {
 - 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
 - 小心递归组件中的后代选择器，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
 
-<!-- tabs:start -->
-<!-- tab:deep()函数 -->
-```typescript
+::: code-group
+```typescript [deep()函数]
 <style scoped>
 .a :deep(.b) {
   // xxx
@@ -2859,8 +2806,7 @@ export default {
 }
 </style>
 ```
-<!-- tab:插槽选择器 -->
-```typescript
+```typescript [插槽选择器]
 <style scoped>
 // 插槽中div会变成红色
 :slotted(div) {
@@ -2868,8 +2814,7 @@ export default {
 }
 </style>
 ```
-<!-- tab:全局选择器 -->
-```typescript
+```typescript [全局选择器]
 <style scoped>
 // 所有的div都将变成红色
 :global(div) {
@@ -2877,7 +2822,7 @@ export default {
 }
 </style>
 ```
-<!-- tabs:end -->
+:::
 
 **`<style module>`**：
 - 仅作用于当前组件
@@ -3597,10 +3542,9 @@ export default {
 - 当你想同时在同一个元素上使用过渡transition和动画animation时（比如vue触发了一个动画，鼠标悬停触发另一个css过渡），此时你需要显式传入type prop给Transition组件，告诉vue是哪种类型，值可以是animation或transition
 - 虽然过渡class只能应用在直接子元素上，但可以使用深层级的选择器触发深层元素的过渡效果，例如使用`.v-enter-avtive .inner {}`语法，将过渡效果用在组件内的inner元素上。同时也能在深层元素上添加过渡延迟transition-delay以创建一个带渐进延迟动画序列，在嵌套过渡中，判断过渡结束的时间是所有内部元素的过渡完成的时间（默认情况下是监听第一个transitionend或animationend事件），这种情况下可以传入duration prop给Transition组件显式指定过渡持续时间（延迟+内部元素的过渡持续时间）。或者传入一个对象形式`{enter: 500, leave: 800}`分开指定进入和离开的过渡持续时间。
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:css结合过渡 -->
-```vue
+```vue [css结合过渡]
 <template>
   <Transition name="slide-fade">
     <p v-if="show">hello</p>
@@ -3627,8 +3571,7 @@ export default {
 </style>
 ```
 
-<!-- tab:css结合动画 -->
-```vue
+```vue [css结合动画]
 <template>
   <Transition name="bounce">
     <p v-if="show" :style="'text-align: center;'">
@@ -3660,8 +3603,7 @@ export default {
 </style>
 ```
 
-<!-- tab:深层过渡 -->
-```vue
+```vue [深层过渡]
 <template>
   <!-- 指定过渡的持续时间(ms) = 延迟 + 内部元素的过渡持续时间 -->
   <!-- 
@@ -3699,7 +3641,7 @@ export default {
 </style>
 ```
 
-<!-- tabs:end -->
+:::
 
 ### 使用js钩子去设置相应的过渡和动画
 
@@ -3859,10 +3801,9 @@ function onLeaveCancelled (el) {}
 - 如果想要想执行离开动画，然后在完成之后在执行元素的进入动画（两个阶段逐步进行：离开后再进入），可以添加mode prop实现这种行为，属性值有out-in（常用）、in-out
 - Transition上的props可以是动态设置的，这样可以根据状态变化动态应用不同类型的过渡，使用v-bind，好处是提前定义好多组css class然后在它们直接动态切换
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基本用法 -->
-```vue
+```vue [基本用法]
 <template>
   <button @onclick="show =!show">切换</button>
   <Transition>
@@ -3883,7 +3824,7 @@ function onLeaveCancelled (el) {}
 </style>
 ```
 
-<!-- tabs:end -->
+:::
 
 ### TransitionGroup
 
@@ -3897,10 +3838,9 @@ function onLeaveCancelled (el) {}
 - css过渡的class会应用到列表元素上，而非容器元素上
 - 通过在js钩子中读取元素的data attribute，可以实现带渐进延迟的列表动画，看下例
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基础用法 -->
-```vue
+```vue [基础用法]
 <template>
   <TransitionGroup
     name='list'
@@ -3963,7 +3903,7 @@ function onEnter (el, done) {
 </style>
 ```
 
-<!-- tabs:end -->
+:::
 
 ## KeepAlive
 
@@ -3975,10 +3915,9 @@ function onEnter (el, done) {
 - 可以通过max prop（number类型）设置可被缓存的最大组件实例数，在指定了max后类似一个LRU缓存：缓存实例数量即将超过指定的那个最大数量时，则最久没被访问的缓存实例将被销毁，以便为新的实例腾出空间
 - 当一个组件实例从DOM上移除但由于被KeepAlive缓存而仍作为组件树的一部分时，它将变为不活跃状态而非被卸载；而当它作为缓存树的一部分插入到DOM中时，它将重新被激活。一个持续存在的组件可通过onActivated（首次挂载时、重新插入时）和onDeactivated（从DOM中移除时、卸载时）注册相应的两个状态的生命周期钩子。这两个钩子不仅可在缓存的根组件中定义，也可在缓存树中的后代组件中定义
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:基本语法 -->
-```vue
+```vue [基本语法]
 <template>
   <!-- 默认形式：非活跃组件会被缓存 -->
   <KeepAlive>
@@ -4001,8 +3940,7 @@ function onEnter (el, done) {
 </template>
 ```
 
-<!-- tab:在KeepAlive内缓存的组件中使用钩子 -->
-```vue
+```vue [在KeepAlive内缓存的组件中使用钩子]
 <!-- 
   比如下面的钩子函数是a或b组件，也可是a组件下的某个后代组件中定义的
  -->
@@ -4023,7 +3961,7 @@ onDeactivated(() => {
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 ## ⭕vue3与vue2不兼容的内容
 
@@ -4069,10 +4007,9 @@ onDeactivated(() => {
 - 使用`binding.instance`访问组件实例
 - 当作用域多根组件（片段）时，自定义组件会被忽略并抛出警告
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:自定义钩子对象 -->
-```typescript
+```typescript [自定义钩子对象]
 // 自定义钩子对象
 const MyDirective = {
   // 新增
@@ -4103,23 +4040,21 @@ const MyDirective = {
 }
 ```
 
-<!-- tab:简化形式 -->
-```typescript
+```typescript [简化形式]
 // 相当于只有了mounted和updated钩子，且两个钩子实现的细节相同
 const vName = (el, binding) => {
   console.log(el, '获取el')
 }
 ```
 
-<!-- tab:使用自定义钩子 -->
-```vue
+```vue [使用自定义钩子]
 <template>
   <!-- v-指令名：指令参数.修饰符1....修饰符n="值" -->
   <div v-name:arg.modifiers1.modifiers2="value">
 </template>
 ```
 
-<!-- tabs:end -->
+:::
 
 ### 自定义元素
 
@@ -4241,11 +4176,9 @@ export default {
 注意：
 - 引用作用域插槽使用`this.$slots.header()`的形式，而非`this.$scopedSlots.header`
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:插槽用法 -->
-
-```typescript
+```typescript [插槽用法]
 // 插槽的语法
 // 内部
 <slot name="header"/>
@@ -4268,8 +4201,7 @@ export default {
 
 ```
 
-<!-- tab:插槽类型 -->
-```vue
+```vue [插槽类型]
 <!-- 类型1： 默认插槽 -->
 <!-- 定义组件 -->
 <template>
@@ -4360,7 +4292,7 @@ let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
   </SubCom>
 </template>
 ```
-<!-- tabs:end -->
+:::
 
 #### 无渲染组件
 
@@ -4396,9 +4328,8 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 - v-model的内置修饰符有`.trim`, `.number`, `.lazy`，同时还可以给v-model添加自定义修饰符。自定义修饰符（比如`.custom`）在组件的created钩子触发时，`modelModifiers`prop会包含它，且它的值为true，可以通过`this.modelModifiers.custom`访问。**使用自定义修饰符**，就是在触发事件的时候，用`this.modelModifiers.custom`进行相应的操作
 - 对于有参数的修饰符（比如`v-model:title.custom`，对应的prop就要改成参数名+'Modifiers'，即上面的modelModifiers改成titleModifiers
 
-<!-- tabs:start -->
-<!-- tab:v-model简写 -->
-```typescript
+::: code-group
+```typescript [v-model简写]
 // 1. 基础用法1
 <My-Input v-model="value"/>
 <!-- 等同于下面 -->
@@ -4461,8 +4392,7 @@ const porps = defineProps({
 <My-Input v-model:title.toUpperCase="value"/>
 ```
 
-<!-- tab:基本用法 -->
-```vue
+```vue [基本用法]
 // 父组件Parent
 <script>
 import Child from './child.vue'
@@ -4492,8 +4422,7 @@ export default {
 </script>
 ```
 
-<!-- tab:带修饰符的v-model -->
-```vue
+```vue [带修饰符的v-model]
 <template>
   <!-- 父组件将title传递给子组件，修饰符capitalize让title的值首字母大写 -->
   <Child v-model:title.capitalize="bookTitle" v-model:book-desc="bookDesc"></Child>
@@ -4526,7 +4455,7 @@ export default {
 }
 </script>
 ```
-<!-- tabs:end -->
+:::
 
 **v-model在原生html元素上的对应关系：**
 
@@ -4600,7 +4529,7 @@ contenteditable：content + edit + able
 ### v-cloak
 
 语法：
-```javascript
+```typescript
 // template
 <div v-cloak>{{ message }}</div>
 // style

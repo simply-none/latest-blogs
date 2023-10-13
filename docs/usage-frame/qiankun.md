@@ -33,9 +33,8 @@
 - 主应用`beforeLoad` -> 微应用`bootstrap` -> 主应用`beforeMount` -> 微应用`mount` 
 
 **示例**：
-<!-- tabs:start -->
-<!-- tab:主应用 -->
-```bash
+::: code-group
+```bash [主应用]
 # 安装qiankun
 npm install qiankun -S
 # yarn add qiankun
@@ -122,22 +121,19 @@ start({
   }
 })
 ```
-<!-- tab:基于webpack的微应用配置 -->
-```bash
+```bash [基于webpack的微应用配置]
 # 新增public-path.js文件，用于修改运行时的publicPath，注意运行时和构建时的publicPath是不同的
 # 微应用建议使用history模式路由，设置路由base，值和它的activeRule一致
 # 在入口最顶部引入public-path.js，修改并导出必填的三个生命周期函数
 # 修改webpack打包配置，运行开发环境跨域和umd打包
 ```
-<!-- tab: public-path.js -->
-```javascript
+```javascript [ public-path.js]
 // src/public-path.js
 if (window.__POWERED_BY_QIANKUN__) {
   __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__
 }
 ```
-<!-- tab:微应用入口配置main.js -->
-```javascript
+```javascript [微应用入口配置main.js]
 // 微应用中不需要额外安装关于qiankun的依赖
 // main.js
 import './public-path.js'
@@ -188,8 +184,7 @@ export async function unmount () {
 
 /* 导出生命周期钩子：end */
 ```
-<!-- tab:微应用的webpack配置 -->
-```javascript
+```javascript [微应用的webpack配置]
 // vue.config.js
 const packageName = require('./package.json').name
 
@@ -213,7 +208,7 @@ module.exports = {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 
 
 
@@ -544,17 +539,15 @@ export function mount(props) {
 - 主应用注册微应用时，entry可以是相对路径，但不能和activeRule一样，否则刷新之后主应用会变成微应用
 
 
-<!-- tabs:start -->
-<!-- tab:主应用Nginx代理配置 -->
-```bash
+::: code-group
+```bash [主应用Nginx代理配置]
 # 主应用Nginx代理配置：
 /app/ {
   proxy_pass http://www.b.com/app1;
   proxy_set_header Host $host:$server_port;
 }
 ```
-<!-- tab:主应用注册微应用 -->
-```javascript
+```javascript [主应用注册微应用]
 registerMicroApps([
   {
     name: 'app1',
@@ -565,8 +558,7 @@ registerMicroApps([
   }
 ])
 ```
-<!-- tab:vue.config.js配置 -->
-```javascript
+```javascript [vue.config.js配置]
 module.exports = {
   output: {
     // 此处必须和entry一致，否则微应用的资源路径(js, css)不会带上/app1/
@@ -575,5 +567,5 @@ module.exports = {
   }
 }
 ```
-<!-- tabs:end -->
+:::
 

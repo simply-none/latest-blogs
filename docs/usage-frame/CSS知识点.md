@@ -158,10 +158,9 @@ position属性：
   - 头部、尾部固定
   - 进度条...
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:粘性布局sticky的应用 -->
-```vue
+```vue [粘性布局sticky的应用]
 <!-- 列表锚点 -->
 <template>
    <div>
@@ -203,7 +202,7 @@ dd + dd {
 ```
 
 
-<!-- tabs:end -->
+:::
 
 
 ## 媒体查询

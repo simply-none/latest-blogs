@@ -99,10 +99,9 @@ module.exports = {
 
 解决方法:
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:terser-webpack-plugin配置 -->
-```javascript
+```javascript [terser-webpack-plugin配置]
 // 方法一：
 // vue.config.js
 import TerserPlugin from 'terser-webpack-plugin'
@@ -130,8 +129,7 @@ module.exports = {
 }
 ```
 
-<!-- tab:babel-plugin-transform-remove-console配置 -->
-```javascript
+```javascript [babel-plugin-transform-remove-console配置]
 // 安装
 npm install babel-plugin-transform-remove-console --save-dev
 
@@ -158,7 +156,7 @@ module.exports = {
   ]
 }
 ```
-<!-- tabs:end -->
+:::
 
 ## 报错13：Error: PostCSS plugin autoprefixer requires PostCSS 8.
 

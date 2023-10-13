@@ -21,9 +21,8 @@ var、let、const比较：
 - let声明：只能在包含他们的块内访问（比如大括号括起的，又比如同一个文件内），声明之前不能被读写（暂时性死区），只能声明一次（又，不能对函数参数使用let重新声明，除非在函数内一个明显的块内（用大括号括起的）），属于词法作用域或块作用域
 - const声明：赋值后不能再改变，拥有与let相同的作用域规则
 
-<!-- tabs:start -->
-<!-- tab:var变量 -->
-```typescript
+::: code-group
+```typescript [var变量]
 // 此处由于setTimeout是微任务，在所有宏任务执行完毕后再执行，此时i为10
 // 然后执行微任务，由于i是一个全局变量，所以每一条语句的i的值都为10
 for (var i = 0; i < 10; i++) {
@@ -38,8 +37,7 @@ for (var i = 0; i < 10; i++) {
 }
 
 ```
-<!-- tab:let变量 -->
-```typescript
+```typescript [let变量]
 // 报错
 function f(x: number) {
   let x = 100
@@ -52,7 +50,7 @@ function f(x: number) {
 }
 
 ```
-<!-- tabs:end -->
+:::
 
 ## 解构
 
@@ -85,9 +83,8 @@ console.log(first, second)
 - d.ts声明文件禁止定义具体的实现
 - 当使用第三方库时，需引用对应的声明文件，才能获得对应的代码补全、接口提示等功能
 
-<!-- tabs:start -->
-<!-- tab:声明全局变量 -->
-```typescript
+::: code-group
+```typescript [声明全局变量]
 declare var Xxx;
 declare function () {}
 declare class {}
@@ -97,8 +94,7 @@ interface A {}
 type A = {}
 ```
 
-<!-- tab:导入资源 -->
-```typescript
+```typescript [导入资源]
 // 加载图片：
 // 定义图片声明：image.d.ts
 declare module '*.png' {
@@ -109,7 +105,7 @@ declare module '*.png' {
 import logo from './assets/logo.png'
 ```
 
-<!-- tabs:end -->
+:::
 
 
 
@@ -252,10 +248,9 @@ const [a, b, ...c] = tuple1
 - 常量枚举通过修饰符const定义，只能使用常量枚举表达式（无计算成员等），且会在编译阶段进行删除
 - 外部枚举，使用修饰符declare定义，描述已经存在的枚举类型的形状
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:枚举类型 -->
-```typescript
+```typescript [枚举类型]
 // 定义
 enum Color { Red = 1, Blue, Green }
 
@@ -266,9 +261,7 @@ const c: Color = Color.Red
 const s: string = Color[1]
 ```
 
-<!-- tab:枚举成员类型 -->
-```typescript
-
+```typescript [枚举成员类型]
 enum Color { Red = 1, Blue, Green }
 
 type enumChildType = Color.Red
@@ -277,7 +270,7 @@ let a: enumChildType = Color.Blue
 // 而下面的就没错，因为是同一种类型（类型兼容），可以进行赋值操作，貌似在演练场是报错的，报错同上❌
 let a: enumChildType = 23
 ```
-<!-- tabs:end -->
+:::
 
 使用场景：
 - 枚举若未初始化，第一个值为0
@@ -671,9 +664,8 @@ function assertNever (x: never): never {
 索引签名：
 - 指的是类似接口中的属性名，但是其属性名不是确切的，使用方式为`[key: string]: T`，当类型不正确时，报错An index signature parameter type must be 'string', 'number', 'symbol', or a template literal type.
 
-<!-- tabs:start -->
-<!-- tab:索引类型 -->
-```typescript
+::: code-group
+```typescript [索引类型]
 // 索引类型查询即keyof T，它的值为T的所有键名，k继承了T的所有键名（但是k的值只能是T中有的各种集合，无自身的值）
 // 索引访问即T[K]，他为😊一个类型 ，类型值为T[K]，若T[K]是反正某一种类型，则T[K]就是该种类型
 function pluck <T, K extends keyof T>(o: T, propertyNames: K[]): T[K][] {
@@ -696,8 +688,7 @@ let carProps: keyof Car
 let makeAndModel: string[] = pluck(taxi, ['manufacturer', 'model'])
 ```
 
-<!-- tab:keyof的妙用 -->
-```typescript
+```typescript [keyof的妙用]
 function getValue(o: object, k: string) {
   // Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
   // No index signature with a parameter of type 'string' was found on type '{}'.
@@ -711,8 +702,7 @@ function getValue<T extends object, K extends keyof T>(o: T, k: K) {
 }
 ```
 
-<!-- tab:字符串索引签名与keyof的使用 -->
-```typescript
+```typescript [字符串索引签名与keyof的使用]
 interface Dictionary<T> {
   // 字符串索引签名的类型
   [key: string]: T
@@ -723,8 +713,7 @@ let key: keyof Dictionary<number>
 let value: Dictionary<number>['foo']
 ```
 
-<!-- tab:数字索引签名与keyof的使用 -->
-```typescript
+```typescript [数字索引签名与keyof的使用]
 interface Dictionary<T> {
   // 数字索引签名的类型
   [key: number]: T
@@ -736,7 +725,7 @@ let value: Dictionary<number>['foo']
 // 此处值为number
 let value: Disctionary<number>[42]
 ```
-<!-- tabs:end -->
+:::
 
 ## 映射类型😢😢😢
 
@@ -749,32 +738,28 @@ let value: Disctionary<number>[42]
 - 若想给映射类型添加新成员，需要结合交叉类型一起使用
 - 对于同态转换（Readonly、Partial、Pick，指的是需要输入类型来拷贝属性，类似下面示例中的`T[P]`，Record不是，因为他不需要输入类型），编译器知道在添加任何新属性之前拷贝所有存在的属性修饰符
 
-<!-- tabs:start -->
-<!-- tab:Readonly -->
-```typescript
+::: code-group
+```typescript [Readonly]
 type Readonly<T> = {
   readonly [P in keyof T]: T[P]
 }
 ```
-<!-- tab:Partial -->
-```typescript
+```typescript [Partial]
 type Partial<T> = {
   [P in keyof T]?: T[P]
 }
 ```
-<!-- tab:Pick -->
-```typescript
+```typescript [Pick]
 type Pick<T, K extends keyof T> = {
   [P in K]: T[P]
 }
 ```
-<!-- tab:Record -->
-```typescript
+```typescript [Record]
 type Record<K extends keyof any, T> = {
   [P in K]: T
 }
 ```
-<!-- tabs:end -->
+:::
 
 ## 内置工具类
 
@@ -802,9 +787,8 @@ type Record<K extends keyof any, T> = {
 注意：
 - `[P in keyof T]-? : T[P]`，其中的`-?`表示移除可选标识符，表示必填；同样`+?`表示加上可选标识符，表示可选
 
-<!-- tabs:start -->
-<!-- tab:内置工具类型的映射 -->
-```typescript
+::: code-group
+```typescript [内置工具类型的映射]
 // partial:可选
 type Partial<T> = {
   [K in keyof T]?: T[K];
@@ -853,8 +837,7 @@ type Omit<T, U extends keyof any> = Pick<T, Exclude<keyof T, U>> = {
 type NonNullable<T> = T extends null | undefined ? never : T;
 ```
 
-<!-- tab:Partial -->
-```typescript
+```typescript [Partial]
 interface Todo {
   title: string
   description: string
@@ -864,8 +847,7 @@ let p: Partial<Todo> = {
   title: 'hello'
 }
 ```
-<!-- tab:Required -->
-```typescript
+```typescript [Required]
 interface Todo {
   title: string
   description: string
@@ -876,8 +858,7 @@ let p: Required<Todo> = {
   description: 'desc'
 }
 ```
-<!-- tab:Readonly -->
-```typescript
+```typescript [Readonly]
 interface Todo {
   title: string
   description: string
@@ -890,8 +871,7 @@ let p: Readonly<Todo> = {
 // Cannot assign to 'title' because it is a read-only property.
 p.title = 'edit title'
 ```
-<!-- tab:Record -->
-```typescript
+```typescript [Record]
 interface Todo {
   title: string
   description: string
@@ -904,8 +884,7 @@ let p: Record<Page, Todo> = {
   body: { title: 'a', description: 'desc' }
 }
 ```
-<!-- tab:Pick -->
-```typescript
+```typescript [Pick]
 interface Todo {
   title: string
   description: string
@@ -918,8 +897,7 @@ let p: Pick<Todo, Page> = {
   footer: 'b'
 }
 ```
-<!-- tab:Omit -->
-```typescript
+```typescript [Omit]
 interface Todo {
   title: string
   description: string
@@ -931,27 +909,23 @@ let p: Omit<Todo, Page> = {
   description: 'a'
 }
 ```
-<!-- tab:Exclude -->
-```typescript
+```typescript [Exclude]
 // 'b' | 'c'
 type T0 = Exclude<'a' | 'b' | 'c', 'a'>
 // string | number
 type T2 = Exclude<string | number | (() => void), Function>
 ```
-<!-- tab:Extract -->
-```typescript
+```typescript [Extract]
 // 'a'
 type T0 = Extract<'a' | 'b' | 'c', 'a'>
 // () => void
 type T2 = Extract<string | number | (() => void), Function>
 ```
-<!-- tab:NonNullable -->
-```typescript
+```typescript [NonNullable]
 // string | number
 type T = NonNullable<string | number | null | undefined>
 ```
-<!-- tab:Parameters -->
-```typescript
+```typescript [Parameters]
 declare function f1 (arg: { a: number, b: string }): void
 // []
 type T0 = Parameters<() => string>
@@ -971,15 +945,13 @@ type T6 = Parameters<Function>
 // unknown[]
 type T7 = Parameters<any>
 ```
-<!-- tab:ConstructorParameters -->
-```typescript
+```typescript [ConstructorParameters]
 // [message?: string | undefined]
 type T0 = ConstructorParameters<ErrorConstructor>
 // 报错，Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
 type T1 = ConstructorParameters<Function>
 ```
-<!-- tab:ReturnType -->
-```typescript
+```typescript [ReturnType]
 // string
 type T0 = ReturnType<() => string>
 // unknown
@@ -988,31 +960,27 @@ type T1 = ReturnType<(<T>()) => T>
 type T2 = ReturnType<string>
 type T3 = ReturnType<Function>
 ```
-<!-- tab:Uppercase -->
-```typescript
+```typescript [Uppercase]
 type Greeting = 'hello'
 // HELLO
 type TitleGreeting = Uppercase<Greeting>
 ```
-<!-- tab:Lowercase -->
-```typescript
+```typescript [Lowercase]
 type Greeting = 'HeLlo'
 // hello
 type TitleGreeting = Lowercase<Greeting>
 ```
-<!-- tab:Capitalize -->
-```typescript
+```typescript [Capitalize]
 type Greeting = 'heLlo'
 // HeLlo
 type TitleGreeting = Capitalize<Greeting>
 ```
-<!-- tab:Uncapitalize -->
-```typescript
+```typescript [Uncapitalize]
 type Greeting = 'HeLlo'
 // heLlo
 type TitleGreeting = Uncapitalize<Greeting>
 ```
-<!-- tabs:end -->
+:::
 
 ## 类型相关
 
@@ -1221,9 +1189,8 @@ const obj3 = {
 - 赋值扩展了子类型的兼容性，增加了一些规则，允许和any来回赋值，以及enum和number来回赋值
 - 类型兼容性实际上是由赋值兼容性控制，即使是在implements和extends语句中😢😢😢
 
-<!-- tabs:start -->
-<!-- tab:值兼容 -->
-```typescript
+::: code-group
+```typescript [值兼容]
 interface Named {
   name: string
 }
@@ -1232,8 +1199,7 @@ let y = { name: 'alice', location: 'beijing' }
 // x能够兼容y，因为y的结构包含x的结构，对于对象，可以多不能少
 x = y
 ```
-<!-- tab:函数参数兼容 -->
-```typescript
+```typescript [函数参数兼容]
 let x = (a: number) => 0
 let y = (a: number, s: string) => 0
 // 兼容，对于函数参数，可以少不能多
@@ -1241,8 +1207,7 @@ y = x
 // 不兼容
 x = y
 ```
-<!-- tab:函数返回值兼容 -->
-```typescript
+```typescript [函数返回值兼容]
 let x = (a: number) => ({ name: 'alice' })
 let y = (a: number) => ({ name: 'alice', location: 'beijing' })
 // 兼容，对于返回值，可以多不能少
@@ -1250,8 +1215,7 @@ x = y
 // 不兼容
 y = x
 ```
-<!-- tab:函数的双向协变 -->
-```typescript
+```typescript [函数的双向协变]
 interface Event { timestamp: number }
 interface MouseEvent extends Event { x: number, y: number }
 interface KeyEvent extends Event { keyCode: number }
@@ -1264,8 +1228,7 @@ listenEvent('Mouse', (e: MouseEvent) => cosole.log(e.x))
 listenEvent('Mouse', (e: Event) => console.log((e as MouseEvent).x))
 listenEvent('Mouse', ((e: MouseEvent) => console.log(e.x)) as (e: Event) => void)
 ```
-<!-- tab:可选参数和剩余参数 -->
-```typescript
+```typescript [可选参数和剩余参数]
 // 目标函数
 function invoke(callback: (...args: any[]) => void) { callback() }
 // 源函数有可选参数，不会报错，当未传入时，值为undefined
@@ -1277,8 +1240,7 @@ function invoke(callback: (x: any, y?: any, z?: any) => void) {
 }
 invoke((x, y) => console.log(x + ',' + y))
 ```
-<!-- tab:泛型兼容性 -->
-```typescript
+```typescript [泛型兼容性]
 // 泛型参数对泛型兼容性的影响1
 interface Empty<T> {
   name: string
@@ -1300,7 +1262,7 @@ x = y;
 y = x;
 
 ```
-<!-- tabs:end -->
+:::
 
 ### 类型守卫
 
@@ -1321,9 +1283,8 @@ y = x;
 - 对于包含null的参数联合类型，需要使用类型守卫去除null；方法包括：条件语句`if (sn === null) {}`, 短路运算符`return sn || 'default'`
 - 若编译器不能自动去除null或undefined，需要手动使用类型断言去除，方式是在变量后面添加`!`，例如`name!.charAt(0)`
 
-<!-- tabs:start -->
-<!-- tab:类型判定 -->
-```typescript
+::: code-group
+```typescript [类型判定]
 // 定义类型判定函数
 function isFish (pet: Fish | Bird): pet is Fish {
   return (pet as Fish).swim !== undefined
@@ -1336,8 +1297,7 @@ if (isFish(pet)) {
   pet.fly()
 }
 ```
-<!-- tab:in操作符 -->
-```typescript
+```typescript [in操作符]
 function move (pet: Fish | Bird) {
   if ('swim' in pet) {
     return pet.swim()
@@ -1345,8 +1305,7 @@ function move (pet: Fish | Bird) {
   return pet.fly()
 }
 ```
-<!-- tab:instanceof类型守卫 -->
-```typescript
+```typescript [instanceof类型守卫]
 function getRandomPadder () {
   return Math.random() < 0.5 ? new SpaceRepeatingPadder(4) : new StringPadder(' ')
 }
@@ -1360,7 +1319,7 @@ if (padder instanceof StringPadder) {
   padder;
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### 类型别名
 
@@ -1451,9 +1410,8 @@ let v = new ScientificCalculator(2)
   3. 特例，使用变量的方式，将变量传给参数，而不是直接在参数定义一个变量字面量（对象字面量）
 - 接口可用于描述JavaScript各种类型，不管是普通的对象，也可以是函数
 
-<!-- tabs:start -->
-<!-- tab:任意个接口属性 -->
-```typescript
+::: code-group
+```typescript [任意个接口属性]
 interface Int {
   // 普通属性，这些都不会报错，因为propName`『接口的key可以是任意类型』`是一个number，所以不会进行匹配
   name: string;
@@ -1464,8 +1422,7 @@ interface Int {
   1: true;
 }
 ```
-<!-- tab:特例 -->
-```typescript
+```typescript [特例]
 interface SquareConfig {
   color?: string;
   width?: number;
@@ -1488,7 +1445,7 @@ let squareOptions = { colour: "red", width: 100 };
 let mySquare = createSquare(squareOptions);
 ```
 
-<!-- tabs:end -->
+:::
 
 **鸭子辩型法**：像鸭子一样走路，并且嘎嘎叫的就是鸭子，即具有鸭子特征（具备最小结构）的认为它就是鸭子
 
@@ -1581,9 +1538,8 @@ mySearch = function (src: string, sub: string) {
 - 设置只读索引，在语句前面，加上关键字readonly
 
 
-<!-- tabs:start -->
-<!-- tab:索引签名语法 -->
-```typescript
+::: code-group
+```typescript [索引签名语法]
 interface StringArray {
   // 下面这个是数字索引签名，索引签名，就是`[index: number]`这部分
   [index: number]: string;
@@ -1595,8 +1551,7 @@ myArr = ['bob']
 let str: string = myArr[0]
 ```
 
-<!-- tab:两种索引签名同时存在的情形 -->
-```typescript
+```typescript [两种索引签名同时存在的情形]
 class Animal {
   name: string;
 }
@@ -1617,8 +1572,7 @@ interface Okay {
 }
 
 ```
-<!-- tab:只读索引 -->
-```typescript
+```typescript [只读索引]
 interface ReadonlyStringArray {
   readonly [index: number]: string;
 }
@@ -1627,7 +1581,7 @@ let myArr: ReadonlyStringArray = ['bob']
 // Index signature in type 'ReadonlyStringArray' only permits reading.
 myArr[0] = 'tom'
 ```
-<!-- tabs:end -->
+:::
 
 5. <b class="puzzled">接口描述类类型</b>
 
@@ -1637,9 +1591,8 @@ myArr[0] = 'tom'
 - 类实现接口时，只会对类的实例进行类型检查，constructor存在于类的静态部分，所以不会进行检查
 
 实现：
-<!-- tabs:start -->
-<!-- tab:第一种方式 -->
-```typescript
+::: code-group
+```typescript [第一种方式]
 interface ClockConstructor {
   new (hour: number, minute: number): ClockInterface;
 }
@@ -1673,8 +1626,7 @@ let analog = createClock(AnalogClock, 7, 32);
 
 ```
 
-<!-- tab:第二种方式 -->
-```typescript
+```typescript [第二种方式]
 interface ClockConstructor {
   new (hour: number, minute: number);
 }
@@ -1691,7 +1643,7 @@ const Clock: ClockConstructor = class Clock implements ClockInterface {
 };
 
 ```
-<!-- tabs:end -->
+:::
 
 6. 接口继承
 
@@ -1830,9 +1782,8 @@ const obj: AddT = {
 - 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把精确的函数定义写在前面*
 - 异步函数的返回值，用`Promise<T>`定义，这个适用于promise和async...await
 
-<!-- tabs:start -->
-<!-- tab:函数重载 -->
-```typescript
+::: code-group
+```typescript [函数重载]
 function reverse(x: number): number;
 function reverse(x: string): string;
 // 函数重载中，最后一个出现的必须是函数的实现
@@ -1846,8 +1797,7 @@ function reverse(x: number | string): number | string | void {
 }
 ```
 
-<!-- tab:函数内的this -->
-```typescript
+```typescript [函数内的this]
 interface Card {
     suit: string;
     card: number;
@@ -1878,8 +1828,7 @@ alert("card: " + pickedCard.card + " of " + pickedCard.suit);
 
 ```
 
-<!-- tab:回调参数的this -->
-```typescript
+```typescript [回调参数的this]
 // 此例不能编译成功
 interface UIElement {
   addClickListener(onclick: (this: void, e: Event) => void): void;
@@ -1894,8 +1843,7 @@ uiElement.addClickListener(h.onClickGood);
 
 ```
 
-<!-- tab:异步函数的返回值 -->
-```typescript
+```typescript [异步函数的返回值]
 // 若没有返回数据，则使用`Promise<void>`
 function queryData(): Promise<string> {
   return new Promise(resolve => {
@@ -1906,7 +1854,7 @@ function queryData(): Promise<string> {
 }
 queryData().then(data => console.log(data))
 ```
-<!-- tabs:end -->
+:::
 
 ## 类
 
@@ -2077,9 +2025,8 @@ let point3d: Point3d = {x: 1, y: 2, z: 3};
 - 类泛型
 - 类型别名泛型
 
-<!-- tabs:start -->
-<!-- tab:类型变量 -->
-```typescript
+::: code-group
+```typescript [类型变量]
 // 类型变量的使用
 // 给identity添加了类型变量T，T帮助捕获用户传入的类型，后面就能够使用这个类型了，这个identity函数就是泛型
 function identity <T> (args: T): T {
@@ -2088,16 +2035,14 @@ function identity <T> (args: T): T {
 
 ```
 
-<!-- tab:泛型的使用 -->
-```typescript
+```typescript [泛型的使用]
 // 1. 显式声明
 let output = identity<string>('mystring')
 // 2. 类型推断，若不能自动推断类型，必须显式声明
 let output = identity('mystring')
 ```
 
-<!-- tab:匿名函数泛型 -->
-```typescript
+```typescript [匿名函数泛型]
 // 即不使用接口或者类型别名的形式定义，而是直接定义
 // 比如：<T>(val: T[]) => T[]
 let getVal: <T>(val: T[]) => T[] = info => {
@@ -2113,7 +2058,7 @@ interface GetVal<T> {
 type GetVal<T> = (val: T[]) => T[]
 ```
 
-<!-- tabs:end -->
+:::
 
 泛型变量：使用泛型创建泛型函数等时，必须在函数体内正确使用这个通用的泛型，即把这些参数当作任意类型或所有类型，不能访问不存在的方法/属性
 
@@ -2127,10 +2072,9 @@ type GetVal<T> = (val: T[]) => T[]
 使用：
 - 泛型类指的是实例部分的类型，因为构造函数传入的值，只能在实例中使用，通过类名调用静态成员获取不到这个类型
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:泛型变量的使用 -->
-```typescript
+```typescript [泛型变量的使用]
 // 错误的使用
 function identity <T> (args: T): T {
   // Property 'length' does not exist on type 'T'.
@@ -2150,8 +2094,7 @@ function identity <T> (args: Array<T>): Array<T> {
 }
 ```
 
-<!-- tab:泛型类型及定义泛型接口 -->
-```typescript
+```typescript [泛型类型及定义泛型接口]
 // 泛型参数名可以使用任意的标识，只要数量上和使用方式上对应即可
 function identity <U> (args: U[]): U[] {
   return args
@@ -2165,8 +2108,7 @@ interface GeneraticIdentityFn {
 let myIdentity: GeneraticIdentityFn = identity
 ```
 
-<!-- tab:泛型参数当作接口的一个参数 -->
-```typescript
+```typescript [泛型参数当作接口的一个参数]
 interface GeneraticIdentityFn <T> {
   (args: T[]): T[];
 }
@@ -2179,8 +2121,7 @@ function identity <U> (args: U[]): U[] {
 let myIdentity: GeneraticIdentityFn<number> = identity
 ```
 
-<!-- tab:泛型类 -->
-```typescript
+```typescript [泛型类]
 class GenericNumber<T> {
     zeroValue: T;
     add: (x: T, y: T) => T;
@@ -2190,7 +2131,7 @@ let myGenericNumber = new GenericNumber<number>();
 myGenericNumber.zeroValue = 0;
 myGenericNumber.add = function(x, y) { return x + y; };
 ```
-<!-- tabs:end -->
+:::
 
 泛型约束：定义一个接口来描述约束条件，让泛型继承（使用关键字extends）这个接口实现约束。在定义了约束的泛型之后，传入的值（以及泛型参数的默认类型）必须要兼容这个约束类型
 
@@ -2210,10 +2151,9 @@ myGenericNumber.add = function(x, y) { return x + y; };
 在泛型中使用类类型：类类型语法为`new (x: number) => Point`等同于`{ new (x: number): Point }`，表示返回一个包含类型为Point的构造函数的对象类型，默认类的构造函数类型为其本身
 
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:泛型约束用法 -->
-```typescript
+```typescript [泛型约束用法]
 interface Lengthwise {
     length: number;
 }
@@ -2227,8 +2167,7 @@ function loggingIdentity<T extends Lengthwise>(arg: T): T {
 loggingIdentity({length: 10, value: 3});
 ```
 
-<!-- tab:在泛型约束中使用类型参数 -->
-```typescript
+```typescript [在泛型约束中使用类型参数]
 // 泛型K继承了泛型T的key的类型
 function getProperty<T, K extends keyof T>(obj: T, key: K) {
     return obj[key];
@@ -2240,8 +2179,7 @@ getProperty(x, "a"); // okay
 getProperty(x, "m"); // error: Argument of type 'm' isn't assignable to 'a' | 'b' | 'c' | 'd'.
 ```
 
-<!-- tab:在泛型约束中使用类类型 -->
-```typescript
+```typescript [在泛型约束中使用类类型]
 function createInstance<A extends Animal>(c: new () => A): A {
   return new c()
 }
@@ -2257,8 +2195,7 @@ class BeeKeeper {
 createInstance(Bee).Keeper.hasMask
 ```
 
-<!-- tab:泛型与构造函数结合使用1 -->
-```typescript
+```typescript [泛型与构造函数结合使用1]
 // 类实现接口时，应该分别定义接口的属性和构造函数类型（两者不能放在一个接口中）
 // 定义接口属性
 interface Point {
@@ -2296,8 +2233,7 @@ function newPoint (
 let point: Point = newPoint(Point2D, 1, 2)
 ```
 
-<!-- tab:泛型与构造函数结合使用2 -->
-```typescript
+```typescript [泛型与构造函数结合使用2]
 // 泛型T不能用作值new T()，下面这个是错的
 class GenericCreator<T> {
   create() : T {
@@ -2324,14 +2260,13 @@ let creator = new GenericCreator<FirstClass>()
 let firstClass: FirstClass = creator.create(FirstClass)
 
 ```
-<!-- tabs:end -->
+:::
 
 注意事项：
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab: 泛型间赋值 -->
-```typescript
+```typescript [ 泛型间赋值]
 type A<T = {}> = {
   name: T;
 }
@@ -2345,8 +2280,7 @@ type B<T> = A<T>
 let a: B;
 ```
 
-<!-- tabs:泛型学习1 -->
-```typescript
+```typescript [泛型学习1]
 type FC<p = {}> = FunctionComponent<P>
 
 interface FunctionComponent<P = {}> = {
@@ -2357,13 +2291,11 @@ interface FunctionComponent<P = {}> = {
 }
 ```
 
-<!-- tab:泛型嵌套 -->
-```tpyescript
+```typescript [泛型嵌套]
 type A<Tuple extends any[]> = B<C<D<Tuple>>>
 ```
 
-<!-- tab:泛型递归 -->
-```typescript
+```typescript [泛型递归]
 // 单链表
 type ListNode<T> = {
   data: T;
@@ -2377,8 +2309,7 @@ declare var HTMLElement: {
 }
 ```
 
-<!-- tab:递归调用 -->
-```typescript
+```typescript [递归调用]
 // 将对象所有（包括嵌套）属性变为可选
 type DeepPartial<T> = T extends Function
   ? T
@@ -2389,7 +2320,7 @@ type DeepPartial<T> = T extends Function
 type PartialWindow = DeepPartial<Window>
 ```
 
-<!-- tabs:end -->
+:::
 
 ## 生成器和迭代器
 

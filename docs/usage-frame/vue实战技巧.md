@@ -7,10 +7,9 @@
 - 插槽
 - `ref`：通过ref属性用于调用组件的属性或者方法（vue3需要通过expose暴露相关内容）
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:attrs -->
-```vue
+```vue [attrs]
 <!-- my-custom.vue -->
 <template>
   <el-input v-bind="$attrs"/>
@@ -25,8 +24,7 @@ export default {
 </script>
 ```
 
-<!-- tab:插槽 -->
-```vue
+```vue [插槽]
 <!-- my-custom.vue -->
 <template>
   <div>
@@ -70,8 +68,7 @@ export default {
 </script>
 ```
 
-<!-- tab:ref -->
-```vue
+```vue [ref]
 <!-- my-custom.vue -->
 <template>
   <div></div>
@@ -132,7 +129,7 @@ export default {
 </script>
 ```
 
-<!-- tabs:end -->
+:::
 
 ## hooks
 
@@ -140,10 +137,9 @@ export default {
 > https://juejin.cn/post/7181712900094951483    
 
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:封装下拉框hook -->
-```typescript
+```typescript [封装下拉框hook]
 // hook.ts
 import { onMounted, reactive, ref } from 'vue'
 
@@ -216,8 +212,7 @@ const selectBind = useFetchSelect({
 ```
 
 
-<!-- tab:封装下拉框hook2 -->
-```typescript
+```typescript [封装下拉框hook2]
 // hook.ts
 import { type Ref, ref } from 'vue'
 
@@ -278,8 +273,7 @@ function onSubmit() {
 </template>
 ```
 
-<!-- tab:封装下拉框hook3 -->
-```typescript
+```typescript [封装下拉框hook3]
 // hook.ts
 import { type Ref, ref } from 'vue'
 
@@ -337,7 +331,7 @@ function onCancel () {
 
 
 
-<!-- tabs:end -->
+:::
 
 
 ## 奇技淫巧

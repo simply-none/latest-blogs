@@ -18,10 +18,9 @@
 - setting.json：会覆盖掉vscode编辑器的全局配置
 - extensions.json：用来设置项目用到的插件推荐列表
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:setting.json -->
-```json
+```json [setting.json]
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
@@ -35,8 +34,7 @@
 
 ```
 
-<!-- tab:extensions.json -->
-```json
+```json [extensions.json]
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
@@ -47,7 +45,7 @@
 
 ```
 
-<!-- tabs:end -->
+:::
 
 
 ## vscode 代码图片
@@ -95,9 +93,8 @@
 - 第二种：直接在setting.json中进行设置
 - 在项目根目录添加：`.prettierrc.json`文件
 
-<!-- tabs:start -->
-<!-- tab:setting.json -->
-```json
+::: code-group
+```json [setting.json]
 {
   "editor.mouseWheelZoom": true,
   "vsicons.dontShowNewVersionMessage": true,
@@ -310,14 +307,13 @@
 }
 
 ```
-<!-- tab:.prettierrc.json -->
-```json
+```json [.prettierrc.json]
 {
   "singleQuote": true,
   "semi": false
 }
 ```
-<!-- tabs:end -->
+:::
 
 ### 代码格式化操作
 

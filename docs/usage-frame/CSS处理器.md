@@ -364,10 +364,9 @@ body
 - 这些插件可以检查lint项目的css，支持编译尚未被浏览器广泛支持的css语法
 - 利用自身的parser将css代码解析为AST抽象语法树，最终输出改写后的css
 
-<!-- tabs:start -->
+::: code-group
 
-<!-- tab:移动端适配vue3+vite -->
-```vue
+```vue [移动端适配vue3+vite]
 // 对不同机型的宽高进行适配
 // 将px转为rem
 npm install postcss-pxtorem
@@ -395,4 +394,4 @@ export default defineConfig({
 })
 ```
 
-<!-- tabs:end -->
+:::
