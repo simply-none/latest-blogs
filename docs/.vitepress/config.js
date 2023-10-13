@@ -9,7 +9,7 @@ import { sidebar } from "./sibar";
 
 // https://skewb.gitee.io/vitepress/reference/site-config
 export default defineConfig({
-  base: "/vitepress/",
+  base: "/latest-blogs/",
   title: "璎耜",
   description: "Vite 和 Vue 强力驱动的静态网站生成器",
   head: [["link", { rel: "icon", href: "/vitepress/logo.png" }]],
