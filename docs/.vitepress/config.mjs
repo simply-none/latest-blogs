@@ -43,7 +43,7 @@ export default defineConfig({
       provider: 'algolia',
       options: {
         appId: 'N4M009QH1O',
-        apiKey: '62038b1e84670a59365b0dfc75595345',
+        apiKey: '94b43718c988f7bbace33cdcc6cfe478',
         indexName: 'blogs'
       }
     }
