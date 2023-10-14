@@ -72,7 +72,7 @@ onMounted(() => {
   bottom: 0;
   right: 0;
   z-index: 1000;
-  background: rebeccapurple;
+  background: linear-gradient(to left bottom, rgb(179, 226, 255) 0%, rgb(255, 186, 179) 100%);
 }
 section.cover {
   position: relative;
@@ -83,6 +83,7 @@ section.cover {
   min-height: 100vh;
   width: 100%;
   display: none;
+  color: black;
 }
 
 .cover-main-icon {
@@ -139,6 +140,7 @@ section.cover ul {
   margin: 1em auto;
   max-width: 500px;
   padding: 0;
+  font-weight: 300;
 }
 section.cover p {
   line-height: 1.5rem;
