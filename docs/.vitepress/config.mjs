@@ -39,11 +39,6 @@ export default defineConfig({
     footer: {
       copyright: "内容整理权归解璎所有 Copyright © 2022-present",
     },
-    algolia: {
-      appId: 'N4M009QH1O',
-      apiKey: '62038b1e84670a59365b0dfc75595345',
-      indexName: 'blogs'
-    },
     search: {
       provider: 'algolia',
       options: {
@@ -52,6 +47,11 @@ export default defineConfig({
         indexName: 'blogs',
         locales: {
           zh: {
+            searchParameters: {
+              page: 30,
+              hitsPerPage: 30,
+              length: 30
+            },
             placeholder: '搜索文档',
             translations: {
               button: {
