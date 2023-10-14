@@ -46,10 +46,34 @@ export default defineConfig({
         apiKey: '62038b1e84670a59365b0dfc75595345',
         indexName: 'blogs',
         maxResultsPerGroup: 100,
+        locales: {
+          'zh-cn': {
+            searchParameters: {
+              page: 100,
+              hitsPerpage: 100,
+            }
+          },
+          'zh': {
+            searchParameters: {
+              page: 100,
+              hitsPerpage: 100,
+            }
+          },
+          'en-us': {
+            searchParameters: {
+              page: 100,
+              hitsPerpage: 100,
+            }
+          },
+          'en': {
+            searchParameters: {
+              page: 100,
+              hitsPerpage: 100,
+            }
+          }
+        },
         placeholder: '搜索文档',
         translations: {
-          page: 100,
-          hitsPerpage: 100,
           button: {
             buttonText: '搜索文档',
             buttonAriaLabel: '搜索文档'
