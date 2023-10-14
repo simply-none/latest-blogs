@@ -45,9 +45,12 @@ export default defineConfig({
         appId: 'N4M009QH1O',
         apiKey: '62038b1e84670a59365b0dfc75595345',
         indexName: 'blogs',
+        maxResultsPerGroup: 10,
         locales: {
           zh: {
             searchParameters: {
+              maxFacetHits: 300,
+              maxValuesPerFacet: 30,
               page: 30,
               hitsPerPage: 30,
               length: 30
