@@ -6,9 +6,13 @@ import {
 import { nav } from "./nav";
 import { sidebar } from "./sibar";
 
-
-// https://skewb.gitee.io/vitepress/reference/site-config
 export default defineConfig({
+  markdown: {
+    theme: {
+      light: 'github-dark-dimmed',
+      dark: 'material-theme-darker'
+    }
+  },
   base: "/latest-blogs/",
   title: "璎耜",
   description: "Vite 和 Vue 强力驱动的静态网站生成器",
@@ -16,7 +20,9 @@ export default defineConfig({
   ignoreDeadLinks: true,
   lastUpdated: true,
   themeConfig: {
-    // https://skewb.gitee.io/vitepress/reference/default-theme-config
+    editLink: {
+      pattern: 'https://github.com/simply-none/latest-blogs/edit/master/docs/:path'
+    },
     logo: "/icon.svg",
     lastUpdated: {
       text: "上次更新",
@@ -117,22 +123,8 @@ export default defineConfig({
   lang: "zh-cn",
   vite: {
     esbuild: {
-      // exclude: '@vue/reactivity'
     },
     plugins: [
-      // pagefindPlugin({
-      //   btnPlaceholder: "搜索",
-      //   placeholder: "搜索文档",
-      //   emptyText: "空空如也",
-      //   heading: "共: {{searchResult}} 条结果",
-      //   customSearchQuery(input) {
-      //     // 将搜索的每个中文单字两侧加上空格
-      //     return input
-      //       .replace(/[\u4e00-\u9fa5]/g, " $& ")
-      //       .replace(/\s+/g, " ")
-      //       .trim();
-      //   },
-      // }),
     ],
   },
 });

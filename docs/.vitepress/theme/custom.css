@@ -2,7 +2,8 @@
   --vcp-c-brand: #cdcdcd;
 }
 
-.algolia [command-item][aria-selected='true'], .algolia [command-item]:hover {
+.algolia [command-item][aria-selected="true"],
+.algolia [command-item]:hover {
   background: var(--vcp-c-brand);
   color: brown;
 }
@@ -10,4 +11,16 @@
 .search-dialog div[command-item] mark {
   background: yellow;
   color: red;
+}
+
+html:not(.dark) .vp-doc [class*="language-"] pre {
+  background: #292b30;
+}
+
+html.dark .vp-doc [class*="language-"] pre {
+  background: #292b30;
+}
+
+#VPSidebarNav .VPSidebarItem.is-active .text {
+  background-color: #e7e7e7;
 }

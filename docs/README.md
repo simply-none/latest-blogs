@@ -1,7 +1,5 @@
 #### 每日十五谏
  
-> 本博客运行依赖：`npm i docsify-cli -g --registry=https://registry.npmmirror.com`    
-
 > **注意事项**    
 > ❌：表示实际上和记录有误或不一致的内容    
 > 🟢：表示不太熟悉且重要的内容     
