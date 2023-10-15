@@ -52,12 +52,7 @@ export default defineConfig({
         apiKey: '62038b1e84670a59365b0dfc75595345',
         indexName: 'blogs',
         maxResultsPerGroup: 100,
-        searchParameters: {
-          page: 100,
-          hitsPerPage: 100,
-          maxValuesPerFacet: 100,
-          maxFacetHits: 100,
-        },
+        hitsPerPage: 100,
         placeholder: '搜索文档',
         translations: {
           button: {
