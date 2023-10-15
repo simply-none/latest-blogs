@@ -53,6 +53,9 @@ export default defineConfig({
         indexName: 'blogs',
         maxResultsPerGroup: 100,
         hitsPerPage: 100,
+        searchParameters: {
+          hitsPerPage: 100
+        },
         placeholder: '搜索文档',
         translations: {
           button: {
