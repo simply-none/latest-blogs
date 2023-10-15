@@ -54,7 +54,7 @@ export default defineConfig({
         maxResultsPerGroup: 100,
         searchParameters: {
           page: 100,
-          hitsPerpage: 100,
+          hitsPerPage: 100,
           maxValuesPerFacet: 100,
           maxFacetHits: 100,
         },
