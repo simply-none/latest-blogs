@@ -2,6 +2,10 @@
   --vcp-c-brand: #cdcdcd;
 }
 
+.DocSearch-Hits mark {
+  background: red;
+}
+
 .dark {
   --vp-c-bg: #3b3b3b;
   --vp-sidebar-bg-color: #3b3b3b;
