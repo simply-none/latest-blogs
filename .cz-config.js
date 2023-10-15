@@ -2,6 +2,7 @@ module.exports = {
   //可选类型
   types: [
     { value: 'docs', name: 'docs:   文档变更' },
+    { value: 'pref', name: 'docs:   博客主题的细节修复及优化' },
     { value: 'feat', name: 'feat:   新功能' },
     { value: 'fix', name: 'fix:   修复' },
     { value: 'style', name: 'style:   代码格式(不影响代码运行的变动)' },
@@ -31,6 +32,7 @@ module.exports = {
     { name: '修改笔记' },
     { name: '新增笔记' },
     { name: '删除笔记' },
+    { name: '优化' },
     { name: '配置文件' },
     { name: '添加文档功能' },
     { name: '修复文档功能' },

@@ -164,8 +164,8 @@ export function sidebarUsageProject() {
       text: "项目实践",
       items: [
         {
-          text: "✅重要的工作共识【谨记】",
-          link: "/usage-project/项目实践/项目版本升级",
+          text: "✅工作注意事项【谨记】",
+          link: "/usage-project/项目实践/重要的工作共识",
         },
         {
           text: "项目版本依赖升级",
