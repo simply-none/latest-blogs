@@ -265,9 +265,9 @@ http {
 
 _nginx是否开启gzip压缩的对比_：
 - 未开启gzip压缩：
-  ![](imgs/nginx关闭gzip压缩.png)
+  ![](../images/nginx关闭gzip压缩.png)
 - 开启gzip压缩：
-  ![](imgs/nginx开启gzip压缩.png)
+  ![](../images/nginx开启gzip压缩.png)
 
 _注意事项：_
 1. 配置未生效：若a.js具有压缩文件a.js.gzip，则运行下面命令，若得出的结果无`Accept-Encoding: gzip`字段，表示配置未生效。此时可重启nginx，或者查看配置的gzip_types是否包含结果中的Content-Type

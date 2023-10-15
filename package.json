@@ -39,7 +39,7 @@
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
     "standard-version": "^9.5.0",
-    "vitepress": "^1.0.0-beta.7",
+    "vitepress": "1.0.0-rc.20",
     "vue-router": "^4.2.2"
   },
   "standard-version": {

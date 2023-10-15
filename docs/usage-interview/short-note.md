@@ -46,7 +46,7 @@ return () {
 
 若想在h()的第三个参数中，使用插槽，且该插槽需要返回组件时，该组件名的解析，需要在h()函数之外（前面）进行解析
 
-> <component :is="name"></component>的实现使用resolveDynamicComponent
+> `<component :is="name"></component>`的实现使用resolveDynamicComponent
 
 其中is支持组件名称、HTML元素名称、组件选项对象
 
@@ -58,6 +58,6 @@ return () {
 
 这里的选项对象，应该是通过defineComponent定义的
 
-> 当使用 <script setup> 的时候，任何在 <script setup> 声明的顶层的绑定 (包括变量，函数声明，以及 import 引入的内容) 都能在模板中直接使用
+> 当使用 `<script setup>` 的时候，任何在 `<script setup>` 声明的顶层的绑定 (包括变量，函数声明，以及 import 引入的内容) 都能在模板中直接使用
 
 这里相当于自动导出了这些变量和函数
