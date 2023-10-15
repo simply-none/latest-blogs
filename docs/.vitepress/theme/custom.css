@@ -2,6 +2,14 @@
   --vcp-c-brand: #cdcdcd;
 }
 
+.dark {
+  --vp-c-bg: #3b3b3b;
+  --vp-sidebar-bg-color: #3b3b3b;
+  --vp-c-bg-alt: #161618;
+  --vp-c-bg-elv: #202127;
+  --vp-c-bg-soft: #202127;
+}
+
 .algolia [command-item][aria-selected="true"],
 .algolia [command-item]:hover {
   background: var(--vcp-c-brand);
@@ -22,5 +30,8 @@ html.dark .vp-doc [class*="language-"] pre {
 }
 
 #VPSidebarNav .VPSidebarItem.is-active .text {
-  background-color: #e7e7e7;
+  border-left: 4px solid #3451b2;
+  padding: 0;
+  padding-left: 3px;
+  margin: 4px 0;
 }
