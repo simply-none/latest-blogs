@@ -8,6 +8,7 @@ import { sidebar } from "./sibar";
 
 export default defineConfig({
   markdown: {
+    lineNumbers: true,
     theme: {
       light: 'github-dark-dimmed',
       dark: 'material-theme-darker'
@@ -21,6 +22,7 @@ export default defineConfig({
   lastUpdated: true,
   themeConfig: {
     editLink: {
+      text: '编辑此页面',
       pattern: 'https://github.com/simply-none/latest-blogs/edit/master/docs/:path'
     },
     logo: "/icon.svg",

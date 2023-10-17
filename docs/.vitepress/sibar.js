@@ -301,6 +301,10 @@ export function sidebarUsageWorkTool() {
           text: "使用docsify plugin",
           link: "/usage-work-tool/其他工具/usage-docsify-plugin",
         },
+        {
+          text: "使用viteprss",
+          link: "/usage-work-tool/其他工具/usage-vitepress",
+        },
       ],
     },
   ];
