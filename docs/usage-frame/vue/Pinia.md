@@ -299,10 +299,10 @@ export default {
         age: 27
       }
       // 推荐
-      useCounterStoreF.$patch = {
+      useCounterStoreF.$patch({
         name: 'jade',
         age: 27
-      }
+      })
     }
 
     import { MutationType } from 'pinia'
@@ -457,9 +457,6 @@ pinia支持扩展的内容，不限于下面这些：
 - 仅在特定store中应用插件
 
 语法：通过`pinia.use()`添加到pinia实例上
-
-说明：
-- 
 
 场景：
 - 添加全局对象，比如路由器、modal、toast管理器

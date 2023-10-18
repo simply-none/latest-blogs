@@ -14,6 +14,64 @@
    3. time： s、ms
 3. +、-运算符两边必须有空白符，*、/运算符不必须
 
+### getComputedStyle(element)
+
+定义：获取一个经过解析计算后的所有css属性值的对象
+
+用法：
+
+```js
+// 若有以下dom结构
+// <html style="--my-color: red;">xxx</html>
+// 获取html元素的`--my-color`属性
+// document.documentElement:根元素的只读属性，如html元素
+let html = getComputedStyle(document.documentElement)
+
+// 获取普通的css属性，比如color
+let color = html.color
+let color = html['color']
+let myColor = html.getPropertyValue('color')
+
+// 获取自定义的css变量
+let myColor = html.getPropertyValue('--my-color')
+```
+
+### transform
+
+值：
+
+- **translate3d(tx, ty, tz)**：相对于元素原位置，移动特定的长度（tx、ty、tz）到一个新位置，例如`transform: translate3d(10px, 0px, 0px);`，向右移动10px
+
+### pointer-events
+
+使用场景：当一个元素a在另一个元素b上面且完全覆盖b时（比如使用z-index），若想点击b上面的事件，而不触发a的事件，这时就可以使用`pointer-events: none;`
+
+定义：`pointer-events: none;`表示该元素不是鼠标事件的目标元素，且鼠标事件可以穿透该元素，而指向被该元素覆盖下的内容。
+
+### filter
+
+定义：改变输入图像外观的图形展现效果
+
+属性值可以是下列函数过滤器：
+
+- blur()：模糊图形
+- brightness()：明暗图形
+- grayscale()：灰度图形
+- invert()：图形颜色反转
+- opacity()：图形透明
+- ......
+
+#### grayscale
+
+使用场景：灰色模式
+
+```css [灰色模式]
+body {
+   /* 参数：表示灰度，0-1之间 */
+   filter: grayscale(1);
+}
+```
+
 ## flex布局
 
 ```css

@@ -34,10 +34,7 @@ html.dark .vp-doc [class*="language-"] pre {
 }
 
 #VPSidebarNav .VPSidebarItem.is-active .text {
-  border-left: 4px solid #3451b2;
-  padding: 0;
-  padding-left: 3px;
-  margin: 4px 0;
+  font-weight: 900;
 }
 
 html:not(.dark) .vp-doc .line-numbers-wrapper {
