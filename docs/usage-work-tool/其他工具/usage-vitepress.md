@@ -28,9 +28,14 @@ info box
 
 :::
 
-## 引入其他md文件
+## 引入其他文件
 
-使用`<!-- @include: file-path -->`即可
+使用`<!--@include: file-path -->`即可
+
+```typescript
+// 引入的例子
+<!--@include: ../../usage-algorithms/problems/001. 两数之和.ts -->
+```
 
 ## 在md中使用vue组件
 

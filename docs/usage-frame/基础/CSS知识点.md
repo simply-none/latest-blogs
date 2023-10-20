@@ -72,7 +72,37 @@ body {
 }
 ```
 
-## flex布局
+### white-space、word-break、overflow-wrap
+
+**white-space**：用于控制空白字符是否显示以及换行行为
+
+值：
+
+- normal：自动换行、空格合并
+- nowrap：不换行、空格合并
+
+**word-break**：控制单词拆分换行的策略
+
+值：
+
+- normal：默认行为
+- break-all：单词触碰到边界无剩余空间，就拆分换行
+- keep-all：不拆分换行
+
+**word-wrap（overflow-wrap）**：控制单词拆分换行策略，功能与word-break互补
+
+值：
+
+- normal：默认行为
+- break-word：只有一个单词一整行（单词长度 > 行长度）都显示不下时，才拆分换行
+
+## css布局
+
+注意事项
+
+- 尽量不要使用inline-block布局，该布局很难掌控，会发生一些意想不到的bug，请用其他布局代替
+
+### flex布局
 
 ```css
 .box {
@@ -111,7 +141,7 @@ body {
 }
 ```
 
-## grid布局
+### grid布局
 
 ```css
 .box {
@@ -177,9 +207,11 @@ body {
 }
 ```
 
-## 多列布局
+### 多列布局
 
 定义：多列布局，就是一大块内容带到多个列中，类似报纸
+
+场景：菜单项从上到下、从左到右自适应布局，且每列之间可加一个分割线。
 
 多列布局属性：
 - column-count：指定内容的列数
@@ -190,6 +222,7 @@ body {
 
 注意：
 - 在使用多列布局时，其内容无法定位，也无法为单个列指定样式，所有列都将保持相同的大小。但可通过column-*相关的属性定义对应的规则
+- 使用多列布局时，应当给包裹菜单项的父元素设置最大高度
 
 ## position定位
 
@@ -331,15 +364,104 @@ dd + dd {
 }
 ```
 
-## 小特性
+## 业务功能集
 
-### 单行省略
+### 滚动条
+
+**修改滚动条样式**：
+
+::: code-group
+
+```scss [chrome-css]
+// 滚动条整体
+::-webkit-scrollbar {
+   // 设置整体的宽度和其他样式
+   width: 10px;
+   background-color: #eee;
+   // 滚动条两侧按钮
+   ::-webkit-scrollbar-button {}
+   // 滚动条轨道 = 滚动滑块 + 剩余可滚动轨道
+   ::-webkit-scrollbar-track {
+      border: 1px solid black;
+      background-color: #f5f5f5;
+   }
+   // 滚动条可滚动的轨道（除去滚动滑块）
+   ::-webkit-scrollbar-track-piece {}
+   // 滚动条滑块
+   ::-webkit-scrollbar-thumb {
+      background-color: #000;
+   }
+   // 滚动条边角（即上滚动条与左滚动条相交的那个小四方形）
+   ::-webkit-scrollbar-corner {}
+   // 滚动条边角上可拖动块（放大缩小）
+   ::-webkit-resizer {}
+}
+
+// 设置水平or垂直滚动条： horizontal、vertical
+::-webkit-scrollbar:horizontal {}
+// 设置滑块前后、两侧按钮区域的样式（track-piece、button前decrement/start、后increment/end）
+::-webkit-scrollbar-button:increment {
+   background-color: red;
+}
+```
+
+```scss [firefox-css]
+// 假如body出现了滚动条
+body {
+   // 设置滚动条轨道和滑块的颜色
+   // scrollbar-color: auto | dark | light;
+   // scrollbar-color: track-color thumb-color;
+   scrollbar-color: dark;
+   // 设置滚动条的宽度
+   // scrollbar-width: auto | thin | none;
+   scrollbar-width: thin;
+}
+```
+
+```JavaScript [js自定义滚动条]
+// https://juejin.cn/post/6844903847282868238
+```
+
+:::
+
+**去除滚动条**：
 
 ```css
-overflow: hidden;
-text-overflow:ellipsis;
-white-space: nowrap;
+/* chrome去除body的滚动条 */
+body::-webkit-scrollbar{
+  display:none;
+}
+/* firefox去除body滚动条 */
+body {
+   scrollbar-width: none;
+}
 ```
+
+### 超出内容省略
+
+::: code-group
+
+```css [单行省略]
+div {
+   overflow: hidden;
+   text-overflow:ellipsis;
+   white-space: nowrap;
+}
+```
+
+```css [多行省略]
+div {
+   display: -webkit-box;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   /* word-break和white-space用于英文单词是否拆分到下一行中，选其一即可 */
+   word-break: break-all;
+   white-space: normal;
+}
+```
+
+:::
 
 ### css文字纵向排列
 
@@ -348,25 +470,37 @@ white-space: nowrap;
 - vertical-lr：垂直方向，内容从上往下（vertical），从左往右（left-right）
 - vertical-rl：垂直方向，内容从上往下（vertical），从右往左（right-left）
 
-### 多列布局
+### 文本颜色用图像填充
 
-多列布局：当下使用场景，菜单项从上到下、从左到右自适应布局，且每列之间需加一个分割线。
-  
-解决方案：
+```css
+div {
+   /* 背景是否延伸的范围：border-box、padding-box、content-box、text */
+   background-clip: text;
+   -webkit-background-clip: text;
+   background-image: url('/media/examples/leopard.jpg');
+   color: transparent;
+}
+```
 
-column-width：在包裹菜单项的父元素设置，定义每列的宽度
-column-count: 在包裹菜单项的父元素设置，定义列的数量，默认为auto
-column-rule：设置列之间的分割线，和border的值一致
-columns: column-width column-count（方向相反也可）
-column-gap：设置列与列之间的间隔，可为normal(1em)、长度单位、百分比
+### 文本镂空字
 
-注意：使用多列布局时，应当给包裹菜单项的父元素设置最大高度
+```css
+div {
+   /* 宽度，颜色 */
+   text-stroke: 1px red;
+   -webkit-text-stroke: 1px red;
+}
+```
+
+### 首字符放大
+
+```css
+div::first-letter {
+   font-size: 2em;
+}
+```
 
 ### 鼠标滚轮横向滚动页面
-
-## 注意事项
-
-- 尽量不要使用inline-block布局，该布局很难掌控，会发生一些意想不到的bug，请用其他布局代替
 
 ## 样式风暴
 
