@@ -292,6 +292,10 @@ export function sidebarUsageWorkTool() {
           text: "不好分类的内容",
           link: "/usage-work-tool/效率提升工具/不好分类的内容",
         },
+        {
+          text: "阮一峰工具集",
+          link: "/usage-work-tool/效率提升工具/阮一峰工具集",
+        },
       ],
     },
     {

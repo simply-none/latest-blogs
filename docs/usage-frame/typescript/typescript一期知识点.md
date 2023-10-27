@@ -116,14 +116,17 @@ import logo from './assets/logo.png'
 
 1. `unknown`类型
 定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
+
 使用：
 - 若想缩小改类型的范围（类型收窄），可以使用条件语句+逻辑判断（typeof、比较符、类型检查、类型断言），之后就只能使用该范围内的类型方法/属性
 
 注意：
--unknown只能赋值给unknown和any
+- unknown只能赋值给unknown和any
 
 2. `any`类型
+   
 定义：表示一个当前时刻不清楚类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
+
 使用：
 - 对于不想进行类型检查的变量，可以标记为any类型
 - 用于旧项目迁移到typescript项目
@@ -138,6 +141,7 @@ a.concat([])
 ```
 
 3. `void`类型
+
 定义：表示没有任何类型，与any相反
 
 场景：
@@ -148,6 +152,7 @@ a.concat([])
 - undefined
 
 4. `null`类型
+
 定义：表示它本身
 
 使用：
@@ -155,6 +160,7 @@ a.concat([])
 - 指定了 **--strictNullChecks** 之后，只能赋值给any和它本身
 
 5. `undefined`类型
+
 定义：表示它本身
 
 使用：
@@ -165,6 +171,7 @@ a.concat([])
 - 在指定了 **--strictNullChecks** 之后，*函数的可选参数*以及*类的可选属性*的类型会被自动的加上`| undefined`
 
 6. `never`类型
+
 定义：表示永远不存在的值的类型
 
 场景：
@@ -296,7 +303,8 @@ let k: ColorKeyType = 'Red'
 ```
 
 
-1.  `object`类型
+14.  `object`类型
+
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
 **object vs Object vs {}**：
@@ -1757,6 +1765,9 @@ interface MySum {
 let mySum: MySum = function (x: number, y: number): number {
   return x + y;
 };
+
+// 类型别名
+type MySumT = (x: number, y: number) => number;
 
 // 对象方法
 interface AddT {
