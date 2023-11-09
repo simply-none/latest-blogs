@@ -330,6 +330,14 @@ export function sidebarUsageBooks() {
           link: "/usage-books/笔记/学习力：颠覆职场学习的高效方法",
         },
         {
+          text: "认知觉醒：伴随一生的学习方法论",
+          link: "/usage-books/笔记/认知觉醒：伴随一生的学习方法论",
+        },
+        {
+          text: "认知觉醒：开启自我改变的原动力",
+          link: "/usage-books/笔记/认知觉醒：开启自我改变的原动力",
+        },
+        {
           text: "ECMAScript入门",
           collapsed: true,
           items: [
