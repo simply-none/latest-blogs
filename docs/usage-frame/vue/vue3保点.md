@@ -590,6 +590,10 @@ nextTick(() => {
 
 ### 组合式函数
 
+感悟：
+- 使用组合式函数时，最好不要出现await等阻塞动作（即`await useXXX`），而应使用watch等代替
+- 封装组合式函数时，需考虑多种情况，比如若某次调用时，不需要执行onMounted的内容，则组合式函数不应该包含onMounted，而是使用方法代替，在需要使用的地方调用该方法即可
+
 定义：
 - 利用vue的组合式api和生命周期钩子封装复用有状态逻辑的函数
 - 函数参数可接收ref，和非ref值（unref：将ref变为非ref）
@@ -597,8 +601,9 @@ nextTick(() => {
 - 组合式函数不仅是为了复用，也能让代码组织更加清晰。能够基于逻辑问题将组件代码拆分成更小的功能函数
 
 注意：
-- 组合式函数在`script setup`/`setup()`中应始终被同步调用，在某些场景下也可以在onMounted这些生命周期钩子中调用，这是为了让vue能够确定当前正在被执行的到底是哪个实例，只有确定了当前组件实例，才能：将生命周期钩子等api注册在当前的组件上，将计算属性和监听器注册到当前组件上，以便在组件卸载时停止监听，避免内存泄露
-- script setup是唯一在调用await之后仍可调用组合式函数的地方，编译器会在异步操作之后自动恢复当前组件实例
+- 组合式函数在`script setup`/`setup()`中应始终被同步调用，在某些场景下也可以在onMounted这些生命周期钩子中被调用，这是为了让vue能够确定当前正在被执行的到底是哪个实例，只有确定了当前组件实例，才能：将生命周期钩子等api注册在当前的组件上，将计算属性和监听器注册到当前组件上，以便在组件卸载时停止监听，避免内存泄露
+- 🟢调用组合式函数时，最好不要使用await、promise.all。
+- `script setup`是唯一在调用await之后仍可调用组合式函数的地方（而setup函数不是），编译器会在异步操作之后自动恢复当前组件实例，然后去注册生命周期钩子、watch、computed
 - 组合式函数可接收一般变量和响应式变量（例如ref，可对响应式变量进行监听追踪）作为参数。最好在处理参数时对两者进行兼容，即处理响应式变量时，使用unref函数获取变量的值（响应式变量返回.value，否则原样返回）；同时若操作会根据响应式变量变化而变化，应该使用watch监听响应式变量，或者在watchEffect中调用unref解构响应式变量追踪其变化
 - 推荐在组合式函数中始终返回一个包含多个ref的普通非响应式对象（即组合式函数返回`{ a: ref(xx), b: ref(xx) }`），这样在对象被解构时，对象属性仍能保持响应性，因为返回一个响应式对象在对象解构时会丢失和组合式函数内状态的响应性连接。若希望以对象属性的方式使用组合式函数中返回的状态，可以在调用组合式函数的时候使用reactive进行包裹（例如`reactive(useFn())`）
 - 在组合式函数中执行相关操作时，应当在正确的生命周期中访问（比如访问dom，应该在挂载之后，即onMounted钩子中）；同时确保在onUnmounted中清除带来的某些操作（比如事件监听器）。
@@ -718,6 +723,74 @@ const { data, error, entry } = useFetch(url)
   <div v-else-if="data">当前数据：{{data}}</div>
   <div v-else>加载中...</div>
 </template>
+```
+
+```vue [在setup中使用await]
+<!-- 错误用法 -->
+<script>
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+
+export default {
+  async setup () {
+    const counter = ref(0)
+
+    watch(counter, () => console.log(counter.value))
+
+    // 此处能正常被调用
+    onMounted(() => console.log('mounted'))
+
+    // 异步操作：❌
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
+
+    // 此处未被调用
+    onUnmounted(() => console.log('unmounted'))
+
+    // 此处在组件销毁后还会生效（内存泄漏）
+    watch(counter, newCounter => {
+      console.log(newCounter)
+    })
+
+    return { counter }
+  },
+  mounted () {
+    // 0
+    console.log(this.counter)
+  }
+}
+</script>
+
+<!-- 正确用法 -->
+<script setup>
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+
+const counter = ref(0)
+
+watch(counter, () => console.log(counter.value))
+
+// 此处能正常被调用
+onMounted(() => console.log('mounted'))
+
+// 异步操作：✅
+// 异步操作后，编译器会自动还原激活实例上下文
+await new Promise(resolve => {
+  setTimeout(() => {
+    resolve()
+  }, 1000)
+})
+
+// 此处被调用
+onUnmounted(() => console.log('unmounted'))
+
+// 此处在组件销毁后还会失效
+watch(counter, newCounter => {
+  console.log(newCounter)
+})
+</script>
+
 ```
 
 ```vue [在选项式中使用组合式函数]
