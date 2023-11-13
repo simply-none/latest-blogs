@@ -82,7 +82,7 @@ typescript用法：
 // 使用InstanceType定义组件的类型
 import Child from './child.vue'
 import {ElImage} from 'element-plus'
-
+// 🛑
 type ElImageCtx = InstanceType<typeof ElImage>;
 type ChildCtx = InstanceType<typeof Child>;
 
@@ -92,7 +92,7 @@ let childRef = ref<ElImageCtx | null>(null)
 在组件中使用：
 - `<input ref="input"/>`结合`const input = ref(null)`一起使用
 - `<input :ref="el => {// 组件每次更新都会被调用，用于元素赋值}"/>`
-- ref也可直接作用在组件上，用于调用子组件expose（即`defineExpose({})`导出的）暴露的方法（只在使用了script setup时）
+- ref也可直接作用在组件上，用于调用子组件expose（即`defineExpose({})`导出的）暴露的方法（只在使用了script setup时），此时的ref代表的是子组件对象，调用子组件中的方法
 
 定义：
 - 创建一个响应式的引用，然后可以在任何地方起作用（通过value属性访问）
