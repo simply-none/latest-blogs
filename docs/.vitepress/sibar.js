@@ -338,6 +338,10 @@ export function sidebarUsageBooks() {
           link: "/usage-books/笔记/认知觉醒：开启自我改变的原动力",
         },
         {
+          text: "被讨厌的勇气：“自我启发之父”阿德勒的哲学课",
+          link: "/usage-books/笔记/被讨厌的勇气：“自我启发之父”阿德勒的哲学课",
+        },
+        {
           text: "ECMAScript入门",
           collapsed: true,
           items: [
