@@ -1,6 +1,6 @@
 {
   "name": "latest-blogs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=18"
   },
@@ -16,7 +16,7 @@
   "scripts": {
     "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git pull && git add . && git-cz",
-    "r": "standard-version --release-as minor && git push --follow-tags origin master",
+    "r": "standard-version --release-as patch && git push --follow-tags origin master",
     "prepare": "husky install",
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
