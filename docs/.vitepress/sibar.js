@@ -3,23 +3,59 @@ export function sidebarUsageFrame() {
     {
       text: "基础",
       items: [
-        { text: "技术栈工具链", link: "/usage-frame/基础/技术栈工具链" },
-        { text: "http知识点", link: "/usage-frame/基础/http知识点汇总" },
-        { text: "electron", link: "/usage-frame/基础/electron知识" },
-        { text: "JavaScript", link: "/usage-frame/基础/JavaScript知识点" },
-        { text: "CSS", link: "/usage-frame/基础/CSS知识点" },
-        { text: "css处理器", link: "/usage-frame/基础/CSS处理器" },
+        {
+          text: "技术栈工具链",
+          link: "/usage-frame/基础/技术栈工具链",
+        },
+        {
+          text: "http知识点",
+          link: "/usage-frame/基础/http知识点汇总",
+        },
+        {
+          text: "electron",
+          link: "/usage-frame/基础/electron知识",
+        },
+        {
+          text: "JavaScript",
+          link: "/usage-frame/基础/JavaScript知识点",
+        },
+        {
+          text: "CSS",
+          link: "/usage-frame/基础/CSS知识点",
+        },
+        {
+          text: "css处理器",
+          link: "/usage-frame/基础/CSS处理器",
+        },
       ],
     },
     {
       text: "Vue",
       items: [
-        { text: "Vue2", link: "/usage-frame/vue/Vue2知识点" },
-        { text: "ElementUI", link: "/usage-frame/vue/elementui知识点" },
-        { text: "vue3保点", link: "/usage-frame/vue/vue3保点" },
-        { text: "vue实战技巧", link: "/usage-frame/vue/vue实战技巧" },
-        { text: "pinia", link: "/usage-frame/vue/Pinia" },
-        { text: "vite", link: "/usage-frame/vue/vite" },
+        {
+          text: "Vue2",
+          link: "/usage-frame/vue/Vue2知识点",
+        },
+        {
+          text: "ElementUI",
+          link: "/usage-frame/vue/elementui知识点",
+        },
+        {
+          text: "vue3保点",
+          link: "/usage-frame/vue/vue3保点",
+        },
+        {
+          text: "vue实战技巧",
+          link: "/usage-frame/vue/vue实战技巧",
+        },
+        {
+          text: "pinia",
+          link: "/usage-frame/vue/Pinia",
+        },
+        {
+          text: "vite",
+          link: "/usage-frame/vue/vite",
+        },
         {
           text: "vue-router迁移指南",
           link: "/usage-frame/vue/vue-router迁移指南",
@@ -29,7 +65,10 @@ export function sidebarUsageFrame() {
     {
       text: "nodejs",
       items: [
-        { text: "NodeJs知识点", link: "/usage-frame/nodejs/nodejs知识点" },
+        {
+          text: "NodeJs知识点",
+          link: "/usage-frame/nodejs/nodejs知识点",
+        },
       ],
     },
     {
@@ -81,18 +120,38 @@ export function sidebarUsageFrame() {
         {
           text: "uniapp",
           collapsed: true,
-          items: [{ text: "速记", link: "/usage-frame/小程序/uniapp/速记" }],
+          items: [
+            {
+              text: "速记",
+              link: "/usage-frame/小程序/uniapp/速记",
+            },
+          ],
         },
       ],
     },
     {
       text: "react",
       items: [
-        { text: "基础知识", link: "/usage-frame/react/react" },
-        { text: "高级指引", link: "/usage-frame/react/高级指引" },
-        { text: "hooks", link: "/usage-frame/react/hooks" },
-        { text: "api", link: "/usage-frame/react/api" },
-        { text: "react生态", link: "/usage-frame/react/react生态" },
+        {
+          text: "基础知识",
+          link: "/usage-frame/react/react",
+        },
+        {
+          text: "高级指引",
+          link: "/usage-frame/react/高级指引",
+        },
+        {
+          text: "hooks",
+          link: "/usage-frame/react/hooks",
+        },
+        {
+          text: "api",
+          link: "/usage-frame/react/api",
+        },
+        {
+          text: "react生态",
+          link: "/usage-frame/react/react生态",
+        },
       ],
     },
     {
@@ -101,7 +160,10 @@ export function sidebarUsageFrame() {
         {
           text: "微前端",
           items: [
-            { text: "qiankun", link: "/usage-frame/前端综合/微前端/qiankun" },
+            {
+              text: "qiankun",
+              link: "/usage-frame/前端综合/微前端/qiankun",
+            },
           ],
         },
       ],
@@ -109,12 +171,30 @@ export function sidebarUsageFrame() {
     {
       text: "工具链",
       items: [
-        { text: "前端业务工具库", link: "/usage-frame/工具链/前端开发工具库" },
-        { text: "git", link: "/usage-frame/工具链/git操作" },
-        { text: "npm", link: "/usage-frame/工具链/npm操作" },
-        { text: "babel", link: "/usage-frame/工具链/babel操作" },
-        { text: "webpack", link: "/usage-frame/工具链/webpack操作" },
-        { text: "http请求", link: "/usage-frame/工具链/http请求" },
+        {
+          text: "前端业务工具库",
+          link: "/usage-frame/工具链/前端开发工具库",
+        },
+        {
+          text: "git",
+          link: "/usage-frame/工具链/git操作",
+        },
+        {
+          text: "npm",
+          link: "/usage-frame/工具链/npm操作",
+        },
+        {
+          text: "babel",
+          link: "/usage-frame/工具链/babel操作",
+        },
+        {
+          text: "webpack",
+          link: "/usage-frame/工具链/webpack操作",
+        },
+        {
+          text: "http请求",
+          link: "/usage-frame/工具链/http请求",
+        },
       ],
     },
   ];
@@ -141,7 +221,10 @@ export function sidebarUsageProject() {
           text: "项目npmrc规则解析",
           link: "/usage-project/配置文件/npmrc规则",
         },
-        { text: "eslintrc.js", link: "/usage-project/配置文件/eslintrc.js" },
+        {
+          text: "eslintrc.js",
+          link: "/usage-project/配置文件/eslintrc.js",
+        },
         {
           text: "vue.config.js",
           link: "/usage-project/配置文件/vue.config.js",
@@ -184,12 +267,18 @@ export function sidebarUsageProject() {
           text: "electron-vue依赖升级",
           link: "/usage-project/项目实践/electron-vue依赖升级",
         },
-        { text: "术语解释", link: "/usage-project/项目实践/术语解释" },
+        {
+          text: "术语解释",
+          link: "/usage-project/项目实践/术语解释",
+        },
         {
           text: "前端工程化实操",
           link: "/usage-project/项目实践/前端工程化实操",
         },
-        { text: "前端渲染pdf", link: "/usage-project/项目实践/前端渲染pdf" },
+        {
+          text: "前端渲染pdf",
+          link: "/usage-project/项目实践/前端渲染pdf",
+        },
         {
           text: "pdfjs本地化部署",
           link: "/usage-project/项目实践/pdfjs本地部署",
@@ -198,9 +287,18 @@ export function sidebarUsageProject() {
           text: "docker打包electron",
           link: "/usage-project/项目实践/Linux-docker打包electron",
         },
-        { text: "git提交脚本", link: "/usage-project/项目实践/gitCommit" },
-        { text: "nginx基础", link: "/usage-project/项目实践/nginx基础" },
-        { text: "前端缓存", link: "/usage-project/项目实践/前端缓存" },
+        {
+          text: "git提交脚本",
+          link: "/usage-project/项目实践/gitCommit",
+        },
+        {
+          text: "nginx基础",
+          link: "/usage-project/项目实践/nginx基础",
+        },
+        {
+          text: "前端缓存",
+          link: "/usage-project/项目实践/前端缓存",
+        },
       ],
     },
 
@@ -237,22 +335,72 @@ export function sidebarUsageInterview() {
     {
       text: "速记",
       items: [
-        { text: "随心所欲", link: "/usage-interview/quick-look" },
-        { text: "短笔记", link: "/usage-interview/short-note" },
-        { text: "零散的记录", link: "/usage-interview/零散的记录" },
-        { text: "快速记忆", link: "/usage-interview/z-quick-note" },
-        { text: "微前端需求解析", link: "/usage-interview/microapp" },
-        { text: "暂记内容", link: "/usage-interview/video.download" },
+        {
+          text: "手册",
+          collapsed: true,
+          // link: "/usage-interview/quick-look",
+          items: [
+            {
+              text: "html",
+              link: "/usage-interview/速记手册/html",
+            },
+            {
+              text: "css",
+              link: "/usage-interview/速记手册/css",
+            },
+            {
+              text: "javascript",
+              link: "/usage-interview/速记手册/javascript",
+            },
+            {
+              text: "vue",
+              link: "/usage-interview/速记手册/vue",
+            },
+            {
+              text: "前端综合",
+              link: "/usage-interview/速记手册/前端综合",
+            },
+          ],
+        },
+        {
+          text: "短笔记",
+          link: "/usage-interview/short-note",
+        },
+        {
+          text: "零散的记录",
+          link: "/usage-interview/零散的记录",
+        },
+        {
+          text: "快速记忆",
+          link: "/usage-interview/z-quick-note",
+        },
+        {
+          text: "微前端需求解析",
+          link: "/usage-interview/microapp",
+        },
+        {
+          text: "暂记内容",
+          link: "/usage-interview/video.download",
+        },
       ],
     },
   ];
 }
 export function sidebarUsageDicts() {
   return [
-    { text: "英语单词表", link: "/usage-dicts/dict" },
-    { text: "english", link: "/usage-dicts/english" },
+    {
+      text: "英语单词表",
+      link: "/usage-dicts/dict",
+    },
+    {
+      text: "english",
+      link: "/usage-dicts/english",
+    },
 
-    { text: "养生", link: "/usage-dicts/养生" },
+    {
+      text: "养生",
+      link: "/usage-dicts/养生",
+    },
   ];
 }
 
@@ -269,8 +417,14 @@ export function sidebarUsageWorkTool() {
           text: "在任何地方使用沙拉查词",
           link: "/usage-work-tool/效率提升工具/沙拉查词",
         },
-        { text: "工作技巧", link: "/usage-work-tool/效率提升工具/工作技巧" },
-        { text: "技能提升", link: "/usage-work-tool/效率提升工具/技能提升" },
+        {
+          text: "工作技巧",
+          link: "/usage-work-tool/效率提升工具/工作技巧",
+        },
+        {
+          text: "技能提升",
+          link: "/usage-work-tool/效率提升工具/技能提升",
+        },
         {
           text: "前端工具函数",
           link: "/usage-work-tool/效率提升工具/前端工具函数",
@@ -314,7 +468,12 @@ export function sidebarUsageWorkTool() {
   ];
 }
 export function sidebarUsageInspiration() {
-  return [{ text: "突发灵感", link: "/usage-inspiration/inspiration" }];
+  return [
+    {
+      text: "突发灵感",
+      link: "/usage-inspiration/inspiration",
+    },
+  ];
 }
 export function sidebarUsageBooks() {
   return [
@@ -445,7 +604,12 @@ export function sidebarUsageBooks() {
   ];
 }
 export function sidebarUsageDiaries() {
-  return [{ text: "记录5月29日以后的感想感悟", link: "/usage-diaries/感悟" }];
+  return [
+    {
+      text: "记录5月29日以后的感想感悟",
+      link: "/usage-diaries/感悟",
+    },
+  ];
 }
 
 export function sidebar() {
