@@ -342,6 +342,10 @@ export function sidebarUsageBooks() {
           link: "/usage-books/笔记/被讨厌的勇气：“自我启发之父”阿德勒的哲学课",
         },
         {
+          text: "基础设施即代码：云服务器管理",
+          link: "/usage-books/笔记/基础设施即代码：云服务器管理",
+        },
+        {
           text: "ECMAScript入门",
           collapsed: true,
           items: [
