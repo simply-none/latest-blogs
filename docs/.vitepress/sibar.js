@@ -590,6 +590,15 @@ export function sidebarUsageBooks() {
             },
           ],
         },
+        {
+          text: '英语学习',
+          items: [
+            {
+              text: '英语语法新思维 基础版（套装共3册）张满胜',
+              link: '/usage-books/笔记/english/英语语法新思维-基础版（套装共3册）张满胜',
+            },
+          ],
+        },
       ],
     },
     {

@@ -29,7 +29,7 @@ export default defineConfig({
     lastUpdated: {
       text: "上次更新",
     },
-    outline: [1, 3],
+    outline: [1, 4],
     outlineTitle: "本页目录",
     docFooter: {
       prev: "上一篇",
