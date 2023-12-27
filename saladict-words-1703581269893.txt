@@ -1,0 +1,415 @@
+|Tic-Tac-Toe |Tutorial: Tic-Tac-Toe|2023/12/26|
+
+|nest |How to create and nest components|2023/12/26|
+
+|sequence |We can even add a transition delay to the nested element on enter, which creates a staggered enter animation sequence:|2023/12/26|
+
+|Duration |Nested Transitions and Explicit Transition Durations ​|2023/12/26|
+
+|A transition can be named via the name prop |A transition can be named via the name prop:|2023/12/26|
+
+|frame |If no CSS transitions / animations are detected and no JavaScript hooks are provided, the DOM operations for insertion and/or removal will be executed on the browser's next animation frame.|2023/12/26|
+
+|detected |If no CSS transitions / animations are detected and no JavaScript hooks are provided, the DOM operations for insertion and/or removal will be executed on the browser's next animation frame.|2023/12/26|
+
+|appropriate |If it does, a number of CSS transition classes will be added / removed at appropriate timings.|2023/12/26|
+
+|sniff |Vue will automatically sniff whether the target element has CSS transitions or animations applied.|2023/12/26|
+
+|dot-delimited |This function will receive a dot-delimited key string, which we will use to look up the translated string in the user-provided options.|2023/12/26|
+
+|scenario |There is no strictly defined scope for a plugin, but common scenarios where plugins are useful include:|2023/12/26|
+
+|potentially |Note that components can potentially have more than one root node.|2023/12/26|
+
+|manipulation |Custom directives should only be used when the desired functionality can only be achieved via direct DOM manipulation.|2023/12/26|
+
+|shipped |In addition to the default set of directives shipped in core (like v-model or v-show), Vue also allows you to register your own custom directives.|2023/12/26|
+
+|fine-grained |However, Vue composables are based on Vue's fine-grained reactivity system, which is fundamentally different from React hooks' execution model.|2023/12/26|
+
+|indeed |Composition API was in part inspired by React hooks, and Vue composables are indeed similar to React hooks in terms of logic composition capabilities.|2023/12/26|
+
+|overhead |When used across an entire application, the amount of extra component instances created by the renderless component pattern can become a noticeable performance overhead.|2023/12/26|
+
+|noticeable |When used across an entire application, the amount of extra component instances created by the renderless component pattern can become a noticeable performance overhead.|2023/12/26|
+
+|incur |The main advantage of composables over renderless components is that composables do not incur the extra component instance overhead.|2023/12/26|
+
+|interact |Implicit cross-mixin communication: multiple mixins that need to interact with one another have to rely on shared property keys, making them implicitly coupled.|2023/12/26|
+
+|Implicit |Implicit cross-mixin communication: multiple mixins that need to interact with one another have to rely on shared property keys, making them implicitly coupled.|2023/12/26|
+
+|potentially |Namespace collisions: multiple mixins from different authors can potentially register the same property keys, causing namespace collisions.|2023/12/26|
+
+|collision |Namespace collisions: multiple mixins from different authors can potentially register the same property keys, causing namespace collisions.|2023/12/26|
+
+|implementation |Unclear source of properties: when using many mixins, it becomes unclear which instance property is injected by which mixin, making it difficult to trace the implementation and understand the component's behavior.|2023/12/26|
+
+|drawback |There are three primary drawbacks to mixins:|2023/12/26|
+
+|concern |Composition API gives you the full flexibility to organize your component code into smaller functions based on logical concerns:|2023/12/26|
+
+|navigate |As the complexity of your components grow, you may end up with components that are too large to navigate and reason about.|2023/12/26|
+
+|reason about |As the complexity of your components grow, you may end up with components that are too large to navigate and reason about.|2023/12/26|
+
+|extracted |Composables can be extracted not only for reuse, but also for code organization.|2023/12/26|
+
+|disposed |Computed properties and watchers can be linked to it, so that they can be disposed when the instance is unmounted to prevent memory leaks.|2023/12/26|
+
+|necessary |Access to an active component instance is necessary so that:|2023/12/26|
+
+|Restriction |Usage Restrictions ​|2023/12/26|
+
+|retaining |This allows it to be destructured in components while retaining reactivity:|2023/12/26|
+
+|convention |The recommended convention is for composables to always return a plain, non-reactive object containing multiple refs.|2023/12/26|
+
+|exclusively |You have probably noticed that we have been exclusively using ref() instead of reactive() in composables.|2023/12/26|
+
+|concrete |The useFetch() implementation discussed earlier provides a concrete example of a composable that accepts refs, getters and plain values as input argument.|2023/12/26|
+
+|normalized |import { toValue } from 'vue' function useFeature(maybeRefOrGetter) { // If maybeRefOrGetter is a ref or a getter, // its normalized value will be returned.|2023/12/26|
+
+|handy |The toValue() utility function will come in handy for this purpose:|2023/12/26|
+
+|utility |The toValue() utility function will come in handy for this purpose:|2023/12/26|
+
+|convention |It is a convention to name composable functions with camelCase names that start with "use".|2023/12/26|
+
+|purpose |Here's the updated version of useFetch(), with an artificial delay and randomized error for demo purposes.|2023/12/26|
+
+|artificial |Here's the updated version of useFetch(), with an artificial delay and randomized error for demo purposes.|2023/12/26|
+
+|tedious |It would be tedious to have to repeat this pattern in every component that needs to fetch data.|2023/12/26|
+
+|interfere |Each component instance calling useMouse() will create its own copies of x and y state so they won't interfere with one another.|2023/12/26|
+
+|gestures |In real-world scenarios, it could also be more complex logic such as touch gestures or connection status to a database.|2023/12/26|
+
+|scenarios |In real-world scenarios, it could also be more complex logic such as touch gestures or connection status to a database.|2023/12/26|
+
+|involve |By contrast, stateful logic involves managing state that changes over time.|2023/12/26|
+
+|By contrast |By contrast, stateful logic involves managing state that changes over time.|2023/12/26|
+
+|extract |For example, we may need to format dates in many places, so we extract a reusable function for that.|2023/12/26|
+
+|encapsulate |In the context of Vue applications, a "composable" is a function that leverages Vue's Composition API to encapsulate and reuse stateful logic.|2023/12/26|
+
+|leverage |In the context of Vue applications, a "composable" is a function that leverages Vue's Composition API to encapsulate and reuse stateful logic.|2023/12/26|
+
+|Composable ||2023/12/26|
+
+|documented |The interaction between <Suspense> and async components is documented in the dedicated chapter for <Suspense>.|2023/12/25|
+
+|interaction |The interaction between <Suspense> and async components is documented in the dedicated chapter for <Suspense>.|2023/12/25|
+
+|Suspense |Using with Suspense ​|2023/12/25|
+
+|flicker |There is a default 200ms delay before the loading component is shown - this is because on fast networks, an instant loading state may get replaced too fast and end up looking like a flicker.|2023/12/25|
+
+|seamlessly |In addition, it will pass along any props and slots to the inner component, so you can use the async wrapper to seamlessly replace the original component while achieving lazy loading.|2023/12/25|
+
+|collision |If you are working in a large application with many dependency providers, or you are authoring components that are going to be used by other developers, it is best to use Symbol injection keys to avoid potential collisions.|2023/12/25|
+
+|co-located |This ensures that the provided state and its possible mutations are co-located in the same component, making it easier to maintain in the future.|2023/12/25|
+
+|unnecessary |To avoid unnecessary computation or side effects in case the optional value is not used, we can use a factory function for creating the default value:|2023/12/25|
+
+|retain |This allows the injector component to retain the reactivity connection to the provider component.|2023/12/25|
+
+|establish |Providing reactive values allows the descendant components using the provided value to establish a reactive connection to the provider component.|2023/12/25|
+
+|descendants |A parent component can serve as a dependency provider for all its descendants.|2023/12/25|
+
+|affected |If there is a longer parent chain, more components would be affected along the way.|2023/12/25|
+
+|Drilling |Prop Drilling ​|2023/12/25|
+
+|incurring |While an interesting pattern, most of what can be achieved with Renderless Components can be achieved in a more efficient fashion with Composition API, without incurring the overhead of extra component nesting.|2023/12/25|
+
+|efficient |While an interesting pattern, most of what can be achieved with Renderless Components can be achieved in a more efficient fashion with Composition API, without incurring the overhead of extra component nesting.|2023/12/25|
+
+|delegating |The <FancyList> use case we discussed above encapsulates both reusable logic (data fetching, pagination etc.) and visual output, while delegating part of the visual output to the consumer component via scoped slots.|2023/12/25|
+
+|encapsulates |The <FancyList> use case we discussed above encapsulates both reusable logic (data fetching, pagination etc.) and visual output, while delegating part of the visual output to the consumer component via scoped slots.|2023/12/25|
+
+|capsulate |Here's an example: imagine a <FancyList> component that renders a list of items - it may encapsulate the logic for loading remote data, using the data to display a list, or even advanced features like pagination or infinite scrolling.|2023/12/25|
+
+|ambiguity |This is to avoid any ambiguity about the scope of the props of the default slot.|2023/12/25|
+
+|reserved |Note the name of a slot won't be included in the props because it is reserved - so the resulting headerProps would be { message: 'hello' }.|2023/12/25|
+
+|analogy |Again, it may help you understand named slots better using the JavaScript function analogy:|2023/12/25|
+
+|fallback |There are cases when it's useful to specify fallback (i.e.|2023/12/25|
+
+|mechanism |Vue components' slot mechanism is inspired by the native Web Component <slot> element, but with additional capabilities that we will see later.|2023/12/25|
+
+|Outlet |Slot Content and Outlet ​|2023/12/25|
+
+|Alternatively |Alternatively, you can use onUpdated() to perform side effects with the latest attrs on each update.|2023/12/25|
+
+|suppressed |The warning will be suppressed if $attrs is explicitly bound:|2023/12/25|
+
+|preserve |Unlike props, fallthrough attributes preserve their original casing in JavaScript, so an attribute like foo-bar needs to be accessed as $attrs['foo-bar'].|2023/12/25|
+
+|scenario |The common scenario for disabling attribute inheritance is when attributes need to be applied to other elements besides the root node.|2023/12/25|
+
+|refactored |If a component renders another component as its root node, for example, we refactored <MyButton> to render a <BaseButton> as its root:|2023/12/25|
+
+|fallthrough ||2023/12/25|
+
+|fire |In the code below we will capitalize the string whenever the <input /> element fires an input event.|2023/12/25|
+
+|via |Modifiers added to a component v-model will be provided to the component via the modelModifiers prop.|2023/12/25|
+
+|leveraging |By leveraging the ability to target a particular prop and event as we learned before with v-model arguments, we can now create multiple v-model bindings on a single component instance.|2023/12/25|
+
+|equivalent |Under the hood, the template compiler expands v-model to the more verbose equivalent for us.|2023/12/25|
+
+|verbose |Under the hood, the template compiler expands v-model to the more verbose equivalent for us.|2023/12/25|
+
+|revisit |First let's revisit how v-model is used on a native element:|2023/12/25|
+
+|two-way ||2023/12/25|
+
+|either...or ||2023/12/25|
+
+|former |Using props.onEvent has a different behaviour than using emit('event'), as the former will pass only handle the property based listener (either @event or :on-event)|2023/12/25|
+
+|assigned |To add validation, the event is assigned a function that receives the arguments passed to the this.$emitemit call and returns a boolean to indicate whether the event is valid or not.|2023/12/25|
+
+|indicate |To add validation, the event is assigned a function that receives the arguments passed to the this.$emitemit call and returns a boolean to indicate whether the event is valid or not.|2023/12/25|
+
+|assigned |To add validation, the event is assigned a function that receives the arguments passed to the this.$emitemit call and returns a boolean to indicate whether the event is valid or not.|2023/12/25|
+
+|indicate |To add validation, the event is assigned a function that receives the arguments passed to the this.$emitemit call and returns a boolean to indicate whether the event is valid or not.|2023/12/25|
+
+|document |Although optional, it is recommended to define all emitted events in order to better document how a component should work.|2023/12/25|
+
+|equivalent |The $emit method that we used in the <template> isn't accessible within the <script setup> section of a component, but defineEmits() returns an equivalent function that we can use instead:|2023/12/25|
+
+|forwarded |All extra arguments passed to $emit() after the event name will be forwarded to the listener.|2023/12/25|
+
+|bubble |Unlike native DOM events, component emitted events do not bubble.|2023/12/25|
+
+|case |Like components and props, event names provide an automatic case transformation.|2023/12/25|
+
+|edge |However, there is an edge when both String and Boolean are allowed - the Boolean casting rule only applies if Boolean appears before String:|2023/12/25|
+
+|mimic |Props with Boolean type have special casting rules to mimic the behavior of native boolean attributes.|2023/12/25|
+
+|casting |When a prop is declared to allow multiple types, the casting rules for Boolean will also be applied.|2023/12/25|
+
+|produce |When prop validation fails, Vue will produce a console warning (if using the development build).|2023/12/25|
+
+|specified |If a default value is specified, it will be used if the resolved prop value is undefined - this includes both when the prop is absent, or an explicit undefined value is passed.|2023/12/25|
+
+|absent |An absent optional prop other than Boolean will have undefined value.|2023/12/25|
+
+|intended |This is especially useful when developing a component that is intended to be used by others.|2023/12/25|
+
+|requirement |Components can specify requirements for their props, such as the types you've already seen.|2023/12/25|
+
+|coupled |As a best practice, you should avoid such mutations unless the parent and child are tightly coupled by design.|2023/12/25|
+
+|tightly |As a best practice, you should avoid such mutations unless the parent and child are tightly coupled by design.|2023/12/25|
+
+|potentially |The main drawback of such mutations is that it allows the child component to affect parent state in a way that isn't obvious to the parent component, potentially making it more difficult to reason about the data flow in the future.|2023/12/25|
+
+|drawback |The main drawback of such mutations is that it allows the child component to affect parent state in a way that isn't obvious to the parent component, potentially making it more difficult to reason about the data flow in the future.|2023/12/25|
+
+|prevent |This is because in JavaScript objects and arrays are passed by reference, and it is unreasonably expensive for Vue to prevent such mutations.|2023/12/25|
+
+|expensive |This is because in JavaScript objects and arrays are passed by reference, and it is unreasonably expensive for Vue to prevent such mutations.|2023/12/25|
+
+|unreasonably |This is because in JavaScript objects and arrays are passed by reference, and it is unreasonably expensive for Vue to prevent such mutations.|2023/12/25|
+
+|afterwards |The prop is used to pass in an initial value; the child component wants to use it as a local data property afterwards.|2023/12/25|
+
+|mutating |This prevents child components from accidentally mutating the parent's state, which can make your app's data flow harder to understand.|2023/12/25|
+
+|accidentally |This prevents child components from accidentally mutating the parent's state, which can make your app's data flow harder to understand.|2023/12/25|
+
+|prevents |This prevents child components from accidentally mutating the parent's state, which can make your app's data flow harder to understand.|2023/12/25|
+
+|one-way-down ||2023/12/25|
+
+|one-way ||2023/12/25|
+
+|imply |-- Including the prop with no value will imply `true`.|2023/12/25|
+
+|So far |So far, you've seen props passed as static values, like in:|2023/12/25|
+
+|practical |However, there isn't as much practical benefit in using camelCase when passing props, so we choose to follow each language's conventions.|2023/12/25|
+
+|Technically |Technically, you can also use camelCase when passing props to a child component (except in in-DOM templates).|2023/12/25|
+
+|camelCase |We declare long prop names using camelCase because this avoids having to use quotes when using them as property keys, and allows us to reference them directly in template expressions because they are valid JavaScript identifiers:|2023/12/25|
+
+|Casing |Prop Name Casing ​|2023/12/25|
+
+|annotation |If you are using TypeScript with <script setup>, it's also possible to declare props using pure type annotations:|2023/12/25|
+
+|document |This not only documents your component, but will also warn other developers using your component in the browser console if they pass the wrong type.|2023/12/25|
+
+|In addition to |In addition to declaring props using an array of strings, we can also use the object syntax:|2023/12/25|
+
+|fallthrough attributes |Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in its dedicated section).|2023/12/25|
+
+|dedicated ||2023/12/25|
+
+|fallthrough |Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in its dedicated section).|2023/12/25|
+
+|so that |Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in its dedicated section).|2023/12/25|
+
+|Vue components require explicit props declaration |Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in its dedicated section).|2023/12/25|
+
+|regardless of |This allows us to use the same JavaScript component registration code regardless of template source.|2023/12/25|
+
+|via |This means a component registered as MyComponent can be referenced in the template via both <MyComponent> and <my-component>.|2023/12/25|
+
+|in-DOM |However, as discussed in in-DOM Template Parsing Caveats, PascalCase tags are not usable in in-DOM templates.|2023/12/25|
+
+|discussed |However, as discussed in in-DOM Template Parsing Caveats, PascalCase tags are not usable in in-DOM templates.|2023/12/25|
+
+|differentiates |It also differentiates Vue components from custom elements (web components).|2023/12/25|
+
+|auto-completion. |It also helps IDEs with auto-completion.|2023/12/25|
+
+|not any |In this case, ComponentA will be made available to the current component only, not any of its child or descendant components.|2023/12/25|
+
+|not any of |In this case, ComponentA will be made available to the current component only, not any of its child or descendant components.|2023/12/25|
+
+|descendant |Note that locally registered components are not also available in descendant components.|2023/12/25|
+
+|shorthand |The above example is using the ES2015 property shorthand and is equivalent to:|2023/12/25|
+
+|implementation |For each property in the components object, the key will be the registered name of the component, while the value will contain the implementation of the component.|2023/12/25|
+
+|registered |For each property in the components object, the key will be the registered name of the component, while the value will contain the implementation of the component.|2023/12/25|
+
+|long-term |This can affect long-term maintainability similar to using too many global variables.|2023/12/25|
+
+|explicit |Global registration makes dependency relationships less explicit in large applications.|2023/12/25|
+
+|drawbacks ||2023/12/25|
+
+|encapsulate |This is very similar to how we nest native HTML elements, but Vue implements its own component model that allows us to encapsulate custom content and logic in each component.|2023/12/22|
+
+|leak |The key here is that the watcher must be created synchronously: if the watcher is created in an async callback, it won't be bound to the owner component and must be stopped manually to avoid memory leaks.|2023/12/22|
+
+|efficient |In addition, if you need to watch several properties in a nested data structure, watchEffect() may prove more efficient than a deep watcher, as it will only track the properties that are used in the callback, rather than recursively tracking all of them.|2023/12/22|
+
+|Eager |Eager Watchers ​|2023/12/22|
+
+|expensive |Deep watch requires traversing all nested properties in the watched object, and can be expensive when used on large data structures.|2023/12/22|
+
+|Caution |Use with Caution|2023/12/22|
+
+|implicitly |When you call watch() directly on a reactive object, it will implicitly create a deep watcher - the callback will be triggered on all nested mutations:|2023/12/22|
+
+|derived |Computed properties allow us to declaratively compute derived values.|2023/12/22|
+
+|external |onMounted() can be called in an external function as long as the call stack is synchronous and originates from within setup().|2023/12/22|
+
+|associate |When calling onMounted, Vue automatically associates the registered callback function with the current active component instance.|2023/12/22|
+
+|hook ||2023/12/22|
+
+|typecast |If you want user input to be automatically typecast as a number, you can add the number modifier to your v-model managed inputs:|2023/12/22|
+
+|demonstrated |It is therefore recommended to provide a disabled option with an empty value, as demonstrated in the example above.|2023/12/22|
+
+|fire ||2023/12/22|
+
+|interpolation |Note that interpolation inside <textarea> won't work.|2023/12/22|
+
+|composition |For languages that require an IME (Chinese, Japanese, Korean etc.), you'll notice that v-model doesn't get updated during IME composition.|2023/12/22|
+
+|cumbersome |It can be cumbersome to manually wire up value bindings and change event listeners:|2023/12/22|
+
+|corresponding ||2023/12/22|
+
+|restrict |These modifiers restrict the handler to events triggered by a specific mouse button.|2023/12/22|
+
+|correspond |You can use the following modifiers to trigger mouse or keyboard event listeners only when the corresponding modifier key is pressed:|2023/12/22|
+
+|via |You can directly use any valid key names exposed via KeyboardEvent.key as modifiers by converting them to kebab-case.|2023/12/22|
+
+|mirror |The .capture, .once, and .passive modifiers mirror the options of the native addEventListener method:|2023/12/22|
+
+|To address this problem |To address this problem, Vue provides event modifiers for v-on.|2023/12/22|
+
+|address |To address this problem, Vue provides event modifiers for v-on.|2023/12/22|
+
+|purely |Although we can do this easily inside methods, it would be better if the methods can be purely about data logic rather than having to deal with DOM event details.|2023/12/22|
+
+|common |It is a very common need to call event.preventDefault() or event.stopPropagation() inside event handlers.|2023/12/22|
+
+|dispatch |A method handler automatically receives the native DOM Event object that triggers it - in the example above, we are able to access the element dispatching the event via event.target.tagName.|2023/12/22|
+
+|feasible |The logic for many event handlers will be more complex though, and likely isn't feasible with inline handlers.|2023/12/22|
+
+|points to |Method handlers: A property name or path that points to a method defined on the component.|2023/12/22|
+
+|executed |Inline handlers: Inline JavaScript to be executed when the event is triggered (similar to the native onclick attribute).|2023/12/22|
+
+|triggered |We can use the v-on directive, which we typically shorten to the @ symbol, to listen to DOM events and run some JavaScript when they're triggered.|2023/12/22|
+
+|typically ||2023/12/22|
+
+|precedence |It's not recommended to use v-if and v-for on the same element due to implicit precedence.|2023/12/21|
+
+|In comparison |In comparison, v-show is much simpler - the element is always rendered regardless of initial condition, with CSS-based toggling.|2023/12/21|
+
+|serves |In this case we can use v-if on a <template> element, which serves as an invisible wrapper.|2023/12/21|
+
+|indicate |You can use the v-else directive to indicate an "else block" for v-if:|2023/12/21|
+
+|conditionally |The directive v-if is used to conditionally render a block.|2023/12/21|
+
+|derived |The returned value from a computed property is derived state.|2023/12/21|
+
+|side-effect |Getters should be side-effect free ​|2023/12/21|
+
+|accordingly |Now when you run fullName.value = 'John Doe', the setter will be invoked and firstName and lastName will be updated accordingly.|2023/12/21|
+
+|In comparison |In comparison, a method invocation will always run the function whenever a re-render happens.|2023/12/21|
+
+|approach |For the end result, the two approaches are indeed exactly the same.|2023/12/21|
+
+|invoking |You may have noticed we can achieve the same result by invoking a method in the expression:|2023/12/21|
+
+|aware |Vue is aware that the computation of publishedBooksMessage depends on author.books, so it will update any bindings that depend on publishedBooksMessage when author.books changes.|2023/12/21|
+
+|cluttered |At this point, the template is getting a bit cluttered.|2023/12/21|
+
+|depending on |And we want to display different messages depending on if author already has some books or not:|2023/12/21|
+
+|bloated |Putting too much logic in your templates can make them bloated and hard to maintain.|2023/12/21|
+
+|Caveat |Caveat in Arrays and Collections ​|2023/12/21|
+
+|Details |Additional Ref Unwrapping Details ​|2023/12/21|
+
+|via ||2023/12/21|
+
+|mutation |The difference is that Vue is able to intercept the access and mutation of all properties of a reactive object for reactivity tracking and triggering.|2023/12/21|
+
+|The difference is that Vue is able to intercept the access and mutation of all properties of a reactive object for reactivity tracking and triggering. |The difference is that Vue is able to intercept the access and mutation of all properties of a reactive object for reactivity tracking and triggering.|2023/12/21|
+
+|Further |Further reading:|2023/12/21|
+
+|primitive |Non-primitive values are turned into reactive proxies via reactive(), which is discussed below.|2023/12/21|
+
+|This means you can expect changes to be detected even when you mutate nested objects or arrays |This means you can expect changes to be detected even when you mutate nested objects or arrays:|2023/12/21|
+
+|hold |Refs can hold any value type, including deeply nested objects, arrays, or JavaScript built-in data structures like Map.|2023/12/21|
+
+|mutated |Later on, when a ref is mutated, it will trigger a re-render for components that are tracking it.|2023/12/21|
+
+|intercept |However, we can intercept the get and set operations of an object's properties using getter and setter methods.|2023/12/21|
