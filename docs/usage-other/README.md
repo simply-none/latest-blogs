@@ -1,9 +1,0 @@
-- 其他工作相关
-  - [前端工具函数](docs/usage-other/前端工具函数.md)
-  - [vscode技巧](docs/usage-other/vscode技巧.md)
-  - [前端渲染pdf](docs/usage-other/前端渲染pdf.md)
-  - [pdfjs本地化部署](docs/usage-other/pdfjs本地部署.md)
-  - [docker打包electron](docs/usage-other/Linux-docker打包electron.md)
-  - [git提交脚本](docs/usage-other/gitCommit.md)
-  - [nginx基础](docs/usage-tool/nginx基础.md)
-  - [前端缓存](docs/usage-tool/前端缓存.md)

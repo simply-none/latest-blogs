@@ -1,6 +1,9 @@
 {
   "name": "latest-blogs",
-  "version": "3.0.0",
+  "version": "0.1.1",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/simply-none/latest-blogs.git"
@@ -13,7 +16,7 @@
   "scripts": {
     "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git pull && git add . && git-cz",
-    "r": "standard-version && git push --follow-tags origin master",
+    "r": "standard-version --release-as patch && git push --follow-tags origin master",
     "prepare": "husky install",
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
@@ -39,7 +42,7 @@
     "husky": "^8.0.3",
     "inquirer": "^8.2.5",
     "standard-version": "^9.5.0",
-    "vitepress": "^1.0.0-beta.7",
+    "vitepress": "^1.0.0-rc.20",
     "vue-router": "^4.2.2"
   },
   "standard-version": {

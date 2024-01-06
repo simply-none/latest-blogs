@@ -6,9 +6,14 @@ import {
 import { nav } from "./nav";
 import { sidebar } from "./sibar";
 
-
-// https://skewb.gitee.io/vitepress/reference/site-config
 export default defineConfig({
+  markdown: {
+    lineNumbers: true,
+    theme: {
+      light: 'github-dark-dimmed',
+      dark: 'material-theme-darker'
+    }
+  },
   base: "/latest-blogs/",
   title: "璎耜",
   description: "Vite 和 Vue 强力驱动的静态网站生成器",
@@ -16,12 +21,15 @@ export default defineConfig({
   ignoreDeadLinks: true,
   lastUpdated: true,
   themeConfig: {
-    // https://skewb.gitee.io/vitepress/reference/default-theme-config
+    editLink: {
+      text: '编辑此页面',
+      pattern: 'https://github.com/simply-none/latest-blogs/edit/master/docs/:path'
+    },
     logo: "/icon.svg",
     lastUpdated: {
       text: "上次更新",
     },
-    outline: [1, 3],
+    outline: [1, 4],
     outlineTitle: "本页目录",
     docFooter: {
       prev: "上一篇",
@@ -46,31 +54,9 @@ export default defineConfig({
         apiKey: '62038b1e84670a59365b0dfc75595345',
         indexName: 'blogs',
         maxResultsPerGroup: 100,
-        locales: {
-          'zh-cn': {
-            searchParameters: {
-              page: 100,
-              hitsPerpage: 100,
-            }
-          },
-          'zh': {
-            searchParameters: {
-              page: 100,
-              hitsPerpage: 100,
-            }
-          },
-          'en-us': {
-            searchParameters: {
-              page: 100,
-              hitsPerpage: 100,
-            }
-          },
-          'en': {
-            searchParameters: {
-              page: 100,
-              hitsPerpage: 100,
-            }
-          }
+        hitsPerPage: 100,
+        searchParameters: {
+          hitsPerPage: 100
         },
         placeholder: '搜索文档',
         translations: {
@@ -117,22 +103,8 @@ export default defineConfig({
   lang: "zh-cn",
   vite: {
     esbuild: {
-      // exclude: '@vue/reactivity'
     },
     plugins: [
-      // pagefindPlugin({
-      //   btnPlaceholder: "搜索",
-      //   placeholder: "搜索文档",
-      //   emptyText: "空空如也",
-      //   heading: "共: {{searchResult}} 条结果",
-      //   customSearchQuery(input) {
-      //     // 将搜索的每个中文单字两侧加上空格
-      //     return input
-      //       .replace(/[\u4e00-\u9fa5]/g, " $& ")
-      //       .replace(/\s+/g, " ")
-      //       .trim();
-      //   },
-      // }),
     ],
   },
 });

@@ -57,7 +57,7 @@ onMounted(() => {
             :underline="false"
             >GitHub</el-link
           >
-          <el-link href="./usage-frame/技术栈工具链" :underline="false">Getting Started</el-link>
+          <el-link href="./README" :underline="false">Getting Started</el-link>
         </p>
       </div>
     </section>

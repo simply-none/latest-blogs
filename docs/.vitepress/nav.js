@@ -1,71 +1,56 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pkg = require("../../package.json");
+import { sidebar } from "./sibar";
+
+function getFirstRoute (menu) {
+  return sidebar()[menu][0].link || sidebar()[menu][0].items[0].link || sidebar()[menu][0].items[0].items[0].link
+}
 
 export function nav() {
   return [
-    { text: "指南", link: "/usage-frame/README", activeMatch: "/usage-frame/" },
+    { text: "指南", link: getFirstRoute("/usage-frame/"), activeMatch: "/usage-frame/" },
     {
-      text: "文章集锦",
-      link: "/usage-article/README",
-      activeMatch: "/usage-article/",
+      text: "笔记",
+      link: getFirstRoute("/usage-books/"),
+      activeMatch: "/usage-books/",
     },
     {
       text: "项目相关",
-      link: "/usage-project/README",
+      link: getFirstRoute("/usage-project/"),
       activeMatch: "/usage-project/",
     },
     {
-      text: "工具使用",
-      link: "/usage-tool/README",
-      activeMatch: "/usage-tool/",
+      text: "效率提升工具",
+      link: getFirstRoute("/usage-work-tool/"),
+      activeMatch: "/usage-work-tool/",
     },
     {
       text: "速记",
-      link: "/usage-interview/README",
+      link: getFirstRoute("/usage-interview/"),
       activeMatch: "/usage-interview/",
     },
     {
-      text: pkg.version,
+      text: "关于我",
+      link: "/README",
+      activeMatch: "/README",
+    },
+    {
+      text: 'v' + pkg.version,
       items: [
         {
           text: "单词表",
-          link: "/usage-dicts/README",
+          link: getFirstRoute("/usage-dicts/"),
           activeMatch: "/usage-dicts/",
         },
         {
-          text: "代码片段",
-          link: "/usage-code-frames/README",
-          activeMatch: "/usage-code-frames/",
-        },
-        {
-          text: "配置文件",
-          link: "/usage-config/README",
-          activeMatch: "/usage-config/",
-        },
-        {
-          text: "其他工作相关",
-          link: "/usage-other/README",
-          activeMatch: "/usage-other/",
-        },
-        {
-          text: "效率提升工具",
-          link: "/usage-work-tool/README",
-          activeMatch: "/usage-work-tool/",
-        },
-        {
           text: "突发灵感",
-          link: "/usage-inspiration/README",
+          link: getFirstRoute("/usage-inspiration/"),
           activeMatch: "/usage-inspiration/",
         },
         {
-          text: "usage-books",
-          link: "/usage-books/README",
-          activeMatch: "/usage-books/",
-        },
-        {
           text: "随感",
-          link: "/usage-diaries/README",
+          link: getFirstRoute("/usage-diaries/"),
           activeMatch: "/usage-diaries/",
         },
       ],

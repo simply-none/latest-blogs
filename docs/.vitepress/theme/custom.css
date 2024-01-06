@@ -2,7 +2,12 @@
   --vcp-c-brand: #cdcdcd;
 }
 
-.algolia [command-item][aria-selected='true'], .algolia [command-item]:hover {
+.DocSearch-Hits mark {
+  background: red;
+}
+
+.algolia [command-item][aria-selected="true"],
+.algolia [command-item]:hover {
   background: var(--vcp-c-brand);
   color: brown;
 }
@@ -10,4 +15,36 @@
 .search-dialog div[command-item] mark {
   background: yellow;
   color: red;
+}
+
+html:not(.dark) .vp-doc [class*="language-"] pre {
+  background: #292b30;
+}
+
+html.dark .vp-doc [class*="language-"] pre {
+  background: #292b30;
+}
+
+#VPSidebarNav .VPSidebarItem.is-active .text {
+  font-weight: 900;
+}
+
+html:not(.dark) .vp-doc .line-numbers-wrapper {
+  background: #292b30;
+  color: #9b9b9b;
+  border-right: #575757 1px solid;
+}
+
+html:not(.dark) .vp-doc [class*='language-'] > button.copy {
+  border: 1px solid #72798b;
+  background-color: #292b30;
+  background-image: var(--vp-icon-copy);
+}
+
+html:not(.dark) .vp-doc [class*='language-'] > button.copy.copied, .vp-doc [class*='language-'] > button.copy:hover.copied {
+  background-color: #292b30;
+}
+
+html:not(.dark) .vp-doc [class*='language-'] > span.lang {
+  color: rgb(166 166 189 / 56%);
 }
