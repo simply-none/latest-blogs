@@ -30,6 +30,34 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
 ## 常用操作
 
+### git提交失败
+
+失败信息有：
+```bash
+fatal: unable to access 'https://github.com/simply-none/redict.git/': HTTP/2 stream 1 was not closed cleanly before end of the underlying stream
+
+unable to access 'https://github.com/simply-none/redict.git/': Failed to connect to github.com port 443 after 21442 ms: Timed out
+
+unable to access 'https://github.com/simply-none/redict.git/': Proxy CONNECT aborted
+
+```
+
+以上失败信息，可通过设置代理，删除代理，挂载代理生效
+
+
+```bash
+# 设置代理：
+git config --global http.proxy http://127.0.0.1:[代理端口号]
+git config --global https.proxy https://127.0.0.1:[代理端口号]
+
+# 删除代理
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+# 查看代理
+git config --global -l
+```
+
 ### 零散的
 
 - 对当前提交打标签：`git tag <version_name>`
