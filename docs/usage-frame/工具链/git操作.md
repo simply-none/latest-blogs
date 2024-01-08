@@ -44,7 +44,6 @@ unable to access 'https://github.com/simply-none/redict.git/': Proxy CONNECT abo
 
 以上失败信息，可通过设置代理，删除代理，挂载代理生效
 
-
 ```bash
 # 设置代理：
 git config --global http.proxy http://127.0.0.1:[代理端口号]
@@ -57,6 +56,21 @@ git config --global --unset https.proxy
 # 查看代理
 git config --global -l
 ```
+
+### git拉取推送失败
+
+失败信息：
+
+```bash
+warning: ----------------- SECURITY WARNING ----------------
+warning: | TLS certificate verification has been disabled! |
+warning: ---------------------------------------------------
+warning: HTTPS connections may not be secure. See https://aka.ms/gcm/tlsverify for more information.
+remote: Permission to simply-none/redict.git denied to mmmnnnmmmnnnppp.
+fatal: unable to access 'https://github.com/simply-none/redict.git/': The requested URL returned error: 403
+```
+
+解决方法：使用`git config --global http.sslVerify false`即可
 
 ### 零散的
 
