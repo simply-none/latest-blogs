@@ -592,6 +592,7 @@ nextTick(() => {
 
 感悟：
 - 使用组合式函数时，最好不要出现await等阻塞动作（即`await useXXX`），而应使用watch等代替
+- 在setup中使用await操作时，组合式API（生命周期钩子等）必须在await操作之前，否则组合式API的操作不会执行，同时有可能造成内存泄漏
 - 封装组合式函数时，需考虑多种情况，比如若某次调用时，不需要执行onMounted的内容，则组合式函数不应该包含onMounted，而是使用方法代替，在需要使用的地方调用该方法即可
 
 定义：
@@ -992,7 +993,7 @@ const double = computed<number>(() => count.value * 2)
 | `activated` | `onActivated` |
 | `deactivated` | `onDeactivated` |
 
-![生命周期](https://cn.vuejs.org/assets/lifecycle.16e4c08e.png)
+[生命周期图示](https://cn.vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram)
 
 **onBeforeMount**
 
@@ -1147,7 +1148,7 @@ export default {
 
 相比于普通的script语法，其优势有：
 - 更少的样板代码，更简洁的代码
-- 能够使用纯typescript生命props和抛出事件
+- 能够使用纯typescript声明props和抛出事件
 - 更好的运行时性能（其模板会被编译成与其同一作用域的渲染函数，无任何中间代理）
 - 更好的IDE类型推断功能（减少语言服务器从代码中抽离类型的工作）
 
@@ -1158,7 +1159,7 @@ export default {
 - 当import导入的组件用在动态组件component中时，其is属性的值就是这个导入的组件的名字`:is="comName"`
 - 单文件组件可以通过它的文件名被自己引用，这种方式相比于import导入的组件优先级更低
 - 若有命名的import导入和组件的推断名冲突，可以使用import别名导入`import { FooBar as AliasBar } from './components'`
-- 若导入一个属性是组件的对象（即.form内导出很多个组件时）`import * as Form from './form'`，可以直接使用类似`<Form.Label>`来引用
+- 若导入一个属性值由组件构成的对象（即.form内导出很多个组件时）`import * as Form from './form'`，可以直接使用类似`<Form.Label>`来引用
 - 对于在`<script setup>`里创建的自定义指令，必须以`vMyDirective`的形式命名，这样它才能够在template中以`<h1 v-my-directive>title</h1>`的形式使用；而对于导入的指令，也应当符合`vMyDirective`的命名形式（即通过`import { myDirective as vMyDirective} from xxx`语法重新命名导入的指令名）
 - 对于props和emit的声明，必须使用`defineProps`和`defineEmits`（仅在`<script setup>`内有效，且不需要导入能直接使用）函数来声明，其接收的参数和选项式语法相同
 - 由于传入到defineProps和defineEmits的选项会从setup中提升到模块的范围，所以他们不能引用在setup内部定义的变量，否则会引起编译错误。但是他们可以引用import导入的内容（这也是模块的范围）
@@ -1167,7 +1168,7 @@ export default {
 - 若想在父组件中使用`<script setup>`中的变量/方法，和setup选项式类似，这里需要使用defineExpose编译器宏（不需要导入，语法和选项式相同）函数将变量/方法暴露出去，例如`defineExpose({暴露的对象})`
 - defineOptions编译器宏可以声明组件选项，比如inheritAttrs，即使用script setup时不需要再定义一个script设置组件选项了（仅支持3.3+版本），定义的选项将被提升到模块作用域中，无法访问script setup中非字面常数的局部变量
 - defineSlots宏可以用于为IDE提供插槽名称和props类型检查的类型提示，只接受类型参数，无运行时参数，类型参数是一个类型字面量，属性名是插槽名，值是插槽函数类型，函数的第一个canasta是插槽期望接收的props，返回类型目前被忽略，可以是any。该宏返回一个slots对象，等同于setup上下文中暴露或由useSlots()返回的slots对象（仅支持3.3+版本）
-- 对于slots和attrs的使用，和vue2一样，可以直接在模板中以`$slots`, `$attrs`使用，若想在`<script setup>`内部使用，需要用`useSlots()`和`useAttrs()`函数访问他们，两函数是真实的运行时函数，返回的内容与setup函数的第二个参数context的属性slots、attrs等价
+- 对于slots和attrs的使用，和vue2一样，可以直接在模板中以`$slots`, `$attrs`使用，若想在`<script setup>`内部使用，需要用`useSlots()`和`useAttrs()`函数访问他们，两函数是真实的运行时函数，返回的内容与setup函数的第二个参数context的属性slots、attrs等价。注意，useSlots函数用于使用了`slot`元素的组件本身，可以查出父组件调用组件时，到底重新定义了组件的多少个插槽
 - 被包裹的代码，可以使用顶层的await，而不需要带有async，因为其结果会被编译为`async setup()`的形式，这种形式需要结合Suspense（实验性特性）一起使用
 - 可以使用script标签上的generic属性声明泛型类型参数，属性值和typescript中位于`<...>`之间的参数列表完全相同，可以使用多个参数，extends约束，默认类型和引用导入的类型，用法见下，更深层的含义见[1](https://github.com/vuejs/rfcs/discussions/436)
 - 因为模块执行语义的差异，`<script setup>`依赖单文件组件的上下文，当将其移动到外部的js或ts文件时，会产生混乱，所以不能和src attribute一起使用，即这样的语法是不允许的`script setup src="xxx"`
@@ -1328,6 +1329,9 @@ const foo = inject('foo')
 // 获取值2
 const foo2 = inject(fooSymbol)
 
+// 获取值且获取改变值的方法
+const { foo22, changeFoo22 } = inject('foo')
+
 // 设置默认值
 const foo3 = inject('foo', 'default')
 
@@ -1347,6 +1351,12 @@ const app = createApp({})
 
 // 应用层提供的数据可以在所有组件中注入
 app.provide('注入名', value)
+
+// 提供数据和变更数据的方法，在组件中类似
+app.provide('注入名', {
+  value,
+  changeValue
+})
 ```
 
 ```typescript [祖孙组件传递选项式]
@@ -1451,7 +1461,10 @@ export default {
     
     // 使用provide
     // 非setup script中应该在setup函数中调用provide
-    provide('count', count)
+    provide('count', {
+      count,
+      changeCount
+    })
     provide('person', readonly(person))
 
     return {
@@ -1468,7 +1481,7 @@ import { inject } from 'vue'
 export default {
   setup () {
     // 非setup script中应该在setup函数中调用inject
-    const parentCount = inject('count', 0)
+    const { count: parentCount, changeCount } = inject('count', 0)
     const parentPerson = inject('person', {})
     return {
       parentCount,
@@ -2749,7 +2762,7 @@ defineProps({
   <!-- 注意，此处是直接通过attrs获取id的，故而在useAttrs中仍然能够访问到id -->
   <button :id="$attrs.id"></button>
 
-  <!-- 此处就不会在访问到id了，如果在props中声明了id -->
+  <!-- 如果在props中声明了id，此处就不会通过attrs访问到id了， -->
   <button :id="props.id"></button>
   <!-- 或不带props -->
   <button :id="id"></button>
