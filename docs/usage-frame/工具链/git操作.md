@@ -30,6 +30,8 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
 ## 常用操作
 
+> 对于提交失败，可使用github desktop
+
 ### git提交失败
 
 失败信息有：
