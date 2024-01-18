@@ -28,6 +28,27 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
 ```
 
+## git提交规范
+
+```bash
+# git提交规范
+<type>([scope]): <subject>
+# 空一行
+[body]
+# 空一行
+[footer]
+
+# type（提交类型）: feat(新功能，包括样式修改)、fix（bug修复，包括样式修改）、perf（性能优化）、docs（文档变更）、style（代码格式调整）、refactor（功能重构）、test（测试）、ci（持续集成脚本变更，例如github文件夹）、build（项目构建的变更，例如vite.config.js）、chore（杂项）
+
+# scope（变更范围的细粒度，可选）：比如页面名、模块名、组件名
+
+# subject（提交的简短描述）：描述为何更改
+
+# body（详细描述）
+
+# footer（关闭bug的描述），例如：Closes #111、Closes #123,#124
+```
+
 ## 常用操作
 
 > 对于提交失败，可使用github desktop
