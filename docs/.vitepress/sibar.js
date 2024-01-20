@@ -299,6 +299,10 @@ export function sidebarUsageProject() {
           text: "前端缓存",
           link: "/usage-project/项目实践/前端缓存",
         },
+        {
+          text: "如何从网页打开一个应用",
+          link: "/usage-project/项目实践/从网页打开一个应用",
+        },
       ],
     },
 

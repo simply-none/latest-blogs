@@ -28,7 +28,30 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
 ```
 
+## git提交规范
+
+```bash
+# git提交规范
+<type>([scope]): <subject>
+# 空一行
+[body]
+# 空一行
+[footer]
+
+# type（提交类型）: feat(新功能，包括样式修改)、fix（bug修复，包括样式修改）、perf（性能优化）、docs（文档变更）、style（代码格式调整）、refactor（功能重构）、test（测试）、ci（持续集成脚本变更，例如github文件夹）、build（项目构建的变更，例如vite.config.js）、chore（杂项）
+
+# scope（变更范围的细粒度，可选）：比如页面名、模块名、组件名
+
+# subject（提交的简短描述）：描述为何更改
+
+# body（详细描述）
+
+# footer（关闭bug的描述），例如：Closes #111、Closes #123,#124
+```
+
 ## 常用操作
+
+> 对于提交失败，可使用github desktop
 
 ### git提交失败
 
@@ -44,7 +67,6 @@ unable to access 'https://github.com/simply-none/redict.git/': Proxy CONNECT abo
 
 以上失败信息，可通过设置代理，删除代理，挂载代理生效
 
-
 ```bash
 # 设置代理：
 git config --global http.proxy http://127.0.0.1:[代理端口号]
@@ -57,6 +79,21 @@ git config --global --unset https.proxy
 # 查看代理
 git config --global -l
 ```
+
+### git拉取推送失败
+
+失败信息：
+
+```bash
+warning: ----------------- SECURITY WARNING ----------------
+warning: | TLS certificate verification has been disabled! |
+warning: ---------------------------------------------------
+warning: HTTPS connections may not be secure. See https://aka.ms/gcm/tlsverify for more information.
+remote: Permission to simply-none/redict.git denied to mmmnnnmmmnnnppp.
+fatal: unable to access 'https://github.com/simply-none/redict.git/': The requested URL returned error: 403
+```
+
+解决方法：使用`git config --global http.sslVerify false`即可
 
 ### 零散的
 
