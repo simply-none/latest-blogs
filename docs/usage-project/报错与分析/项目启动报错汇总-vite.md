@@ -54,3 +54,9 @@
 出现场景：在vitepress中使用element-plus出现的错误
 
 解决：安装该包即可，`npm i @vue/reactivity`
+
+## 警告8：[Vue warn]: inject() can only be used inside setup() or functional components. 
+
+在script setup中直接调用`useRoute()`, `useRouter()`等函数时，出现此警告
+
+解决方法：当在onMounted等钩子中调用时，而非直接在script setup内部调用，则不报错
