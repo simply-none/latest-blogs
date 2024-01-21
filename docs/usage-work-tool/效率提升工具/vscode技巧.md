@@ -1,4 +1,4 @@
-# vscode技巧
+# vscode 技巧
 
 ## 快捷键设置
 
@@ -8,45 +8,43 @@
 ## 插件推荐
 
 - koroFileHeader，自动生成代码文件头注释，函数注释
-- 
+-
 
-## .vscode目录
+## .vscode 目录
 
 定义：存放工作区的项目配置和工具相关文件
 
 目录文件：
-- setting.json：会覆盖掉vscode编辑器的全局配置
+
+- setting.json：会覆盖掉 vscode 编辑器的全局配置
 - extensions.json：用来设置项目用到的插件推荐列表
 
 ::: code-group
 
 ```json [setting.json]
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.fixAll.eslint": true,
-    "source.fixAll.stylelint": true
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
   },
-  "stylelint.validate": ["css", "less", "scss", "vue"]
+  "stylelint.validate": ["css", "less", "scss", "vue"]
 }
-
 ```
 
 ```json [extensions.json]
 {
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "Vue.volar"
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Vue.volar"
   ]
 }
-
 ```
 
 :::
-
 
 ## vscode 代码图片
 
@@ -54,33 +52,47 @@
 
 ## 创建运行任务
 
-- 创建运行任务（ctrl+shift+B），会得到一个.vscode文件夹，包含tasks.json和launch.json俩个文件
+- 创建运行任务（ctrl+shift+B），会得到一个.vscode 文件夹，包含 tasks.json 和 launch.json 俩个文件
 
 ```json
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "typescript",
-			"tsconfig": "Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json",
-			"problemMatcher": [
-				"$tsc"
-			],
-			"group": "build",
-			"label": "tsc: 构建 - Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "typescript",
+      "tsconfig": "Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "tsc: 构建 - Typescript入门与实战-钟胜平/demos/demo1/tsconfig.json"
+    }
+  ]
 }
 ```
 
-## vscode代码片段
+## vscode 代码片段
 
 代码片段：可直接键入相对应的名称（html:5）就生成一个原始代码
-  1. 在file-preference-user snippet中创建对应后缀的类型片段（类似一个模板，json对象形式）
-  2. 在[generator snippet](https://snippet-generator.app)中可生成对应的json对象
-  3. 粘贴到json文件中
 
-## vscode代码格式化
+1. 在 file-preference-user snippet 中创建对应后缀的类型片段（类似一个模板，json 对象形式）
+2. 在[generator snippet](https://snippet-generator.app)中可生成对应的 json 对象
+3. 粘贴到 json 文件中
+
+注意：若设置代码片段后，不生效，可在 setting.json 文件中进行相关配置，如下是对 md 文件的配置
+
+```json
+{
+  "[markdown]": {
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": true,
+      "strings": true
+    },
+    "editor.acceptSuggestionOnEnter": "on"
+  }
+}
+```
+
+## vscode 代码格式化
 
 ### 安装代码格式化插件
 
@@ -89,11 +101,12 @@
 
 ### 格式化设置
 
-- 第一种：搜索vetur，然后将主要的后缀（js、vue）等的格式化设置成prettier
-- 第二种：直接在setting.json中进行设置
+- 第一种：搜索 vetur，然后将主要的后缀（js、vue）等的格式化设置成 prettier
+- 第二种：直接在 setting.json 中进行设置
 - 在项目根目录添加：`.prettierrc.json`文件
 
 ::: code-group
+
 ```json [setting.json]
 {
   "editor.mouseWheelZoom": true,
@@ -130,7 +143,9 @@
   "materialTheme.accent": "Cyan",
   "editor.suggestSelection": "first",
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  "vscode_custom_css.imports": ["file:///P:/Apps/VSCode-win32-x64-1.39.2/synthwave84.css"],
+  "vscode_custom_css.imports": [
+    "file:///P:/Apps/VSCode-win32-x64-1.39.2/synthwave84.css"
+  ],
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.quickSuggestions": true
@@ -202,7 +217,10 @@
       "icon": "terminal-powershell"
     },
     "Command Prompt": {
-      "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
       "args": [],
       "icon": "terminal-cmd"
     },
@@ -305,29 +323,28 @@
   } // 设置是否使用tab键缩进 默认false，即不使用，该配置将被所有格式化器继承
   //"vetur.ignoreProjectWarning": true // 控制是否忽略关于vscode项目配置错误的告警，默认为false，即不忽略
 }
-
 ```
+
 ```json [.prettierrc.json]
 {
   "singleQuote": true,
   "semi": false
 }
 ```
+
 :::
 
 ### 代码格式化操作
 
-1. 设置默认格式化程序为prettier
-2. 全局格式化，可在package.json添加脚本：`"prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
+1. 设置默认格式化程序为 prettier
+2. 全局格式化，可在 package.json 添加脚本：`"prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
 
 ### 注意事项
 
-1. 在setting.json设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置
+1. 在 setting.json 设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置
 
+## setting.json 设置
 
-## setting.json设置
-
-> 参考：    
-> https://code.visualstudio.com/docs/getstarted/settings    
-> https://juejin.cn/post/7276628114981388349    
-
+> 参考：  
+> https://code.visualstudio.com/docs/getstarted/settings  
+> https://juejin.cn/post/7276628114981388349

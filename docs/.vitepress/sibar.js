@@ -152,6 +152,10 @@ export function sidebarUsageFrame() {
           text: "react生态",
           link: "/usage-frame/react/react生态",
         },
+        {
+          text: 'react@18.2.0',
+          link: '/usage-frame/react/react@18.2.0'
+        }
       ],
     },
     {
