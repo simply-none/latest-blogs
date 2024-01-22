@@ -43,39 +43,47 @@
 
 ```javascript [setup内部仅依赖一个值]
 // setup内部仅依赖一个值，但又要读取其他值⛔实验性api
-function Page({url, shoppingCart}) {
-   // 定义一个effect事件
-   const onVisit = useEffectEvent(visitedUrl => {
-      // 此处处理相关代码，例如读取shoppingCart
-      console.log(shoppingCart)
-   })
+function Page({ url, shoppingCart }) {
+  // 定义一个effect事件
+  const onVisit = useEffectEvent((visitedUrl) => {
+    // 此处处理相关代码，例如读取shoppingCart
+    console.log(shoppingCart);
+  });
 
-   useEffect(() => {
-      onVisit(url)
-      // 此处仅仅需要将url添加到依赖数组中，而shoppingCart不需要
-   }, [url])
+  useEffect(() => {
+    onVisit(url);
+    // 此处仅仅需要将url添加到依赖数组中，而shoppingCart不需要
+  }, [url]);
 }
-···
+```
+
 :::
-
-
 
 ### useId
 
 定义：`useId()`
 
-返回值：返回一个唯一的字符串ID
+返回值：返回一个唯一的字符串 ID
 
 注意：
 
-- 只能在组件顶层/hook中调用，不能用在循环或条件判断中
+- 只能在组件顶层/hook 中调用，不能用在循环或条件判断中
+- useId不应该用在列表的key中，列表key应由数据生成
+- 使用服务端渲染时，useId需要在服务器和客户端上有相同的组件树，若在两者之间渲染的树不完全匹配，则生成的id也是不匹配的
 
+用法：
 
-
+- 该hook能够保证生成的id是整个应用全局唯一的，避免了id之间的冲突
+- 能够和服务端渲染一起工作，且生成内容的顺序和预期是一致的，在这一点上递增计数器（+1）在渲染之后输出的顺序可能不一致（在服务器渲染期间，组件会生成并输出成html，然后在客户端上，`hydration`会将事件处理程序附加到html上。），useId能够确保hydration正常工作，且服务器和客户端的输出是匹配的
+- 若一组相关的元素需要生成id，可使用useId生成一个字符串前缀，然后再在对于的元素上加上独特的后缀标识即可
+- 若单个页面上渲染了多个独立的react程序，需要先在`createRoot`或`hydrateRoot`调用中将identifierPrefix作为选项传递（用于指定前缀），然后正常调用useId，这样能够确保各个应用之间使用useId生成的id不冲突
 
 ## 附录
 
 ### 专有名词
 
 **外部系统**：不受 react 控制的代码，比如网络、某些浏览器 API（interval 定时器、eventListener 侦听器）、第三方库
+
+```
+
 ```
