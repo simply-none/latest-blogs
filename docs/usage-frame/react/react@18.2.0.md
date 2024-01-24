@@ -2,7 +2,11 @@
 
 ## hook
 
+注意：所有的hook都只能够在组件顶层和自定义的hook中调用，且在开发严格模式下，调用两次组件方法
+
 ### useState
+
+作用：给组件添加一个有状态的变量（即保持变量的响应性）
 
 定义：`const [state, setState] = useState(initialState)`
 
@@ -20,14 +24,21 @@
 注意：
 
 - hook只能在组件的顶层或自己的hook中调用，不能用于循环或条件语句中
+- 可以传递一个函数`fn`作为初始化参数（仅在初始化期间调用），若传递一个函数的调用`fn()`作为参数，则每次渲染都会进行调用（在执行复杂计算时可能浪费资源）
+- 若state是一个函数，则在更新的时候，应该使用箭头函数的方式，因为默认的直接传函数名方式，会将其当作初始化函数。
 - set函数参数若是依据之前状态计算的表达式（比如a+1），若连续调用多次，则实际上就只调用了一次（批量状态更新策略的缘故）；若参数是函数（比如a => a+1），连续调用多次，实际也是调用多次
 - set函数仅更新下一次渲染的状态变量，即在调用该函数之后紧接着调用该状态变量，得到的值还是原来的值
-- 如果提供的新值和上一个相同，将跳过组件重渲染
-- 当更新一个对象/数组时，请进行整个替换（也就是引用也随之变更），而非只是改变对象的属性
+- 如果提供的新值和上一个相同（指的是引用相同，即内存中的地址），将跳过组件重渲染
+- 给组件传递一个key，key改变时，可以重置组件的状态（即进行初始化渲染）
+- 当更新一个对象/数组时，请进行整个替换（也就是引用也随之变更），而非使用不改变对象引用的方式（比如数组的push等、直接设置属性等）改变对象，不然屏幕可能不会更新
 - react执行的是批量状态更新策略，即调用set函数后不会立即执行更新，而是等待所有的事件处理函数（比如点击，换句话说，得等待set函数所处的块代码执行完毕）执行完毕后才会更新状态（也就是组件重渲染更新屏幕）。如果你想调用set函数后迫切的更新屏幕（访问dom），可以使用flushSync（影响性能，大多数时候都不用）
+- 在调用set函数的代码块中包括异步操作，若异步操作内部也包括state变量，变量的值还是之前的，react执行的是批量状态更新策略，不影响已经运行的事件处理程序中的变量的值（即使是异步的）
+- 若出现`too many re-renders`的错误，表明此时组件进行循环`渲染->设置状态（重渲染）-> 渲染`的循环等，通常情况是由于错误指定事件处理函数引起的(即`onClick={handleClick()}`)，正确的处理是`onClick={handleClick}`或`onClick={(e) => handleClick(e)}`。也可查看控制台的JavaScript调用堆栈
 - 在开发且严格模式下，将两次调用初始化函数，用于找出意外的不纯性
 
 ### useEffect
+
+作用：将组件与外部系统（网络等）同步
 
 定义：`useEffect(setup, dependencies?)`
 
@@ -52,6 +63,7 @@
 - 若依赖项是组件内部定义的对象/函数，可能会导致 effect（setup）过多的重新运行。所以应该删除不必要的对象/函数依赖项，或者抽离状态更新和非响应式逻辑到 effect 外部，或者将函数定义在 setup 内部
 - 若需要跟踪一些不用于渲染的数据，可以使用 ref`useRef`调用，这不会触发重新渲染
 - 若 setup 内部具有多个响应式变量，按理来说，必须添加所有变量到依赖数组中，这在你仅需要依赖一个响应式变量但又需要其他值的时候明显做不到，此时可以使用 Effect 事件`useEffectEvent hook`，将读取其他值的代码放入该 hook 中，然后在 setup 中调用该 hook 即可 📕📕(⛔ 实验性 api)
+- 避免不必要的进行更新，大多数性能问题都是由effect创造的更新链（导致反复重新渲染）引起的
 - 非交互（点击）引起的 effect 运行，会让浏览器在运行 effect 前绘制出更新后的屏幕
 - 交互引起的 effect 运行，也可能会在运行 effect 前重绘屏幕。当要阻止屏幕重绘，应使用 useLayoutEffect 代替 useEffect
 - 视觉相关的事情（如定位）且有明显的延迟，应使用 useLayoutEffect 代替 useEffect
@@ -84,7 +96,119 @@ function Page({ url, shoppingCart }) {
 
 :::
 
+### useMemo
+
+作用：在每次重新渲染时缓存计算的结果
+
+定义：`const m = useMemo(calculateValue, dependencies)`
+
+定义说明：
+
+1. 参数calculateValue：只能是无参的纯函数，可以返回任意类型（包括jsx节点，react中组件返回的就是jsx），将在首次渲染时调用，后面仅在dependencies发生变化时进行调用（这样能够跳过一些昂贵的计算）
+2. 参数dependencies：所有在calculateValue函数中使用的响应式变量（props、state、变量、函数）组成的数组，若不传，则每次都会重新计算
+3. 返回值m：返回调用calculateValue的结果，依赖数组发生变化，重新返回调用calculateValue的结果
+
+注意：
+
+- 应该仅把useMemo作为性能优化的手段，而非缺了它就代码不能工作。默认情况下，react会在组件每次重渲染时重新运行整个组件，此时组件中的对象、函数都会重新执行，这加大了运行开销
+- useMemo不会让渲染变得更快，只是跳过了跟他依赖无关的渲染（不执行），对于依赖相关的渲染，还是会重新执行的
+- 开发环境且严格模式下，将调用calculateValue两次
+- 使用useMemo的情况：useMemo中的计算很耗时、将计算结果作为props传递给包裹在memo中的组件时、传递的值用作某些hook的依赖项时
+
+### useCallback
+
+作用：在多次渲染中缓存函数
+
+定义：
+
+- `const cachedFn = useCallback(fn, dependencies)`
+- 等同于`const cachedFn = useMemo(() => fn, dependencies)`
+
+定义说明：
+
+1. 参数fn：想要缓存的函数，将在初次渲染时（非调用时）返回该函数，后续仅在依赖变更时返回最新的函数
+2. 参数dependencies：是否要更新fn的所有响应式的列表
+3. 返回值cachedFn：初次渲染和依赖变更时，返回传入的fn，否则返回上一次的
+
+useMemo vs. useCallback：
+
+- useMemo返回函数调用的结果：`useMemo(() => fn(), dep)`
+- useCallback返回函数本身：`useCallback(fn, dep)`
+
+注意：同useMemo
+
+### useContext
+
+作用：读取和订阅组件中的context
+
+定义：
+
+- `const SomeContext = createContext(defalutValue)`
+- `const c = useContext(SomeContext)`
+- `<SomeContext.Provider value={value}></SomeContext.Provider>`
+
+定义说明：
+
+1. 参数defaultValue：该值从不改变，更新context一般是provider的value和state一起使用
+2. 参数SomeContext：该值是用createContext创建的context
+3. 返回值c：返回的值总是最新的（根据context的变化而变化），该值是最近组件树上的SomeContext.Provider的value的值，若无，则值是createContext的defaultValue的值
+4. provider的value属性value：可以是任意的值，包括对象和函数，当省略时，值为undefined
+
+注意：
+
+- 组件是的useContext的调用仅仅受包裹了对应的SomeContext.Provider的上级组件的影响，而非调用了SomeContext的上级组件的
+- 在provider接收到不同的value开始，会重渲染使用了该特定context的所有子级，可使用memo跳过重渲染（但是context的值还是传过去了，只是不会导致组件重新渲染）
+- 当组件重新渲染时，如果provider的value属性值是对象和函数（引用对象，渲染后和之前不是同一个内存地址），则还会重新渲染所有调用对应的useContext的组件，此时可以使用useCallback包裹函数，使用useMemo包裹对象，以此来进行性能优化，至此当组件重渲染时，调用对应的useContext的组件不会发生重渲染，除非包裹的对象和函数依赖的值发生变化了
+- 可以将provider封装成组件使用
+- 可以嵌套使用多个相同或不同的provider，在嵌套时，下层provider的value值若依赖context，该context是基于上一层provider的value计算来的。举例，共嵌套了三层`<SomeContext.Provider></SomeContext.Provider>`，其value属性值都是`someContext + 1`，若初始值是1，此时，各层下面的子组件读取到的useContext的值分别是`2， 3， 4`
+
+### useReducer
+
+作用：给组件添加一个reducer（包括所有组件状态更新逻辑的外部函数）
+
+定义：`const [state, dispatch] = useReducer(reducer, initialArg, init?)`
+
+定义说明：
+
+1. 参数reducer：用于更新变量state的纯函数，参数为当前的state和action（任意值），返回更新后的state
+2. 参数initialArg：变量state的初始值
+3. 参数init函数：可选，用于计算初始值函数，存在则使用init(initialArg)的执行结果作为初始值，否则使用initialArg作为初始值
+4. 返回值state
+5. 返回值dispatch函数：接受action作为参数，调用它时，react会调用reducer函数用于更新state；用于更新state，并触发组件的重新渲染
+6. action：用户执行的操作标记，通常是一个对象
+
+注意：
+
+- dispatch函数是为下一次渲染而更新state，调用它之后的代码的state还是原来的值
+- 当state和上一个state相同时，会跳过组件的重渲染
+- 不要修改state（引用地址不变），而是替换state（引用地址会变）
+- react执行的是批量更新state的策略，同useState
+- useReducer和useState非常相似，但是useReducer可以将状态更新逻辑移到组件外部
+- 可以使用immer等第三方库减少重复的样板代码，更专注于逻辑
+- `useReducer(reducer, name, createInitialFn)`相比于`useReducer(reducer, createInitialFn(name))`，前者仅会在初始渲染时执行，而后者（只传初始值）每次重渲染都会执行，可能更耗费性能
+
+### useRef
+
+作用：可以引用一个不需要渲染的值
+
+定义：`const ref = useRef(initialValue)`
+
+定义说明：
+
+1. 参数initialValue：ref对象的current属性的初始值
+2. 返回值ref：该值仅包含一个属性current，初始渲染时值为initialValue，后续渲染时都返回同一个对象，可将ref作为jsx节点ref属性的值
+
+注意：
+
+- 改变ref.current时，不会触发重渲染，该值只是一个普通js对象
+- 用途有：在多次渲染时存储信息而不被重置、操作dom
+- 将ref对象作为jsx dom节点的ref属性，在创建dom节点并渲染到屏幕时，会把节点设置为ref对象的current属性，然后可以调用相关的方法
+- 若将ref用在自定义组件上，需要将该自定义组件用forwardRef包裹起来，因为默认情况下，自定义组件不会暴露内部dom节点的ref
+- 不要在渲染期间读写ref（即组件函数代码块、return的jsx），因为组件主体应该表现的像纯函数，而写入、读取ref会破坏这些行为。而是在事件处理程序或effect中读写。否则就用state代替
+
 ### useId
+
+作用：生成一个唯一ID
 
 定义：`useId()`
 
