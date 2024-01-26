@@ -229,6 +229,199 @@ useMemo vs. useCallback：
 - 若一组相关的元素需要生成id，可使用useId生成一个字符串前缀，然后再在对于的元素上加上独特的后缀标识即可
 - 若单个页面上渲染了多个独立的react程序，需要先在`createRoot`或`hydrateRoot`调用中将identifierPrefix作为选项传递（用于指定前缀），然后正常调用useId，这样能够确保各个应用之间使用useId生成的id不冲突
 
+## 组件
+
+### Fragment
+
+作用：在不添加额外节点的情况下将子元素组合
+
+定义：`<Fragment></Fragment>`、`<></>`
+
+注意：
+
+- 若想给组件传递key，则不能使用简写
+
+### StrictMode
+
+作用：在开发过程中启用组件树内部额外的开发行为和警告
+
+定义：`<StrictMode></StrictMode>`
+
+定义说明：无参
+
+注意：
+
+- 严格模式下启用的行为：组件将重渲染一次（检查非纯渲染错误，包括组件函数体顶层逻辑，传递给useState、useMemo、useReducer、set的参数，constructor、render、shouldComponentUpdate等部分类组件方法）、将重运行Effect一次（检查是否缺少effect清理，检查是否符合预期）、检查是否使用废弃的API
+- 在该组件包裹的树中，无法退出严格模式
+- 可包裹任意组件
+- 仅在开发环境运行
+
+### Profiler
+
+作用：测量组件树的渲染性能
+
+定义：`<Profiler id="CompName" onRender={onRenderFn}><CompName></CompName></Profiler>`
+
+定义说明：
+
+1. 使用该组件包裹需要进行性能测量的组件树，id为组件名词
+2. 可嵌套使用，也就是需要监测哪里就包裹哪里
+3. onRender：性能测量的回调函数，能够获取渲染内容和所花费的时间
+4. 默认在生产环境下被禁用，[在生产环境下启用](https://fb.me/react-profiling)
+
+### Suspense
+
+作用：在子组件完成加载前展示后备内容
+
+定义：`<Suspense fallback={<Loading/>}><SomeComponent/></Suspense>`
+
+注意：
+
+- 只有启用了Suspense的数据源才会激活Suspense组件，包括：支持它的框架如Relay/Nextjs、使用lazy懒加载组件代码、使用use读取Promise的值
+- Suspense无法检测在Effect和事件处理程序中获取数据的情况
+- Suspense内部整个组件树都被视为一个单元，即使整个组件树只有其中一个组件被挂起，也都将被替换为fallback
+- 可以嵌套使用Suspense，分别为需要的组件设置后备组件，这样就不用整个组件树都被替换了
+
+## API
+
+### createContext
+
+**createContext**: 创建一个组件能够提供/读取的context
+
+**SomeContext.Provider**: 用context provider包裹组件，用value为整个组件树（层级不限）指定一个context的值
+
+用法：
+
+1. 将所有的context单独创建一个文件导出，因为不止一个组件需要读取同一个上下文
+
+### forwardRef
+
+作用：在组件上使用ref时，允许将dom节点暴露给父组件
+
+定义：`const SomeComponent = forwardRef(render)`
+
+定义说明：
+
+1. 参数render：组件的渲染函数（接收props、ref属性），当为函数组件时，就是组件本身
+2. 返回值SomeComponent：返回能够接收props、ref属性的组件
+
+:::code-group
+
+```javascript [暴露整个]
+function Form () {
+   // 步骤3：定义ref
+   const ref = useRef(null)
+
+   function handleClick () {
+      // 步骤5：这里拿到的就是input节点
+      ref.current.focus()
+   }
+
+   return (
+      <form>
+         {/* 步骤4：在组件上使用ref */}
+         <MyInput label='Enter you name:' ref={ref}/>
+         <button type="button" onClick={handleClick}>编辑</button>
+      </form>
+   )
+}
+
+// 步骤1：在需要使用ref的组件上用forwardRef包裹
+const MyInput = forwardRef(function MyInput(props, ref) {
+   const { label, ...otherProps} = props
+   return (
+      <label>
+         {label}
+         {/* 步骤2：将ref传递给想暴露的节点上 */}
+         <input {...otherProps} ref={ref}/>
+      </label>
+   )
+})
+```
+
+```javascript [暴露节点的有限功能]
+// 核心是修改MyInput
+import { forwardRef, useRef, useImperativeHandle } from 'react'
+
+const MyInput = forwardRef(function MyInput(props, ref)  {
+   // 改动1：定义一个ref，作用在要暴露给父组件的节点上
+   const inputRef = useRef(null)
+
+   // 改动2：使用useImperativeHandle指定要暴露给父组件的对象（ref.current读取到的）
+   useImperativeHandle(ref, () => {
+      return {
+         // 这里仅暴露两个方法
+         focus () {
+            inputRef.current.focus()
+         },
+         scrollIntoView() {
+            inputRef.current.scrollIntoView()
+         }
+      }
+   }, [])
+
+   return <input {...props} ref={inputRef}/>
+})
+```
+
+:::
+
+注意：
+
+- ref可嵌套传递，即沿着组件树将ref传递给目标节点上，此时传递链上的组件都需要用forwardRef包裹
+- 不要滥用ref，能用props就不应该用ref
+
+### lazy
+
+作用：在组件初次渲染前延迟加载组件代码
+
+定义：`const SomeComponent = lazy(load)`
+
+定义说明：
+
+1. 参数load函数：无参，返回一个Promise或thenable的函数
+
+```javascript
+const MarkdownPreview = lazy(() => delayForDemo(import('./MarkdownPreview.js')))
+
+function MarkdownEditor () {
+   return (
+      <Suspense fallback={<Loading/>}>
+         <MarkdownPreview markdown='markdown'/>
+      </Suspense>
+   )
+}
+
+// 添加一个固定的延迟时间，以便你可以看到加载状态
+function delayForDemo (promise) {
+   return new Promise(res => {
+      setTimeout(res, 2000)
+   }).then(() => promise)
+}
+```
+
+注意：
+
+- 只能在组件外部使用lazy函数，否则将导致在重渲染时重置所有状态
+
+### memo
+
+作用：允许组件在props未改变时跳过重渲染
+
+定义：`const MemoizedComponent = memo(SomeComponent, arePropsEqual?)`
+
+定义说明：
+
+1. 参数SomeComponent：要进行记忆化的组件
+2. 可选参数arePropsEqual函数：该函数接收2个参数，组件的上一个props和新的props，若两者相同应返回true。通常情况下，不用指定该函数（默认用Object.is）
+3. 返回值：返回一个新的记忆化组件（函数组件、forwardRef组件），功能和SomeComponent相同
+
+注意：
+
+- 如果传递给组件的props一直不同（比如普通对象和函数），则memo是无效的，所以通过和useMemo、useCallback一起使用
+- 只有props不改变是不触发重渲染，当自身的状态（state、使用的context）改变时，会触发重渲染
+- 只应该将其作为性能优化方案，若离开他无法运行，则应该修复潜在问题
+
 ## 附录
 
 ### 专有名词
