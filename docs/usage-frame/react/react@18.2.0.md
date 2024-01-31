@@ -15,7 +15,7 @@
 1. initialState：即变量state的初始值
    - 可以是任意的值，包括函数
    - 对于函数，必须是无参数的纯函数，会将该函数的运行结果作为state的初始值
-   - 初始化完成之后，该值就无作用了
+   - 初始化完成之后，该值就无作用了。后续如果props、state等变更到导致重渲染，该值也不会发挥任何作用。仅在首次渲染有作用
 2. 返回值：该函数返回一个由两个值组成的数组
    - state：在首次渲染时，也就是initialState
    - set函数（setState）：更新state的函数，无返回值，在更新时同时触发组件重渲染
@@ -35,6 +35,18 @@
 - 在调用set函数的代码块中包括异步操作，若异步操作内部也包括state变量，变量的值还是之前的，react执行的是批量状态更新策略，不影响已经运行的事件处理程序中的变量的值（即使是异步的）
 - 若出现`too many re-renders`的错误，表明此时组件进行循环`渲染->设置状态（重渲染）-> 渲染`的循环等，通常情况是由于错误指定事件处理函数引起的(即`onClick={handleClick()}`)，正确的处理是`onClick={handleClick}`或`onClick={(e) => handleClick(e)}`。也可查看控制台的JavaScript调用堆栈
 - 在开发且严格模式下，将两次调用初始化函数，用于找出意外的不纯性
+
+```javascript
+function Messsage({messageColor}) {
+   // 将props作为初始值，仅在首次渲染时有效，在后续props变更时，不会发生重渲染
+   // 若仅仅将其当作初始值，后面更新都跟其无关的话，那这样做是有用的
+   const [color, setColor] = useState(messageColor)
+
+   // 正确做法，想在每次props更新都更新
+   const color = messageColor
+}
+
+```
 
 ### useEffect
 
@@ -184,6 +196,8 @@ useMemo vs. useCallback：
 - 不要修改state（引用地址不变），而是替换state（引用地址会变）
 - react执行的是批量更新state的策略，同useState
 - useReducer和useState非常相似，但是useReducer可以将状态更新逻辑移到组件外部
+- reducer函数内部，习惯用switch语句，且每个case语句块使用`{}`包裹，这样不会引起变量冲突
+- 一个好的reducer，通常是一个纯函数、且每个action都仅描述了一个单一的用户交互，即仅根据当前的state和action改变当前的state，而不应该参杂其他的操作，比如改变其他变量的值
 - 可以使用immer等第三方库减少重复的样板代码，更专注于逻辑
 - `useReducer(reducer, name, createInitialFn)`相比于`useReducer(reducer, createInitialFn(name))`，前者仅会在初始渲染时执行，而后者（只传初始值）每次重渲染都会执行，可能更耗费性能
 

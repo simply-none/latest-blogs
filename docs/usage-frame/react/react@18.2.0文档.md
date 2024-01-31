@@ -13,7 +13,7 @@ react框架：nextjs（全栈框架）、remix（嵌套路由全栈框架）、G
 - react组件必须以大写字母开头，html标签必须是小写字母
 - react组件只支持单根节点，多节点可用Fragment组件包裹
 - react组件接收props对象作为其唯一参数
-- 不要在一个组件内部定义其他组件
+- 不要在一个组件内部定义其他组件，原因是每次组件因响应式变更导致重渲染时，内部的非响应式变量/函数都将重置/初始化
 - 组件返回值可以全写在一行上，多行内容需用`()`包裹，否则return下一行之后的代码都将被忽略
 - 条件渲染同js，比如if，&&，三元运算符
 - 不想渲染任何内容，可返回null
@@ -58,6 +58,80 @@ state：
 - useState用于保存渲染期间的数据，更新时会触发渲染
 - 设置state时，只会在下一次渲染变更state的值，即当前时间节点上还是目前的值
 
+state构建原则：
+
+- 合并关联的state
+- 避免互相矛盾的state
+- 避免冗余的state：对于某些可通过其他state创建的变量，不应该设置为state，而是通过赋值state的形式让其成为一个常量，这样在每次state重渲染的时候，也会重新计算该常量。例如`const fullName = firstName + ' ' + lastName`，其中fullName依赖于后面两个state
+- 避免重复的state：如果两个state具有相同的对象，应该优化它
+- 避免深度嵌套的state
+
+state状态保留与重置
+
+> [注：](https://zh-hans.react.dev/learn/preserving-and-resetting-state#challenges)，最后的挑战有意思，可以多学习
+
+- 当组件在UI链树中的位置保持不变时，该组件的state会被保留下来。否则将会被重置。
+- 可以使用key（辨别同级节点的顺序），改变key来重置state，保持key不变来保留state（即组件的顺序改变，只有key不变，状态依然保留）
+- 保留不可见组件的状态
+  1. 展示所有组件，用css进行控制显隐（海量数据的树形结构可能会降低性能）
+  2. 使用状态提升，将状态保存在公有父组件中
+  3. 使用缓存，比如local storage等
+
+解释：
+
+- UI树中的位置（非代码位置），即当用户交互（比如根据条件展示不同的信息）对组件产生了影响时，若交互前后，组件的位置不一致，或组件名称不相同，都会造成组件的state被重置。
+- 同名组件在同一位置，state会被保留下来。注意，在条件切换导致该语句块条件为false（比如值为false或null）时，该处位置为`false, comp`和`comp, false`时，这种情况下也是处于非同一位置的。只是false会自动被忽略罢了🟩🟨🟩
+- UI链树位置相同，指的是从上到下，组件/元素名称、位置都一致，比如`div > div> comp`和`div > p > comp`，这里的comp就是会被重置的，因为树结构不一致
+
+```jsx
+// 🟩🟨🟩
+function App () {
+  return (
+    <div>
+      {isA && <Item name={'A'}></Item>}
+      {!isA && <Item name={'notA'}></Item>}
+    </div>
+  )
+}
+
+// 此处渲染的结构如下两种情况
+// 1. <Item></Item> , false
+// 2. false, <Item></Item>
+// 故而两种虽然视觉上是同一个ui链结构，但实际上还有一个被忽略的false
+
+// 而这种情况是不会导致组件状态变更的
+// 1. <i></i>, <Item></Item>
+// 2. false/null, <Item></Item>
+```
+
+组件共享状态：
+
+- 将state移到公共父级上（状态提升）
+- 不一定必须定义一个state，如果一个变量，依赖于其他变量的变更而变更，完全可将其定义成一个常量，例如`const full = setFull(first, last)`，其中full是常量，而first、last是state变量，在每次first/last变更时，会引发重渲染，从而重新计算full的值
+
+useState vs. useReducer：
+
+- 代码体积：
+- 可读性
+- 可调试性
+- 可测试性
+- 个人偏好
+
+context深层传递参数
+
+- 使用场景：主题、当前账户、路由、状态管理
+- 可将reducer函数传递给context
+
+context的替代方案：
+
+- 逐级传递props：清晰的数据流
+- 组件嵌套：将组件作为chilren，然后在需要使用数据的地方传递props
+
+重点阅读：
+
+- <https://zh-hans.react.dev/learn/sharing-state-between-components>
+- <https://zh-hans.react.dev/learn/preserving-and-resetting-state>
+
 渲染和提交：
 
 - 请求和提供ui的过程：（触发渲染-> 渲染组件-> 提交到dom） -> 浏览器绘制
@@ -88,3 +162,15 @@ state：
 react中，副作用通常属于事件处理程序，仅在执行操作时运行（而非渲染期间），故而无需是纯函数
 
 如果无法为副作用寻找到合适的事件处理程序，可调用useEffect将其附加到返回的jsx中，这会让react在渲染结束时执行它
+
+### 脱围机制
+
+定义：走出react，连接到外部系统
+
+### 受控组件
+
+定义：组件重要信息由传入的props（父组件）进行驱动的，具有最大的灵活性
+
+非受控组件：不受父组件控制的组件，而是由组件自身状态进行驱动
+
+两者的界限不是十分清晰的，可以定义哪些状态受父组件控制，哪些由自身控制
