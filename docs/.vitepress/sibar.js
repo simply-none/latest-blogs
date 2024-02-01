@@ -163,7 +163,11 @@ export function sidebarUsageFrame() {
         {
           text: 'react-dom@18.2.0',
           link: '/usage-frame/react/react-dom@18.2.0'
-        }
+        },
+        {
+          text: "nextjs",
+          link: "/usage-frame/react/nextjs",
+        },
       ],
     },
     {

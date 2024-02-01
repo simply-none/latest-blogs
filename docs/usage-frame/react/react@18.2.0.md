@@ -436,6 +436,70 @@ function delayForDemo (promise) {
 - 只有props不改变是不触发重渲染，当自身的状态（state、使用的context）改变时，会触发重渲染
 - 只应该将其作为性能优化方案，若离开他无法运行，则应该修复潜在问题
 
+## 和vue对比的写法
+
+### 具名插槽
+
+将组件当作props传进去即可
+
+### 类似vue的作用域插槽写法
+
+> 参考：<https://zhuanlan.zhihu.com/p/427114998?utm_id=0>
+
+```jsx
+function Container(props) {
+  return (
+    <>
+      {/* 接收到的值在该处渲染 */}
+      {props.children({ a: 1, b: 2, c: 3 })}
+      {props.children({ e: 1, b: 2, c: 3 })}
+      <input></input>
+      <input></input>
+      {props.children({ d: 1, b: 2, c: 3 })}
+      <input></input>
+    </>
+  );
+}
+
+function C2ontainer(props) {
+  return (
+    <>
+      <div>
+        <input />
+        <input />
+        <input />
+        <input />
+      </div>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <Container>
+        {/* 
+        通过传递函数实现作用域插槽：
+        将下面的内容替换成conteiner内部的props.children位置上的内容，可以返回任意内容 
+        其中，每个v都代表一个props.children
+        */}
+        {(v) =>
+          Object.keys(v).map((item) => {
+            return (
+              <li key={item}>
+                {v[item]}: {item}
+                <C2ontainer />
+              </li>
+            );
+          })
+        }
+      </Container>
+    </>
+  );
+}
+
+```
+
 ## 附录
 
 ### 专有名词
