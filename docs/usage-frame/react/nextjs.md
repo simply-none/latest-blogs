@@ -29,6 +29,37 @@ No / Yes
 - 对于pages router模式，结构为`/src/pages`, `/src/app`
 - 对于app router模式，结构为`/pages`, `/app`
 
+### 元数据文件
+
+#### 网站图标
+
+文件生成：
+
+- 对于`favicon.ico`，仅能位于`app/`下
+- 对于`icon.ico/jpg/jpeg/png/svg`，位于`app/**/*`下
+- 对于`app-icon.jpg/jpeg/png`，位于`app/**/*`下
+
+代码生成：创建默认的导出函数
+
+- `icon.js/ts/tsx`
+- `apple-icon.js/ts/tsx`
+
+```js
+import { ImageResponse } from 'next/og'
+
+// 导出图标属性
+export const runtime = 'edge'
+export const size = { width: 32, height: 32 }
+export const contentType = 'image/png'
+
+// 生成图标
+export default function Icon ({params}: { params: { slug: string }}) {
+  return new ImageResponse((
+    <div style={{fontSize: 24, color: 'white'}}>A</div>
+  ), { ...size })
+}
+```
+
 ### 绝对导入和路径别名
 
 ```json
@@ -43,9 +74,50 @@ No / Yes
 }
 ```
 
+### next.config.js
+
+```js
+// 使用对象形式
+export default {}
+
+// 使用函数形式
+export default (phase) => {
+  return {
+    // 域名子路径部署网站时有用，存放应用资源的请求路径，这样相对路径会添加相应的前缀
+    assertPrefix: isProd ? 'https://cdn.xxx.com' : undefined,
+    // 域名子路径部署网站有用，这样所有的路由请求，资源文件都将添加相应前缀
+    basePath: '/docs',
+    // 默认压缩是gzip，可禁用压缩，使用自身服务器（比如nginx）的压缩算法
+    compress: false,
+    // 构建缓存目录，默认是.next
+    distDir: 'build',
+    // 添加env配置，通过process.env.xxx进行访问
+    env: {
+      xxx: ''
+    },
+    // eslint配置，可用于忽略某些报错
+    eslint: {},
+    // url是否带有尾部斜杠，比如/about变为/about/
+    trailingSlash: true,
+    // ...
+  }
+}
+
+// v12.1+可以使用异步函数
+```
+
+### nextjs命令行
+
+```bash
+[npx] next start -p 5000
+
+[npx] next -h
+```
+
 ## 路由
 
 - nextjs 使用基于文件系统的路由器，路由结构由文件路径决定
+- app路由和page路由可并行工作
 
 ### app 路由
 
@@ -55,7 +127,7 @@ No / Yes
 
 - layout.js
 - template.js
-- error.js
+- error.js、global-error.js
 - loading.js
 - not-found.js
 - page.js，或者子级的 layout.js
@@ -116,6 +188,24 @@ export default function DashboardLayout({ children }) {
 - 无法在父子布局中传递数据，但可多次获取路由中的相同数据，react 会自动删除重复请求，不会影响性能
 - 布局无法访问子布局的路径，在客户端组件中，可使用 useSelectedLayoutSegment 或 useSelectedLayoutSegments 访问所有路由段
 
+路由段：
+
+- 即项目目录结构或url结构
+- 在page.js、layout.js、route.js中配置
+
+```js
+// 路由段配置
+export const dynamic = 'auto' || 'force-dynamic' || 'error' || 'force-static'
+export const dynamicParams = true || false
+export const revalidate = false || true || 0
+export const fetchCache = 'auto' || 'default-cache' || 'only-cache' || 'force-cache' || 'force-no-store' || 'default-no- store' || 'only-no-store'
+export const runtime = 'nodejs' || 'edge'
+export const preferredRegion = 'auto' || 'global' || 'home' || string || string[]
+export const maxDuration = number
+
+export default function Component （） {}
+```
+
 模板 template：
 
 - 和布局 layout 类似，但布局可以跨路由持久化且保持状态，模板却在导航上为每个子级创建新的实例（所以每次切换导航都会显示 fallback），不保留状态
@@ -135,6 +225,16 @@ export default function Template({ children }) {
 错误处理 ui error：
 
 - 在页面出错时展示的内容
+- props属性：err: `{message, digest, reset}`
+
+根组件错误处理 ui global-error：
+
+- 专门处理根layout.js中的错误，与根组件同级，该组件必须包含html和body tags
+
+not-found：
+
+- 在路由段抛出notFound()函数时呈现的ui
+- 在根组件中定义将处理整个app的任何不匹配的url
 
 #### 路由组
 
@@ -145,7 +245,7 @@ export default function Template({ children }) {
 
 #### 动态路由
 
-- 动态字段将作为 params 属性传给 layout、page、route、generateMetadata 函数，然后在函数内部做相关处理
+- 动态字段将作为 params 属性传给 layout、page、route、generateMetadata 函数，然后在函数内部做相关处理，通过`useRouter()`获取
 - 定长路由`[slug]`：目录结构`app/blog/[slug]/page.js`，将匹配：
   - `/blog/a`, 其 params 参数为`{slug: 'a'}`
   - `/blog/b`，其 params 参数为 `{slug: 'b'}`
@@ -203,8 +303,28 @@ Link 组件：
 ```jsx
 import Link from "next/link";
 
-export default function Page() {
-  return <Link href="/dashboard">dashboard</Link>;
+export default function Page({ posts }) {
+  return (
+    <ul>
+      {posts.map((post) => {
+        <li key={post.id}>
+          {/* 注意：为了url和utf-8编码兼容，
+              需要对字符串使用`encodeURLComponent`进行编码 
+          */}
+          <Link href={`/blog/${encodeURIComponent(post.slug)}`}>
+            {post.title}
+          </Link>
+          {/* 或使用URL对象 */}
+          <Link href={{
+            pathname: '/blog/[slug]',
+            query: { slug: post.slug }
+          }}>
+            {post.title}
+          </Link>
+        </li>
+      })}
+    </ul>
+  )
 }
 ```
 
@@ -260,8 +380,6 @@ module.exports = {
 ```
 
 路由和导航工作原理：略
-
-### page 路由
 
 ## 组件分类
 
@@ -440,8 +558,6 @@ nextjs 的 metadata api 允许修改页面的 head 元素，通过 2 种方式�
 
 config-based metadata：在任何文件夹下的 layout/page.js 中导出一个静态的 metadata 对象、或者是动态的 generateMetadata 函数，若文件结构中有多个该对象，将使用离当前组件最近的一个，对于相同的一级属性，将进行覆盖，不同的一级属性，将继承
 
-
-
 ```jsx
 // layout.jsx
 export const metadata = {
@@ -497,3 +613,124 @@ export default function Layout() {
 }
 ```
 
+### page 路由
+
+文件结构：
+
+- /**/xxx.js：导出的组件，将构成一个路由（即页面）
+- pages/_app.js：自定义App组件
+- pages/_document.js：自定义document html、body等
+- pages/api/**/*.js： api接口所在目录
+- pages/404.js：自定义的404页面，类似的还有500，更多错误(pages/_error.js)
+
+#### 页面和布局
+
+- page路由中，每个具有默认导出的组件的`js/ts/jsx/tsx`文件都是一个页面
+- 页面构成的路径组成路由
+- index文件，路由会默认省略index
+
+##### shallow routing
+
+用法：`router.push('/?xxx=10', undefined, { shallow: true })`
+
+- 第一点注意：`/?xxx=10`，这里是传递query属性xxx，值为10，同时改变路由pathname为`/`
+- 第二点注意：`{shallow: true}`，设置shallow属性
+
+- 设置了该属性，改变url之后不会运行数据fetch方法（包括：getServerSideProps、getStaticProps、getInitialProps）
+- 设置了该属性，地址栏的url和router对象将被更新，但页面不会被替换，此时可以通过router对象的query等属性进行监听（useEffect），或者使用类组件的componentDidUpdate监视
+
+##### 自定义App组件
+
+- 如果你想让整个应用都具备相同的某个部分（比如导航和页脚），则应该创建一个`_app.js/ts/tsx/jsx`进行自定义
+
+::: details 安装
+
+1. 整个应用共用一个单布局
+
+```js
+// pages/_app.js
+// 一个布局组件，可以随便定义
+import Layout from '../components/layout'
+// component: 代表活跃的page页面，pageProps：代表传递给组件的初始props对象
+export default function MyApp({component, pageProps}) {
+  return (
+    <Layout>
+      <Component {...pageProps}/>
+    </Layout>
+  )
+}
+```
+
+2. 设置getLayout属性让每一个组件都有一个自定义布局
+
+```js
+// pages/_app.js
+export default function MyApp({ Component, pageProps }) {
+  const getLayout = Component.getLayout ?? ((page) => page)
+
+  return getLayout(<Component {...pageProps} />)
+}
+
+// pages/index.js
+import Layout from '../components/layout'
+import NestedLayout from '../components/nested-layout'
+
+export default function Page() {
+  return (
+    // 组件详细内容
+  )
+}
+
+// 设置getLayout属性
+Page.getLayout = function getLayout (page) {
+  return (
+    <Layout>
+      <NestedLayout>{page}</NestedLayout>
+    </Layout>
+  )
+}
+```
+
+:::
+
+##### 自定义document
+
+- 若想自定义html和body，可以在`pages/_document.js/ts/tsx/jsx`中定义
+- _document仅在服务器上呈现，所以不能使用onClick事件
+
+```js
+// 必须传递下面四个组件
+import { Html, Head, Main, NextScript } from 'next/document'
+export default function Document() {
+  return (
+    <Html lang='en'>
+      <Head/>
+      <body>
+        <Main/>
+        <NextScript/>
+      </body>
+    </Html>
+  )
+}
+```
+
+#### 渲染
+
+nextjs有两种形式的pre-rendering方式：
+
+- 静态生成（SSG）：html将在构建时生成，同时在每个请求中重用
+- 服务端渲染（SSR）：在每个请求中生成html
+
+使用：
+
+- 可以混合使用两种模式，建议使用静态生成，可以通过cdn缓存，无需额外配置即可提高性能。某些情况下SSR可能是唯一选择
+
+静态生成：
+
+- 使用导出getStaticProps函数的形式获取props的数据，请求api
+- 使用导出getStaticPaths函数的形式获取paths里面的params等数据
+- 该函数仅能在page中导出，其他文件（比如_app、_err）都不能导出它
+
+服务端渲染：
+
+- 使用导出getServerSideProps函数的形式获取porps数据，请求api
