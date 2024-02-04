@@ -165,6 +165,10 @@ export function sidebarUsageFrame() {
           link: '/usage-frame/react/react-dom@18.2.0'
         },
         {
+          text: 'react-router@6',
+          link: '/usage-frame/react/react-router@6'
+        },
+        {
           text: "nextjs",
           link: "/usage-frame/react/nextjs",
         },
