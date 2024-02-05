@@ -644,6 +644,19 @@ export function sidebarUsageDiaries() {
     },
   ];
 }
+export function sidebarUsageGames() {
+  return [
+    {
+      text: "游戏攻略",
+      items: [
+        {
+          text: "中世纪王朝",
+          link: "/usage-games/中世纪王朝",
+        }
+      ]
+    },
+  ];
+}
 
 export function sidebar() {
   return {
@@ -654,6 +667,7 @@ export function sidebar() {
     "/usage-work-tool/": sidebarUsageWorkTool(),
     "/usage-inspiration/": sidebarUsageInspiration(),
     "/usage-books/": sidebarUsageBooks(),
+    "/usage-games/": sidebarUsageGames(),
     "/usage-diaries/": sidebarUsageDiaries(),
   };
 }

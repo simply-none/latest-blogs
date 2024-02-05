@@ -53,6 +53,11 @@ export function nav() {
           link: getFirstRoute("/usage-diaries/"),
           activeMatch: "/usage-diaries/",
         },
+        {
+          text: "游戏攻略",
+          link: getFirstRoute("/usage-games/"),
+          activeMatch: "/usage-games/",
+        },
       ],
     },
   ];
