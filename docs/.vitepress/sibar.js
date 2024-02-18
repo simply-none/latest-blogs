@@ -173,8 +173,18 @@ export function sidebarUsageFrame() {
           link: "/usage-frame/react/nextjs",
         },
         {
-          text: 'react-toolkit@2',
-          link: "/usage-frame/react/react-toolkit@2"
+          text: 'react状态管理',
+          collapsed: true,
+          items: [
+            {
+              text: 'react-toolkit@2',
+              link: "/usage-frame/react/react-toolkit@2"
+            },
+            {
+              text: 'zustand@4',
+              link: '/usage-frame/react/zustand@4'
+            }
+          ]
         }
       ],
     },

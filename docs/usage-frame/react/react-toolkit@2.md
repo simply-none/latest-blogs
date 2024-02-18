@@ -117,7 +117,7 @@ export function Counter () {
   // 方式二：获取
   // const count1 = useSelector(selectorCount)
   const dispatch = useDispatch()
-  const [incrementAmount, setIncrementAmount] = useState('2j')
+  const [incrementAmount, setIncrementAmount] = useState('2')
 
   return (
     <div>
