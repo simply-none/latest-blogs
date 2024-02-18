@@ -172,6 +172,10 @@ export function sidebarUsageFrame() {
           text: "nextjs",
           link: "/usage-frame/react/nextjs",
         },
+        {
+          text: 'react-toolkit@2',
+          link: "/usage-frame/react/react-toolkit@2"
+        }
       ],
     },
     {
