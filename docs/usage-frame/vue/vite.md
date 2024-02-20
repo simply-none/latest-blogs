@@ -150,7 +150,7 @@ degit anncwb/vue-vben-admin project-name
 - 影响构建的其他字段：extends、importsNotUsedAsValues、preserveValueImports、jsxFactory、jsxFragmentFactory
 
 **客户端类型**：
-- vite默认的类型定义是写给nodejs api的，要将其补充到一个vite应用的客户端代码环境中，需添加一个`d.ts`声明文件，内容为`/// <reference types="vite/client" />`，也可将`vite/client`添加到tsconfig的`compilerOptions.types`中，内容为`'types': ['vite/client']`，这将会提供以下类型定义补充：
+- vite默认的类型定义是写给nodejs api的，要将其补充到一个vite应用的客户端代码环境中，需添加一个`d.ts`声明文件，内容为`/// <reference types="vite/client" />`，也可将`vite/client`添加到tsconfig的`compilerOptions.types`中，内容为`'types': ['vite/client']`，这将会提供以下类型定义补充： 
   - 资源导入，比如导入一个svg文件
   - `import.meta.env`上vite注入的环境变量的类型定义
   - `import.meta.hot`上的HMR API类型定义
