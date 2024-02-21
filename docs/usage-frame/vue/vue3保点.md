@@ -273,7 +273,7 @@ const { name } = toRefs(person)
 
 **toValue**:
 
-定义：将值、refs、getters转为非响应性值，若参数是一个getter，它将会被调用并返回它的返回值
+定义：将值、refs、getters转为非响应性值，若参数是一个getter（即函数），它将会被调用并返回它的返回值，否则原样返回
 
 ```typescript
 import type { MaybeRefOrGetter } from 'vue'
@@ -2535,7 +2535,11 @@ render() {
 
 ## 事件
 
-语法：`v-on:eventName.modifiers="eventHandler"`，其中`v-on:`可简化成`@`
+语法：
+
+- 事件监听：`v-on:eventName.modifiers="eventHandler"`，其中`v-on:`可简化成`@`
+- 模块顶部声明需要触发的事件（组合式）：`const emit = defineEmits([eventName1, eventName2...])`
+- 事件触发：模板或选项式`$emit(eventName, data)`、组合式`emit(eventName, data)`
 
 处理器种类分辨：通过检查值是否是合法的js标识符或属性访问路径，若是则是方法，否则是内联
 
@@ -2587,7 +2591,7 @@ options = {
 - 按下鼠标按钮并移动，会选择该段文本
 - ......
 
-**按键修饰符**
+**按键修饰符**：
 
 语法：
 
@@ -2743,11 +2747,11 @@ function handleClick (arg) {
 
 定义：
 
-- 使用defineProps定义，参数和vue2类似，这样才知道外部传入的哪些是props，哪些是透传attributes
+- 使用`defineProps`宏或`props`选项定义，参数和vue2类似（比如字符串数组、对象等）
 
 使用：
 
-- 绑定多个props，使用`v-bind="props"`的形式。，比如`<div v-bind="{id: 'jou', class: 'jade'}"></div>`，和`<div id="jou" class="jade"></div>`寓意相同
+- 绑定多个props，使用`v-bind="props"`的形式。，比如`<div v-bind="{id: 'jou', class: 'jade'}"></div>`，和`<div id="jou" class="jade"></div>`意义相同
 - 获取props，可直接使用defineProps结合ref、computed的形式获取
 - 在定义时即defineProps内，使用camelCase形式的名字，在使用时即template下的组件上，使用kebab-case形式的名字
 - props的类型可以是String、Number、Boolean、Array、Object、Date、Function、Symbol，以及自定义的类或构造函数
@@ -2759,6 +2763,8 @@ function handleClick (arg) {
 - 子组件能够修改对象或数组的props内的元素，因为这两个是引用传递，不建议这样做，会有很大性能损耗。修改props的最佳方式是子组件用emit抛出一个事件去通知父组件修改
 - defineProps中的参数不可访问script setup中的其他变量，因为在编译时整个表达式会被移到外部函数中
 - 未传递的boolean类型的props默认值为false，其他类型则是undefined，默认值可通过default属性进行修改
+- 所有的props默认是可选的，除非声明了`required: true`
+- 所有的pros若未传递值，则默认为undefined，除非声明了default属性或类型是Boolean
 
 ::: code-group
 
@@ -2823,12 +2829,15 @@ withDefaults(defineProps<Props>(), {
 const props = defineProps(['title'])
 
 const newProp = ref(props.title)
-const newProps = computed(() => props.title)
+const newProp2 = computed(() => props.title)
 ```
 
 :::
 
 **props校验**：
+
+- type的值可以是String、Number、Boolean、Array、Object、Date、Function、Symbol、Error
+- type的值也可以是自定义类型（比如`class Person {}`）中的Person类型，这时会通过instanceof检查传过来的prop的类型是否是Person类型的实例
 
 ```vue
 <script setup>
@@ -2855,7 +2864,7 @@ defineProps({
   },
   // 自定义类型校验
   porpE: {
-    validator (value) {
+    validator (value, props) {
       return ['success', 'warning'].includes(value)
     }
   },
@@ -2872,6 +2881,11 @@ defineProps({
 
 </script>
 ```
+
+**Boolean类型转换**：
+
+- 若props的类型是Boolean，则传递无值的prop（比如`<a disabled/>`），默认为true，不传递则为false
+- 若props的类型包括Boolean、Number、String中的多个类型，当String在前面时，则传递无值的prop，默认为`''`，其他情况为true
 
 ### 属性透传
 
@@ -4573,9 +4587,12 @@ let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
 <!-- 使用组件 -->
 <template>
   <!-- 默认组件的v-slot可以直接放在组件名上 -->
-  <SubCom v-slot="slotProps">
+  <SubCom>
     <!-- 非template的默认就是默认插槽的内容 -->
-    {{ slotProps.text }}: {{ slotProps.count }}
+    <!-- 同时使用默认插槽和具名插槽时，不能直接放在组件名上 -->
+    <template #default="slotProps">
+      {{ slotProps.text }}: {{ slotProps.count }}
+    </template>
 
     <!-- header插槽：具名作用域插槽 -->
     <template #header="{ headername }">
@@ -4584,6 +4601,25 @@ let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
     </template>
   </SubCom>
 </template>
+```
+
+```vue [slot多次渲染]
+<!-- 渲染一个列表数据 -->
+<FancyList :api-url="url" :per-page="10">
+  <template #item="{ body, username, likes }">
+    <div class="item">
+      <p>{{body}}</p>
+      <p>{{username}} | {{likes}}</p>
+    </div>
+  </template>
+</FancyList>
+
+<!-- fancyList组件内部 -->
+<ul>
+  <li v-for="item in items">
+    <slot name="item" v-bind="item"></slot>
+  </li>
+</ul>
 ```
 
 :::
@@ -4611,12 +4647,22 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 
 ### v-model
 
+本质：v-model本质上是为input元素服务的
+
 改动：
 
 - v-model的prop和事件名从value和input改为modelValue和update:modelValue
 - 可以对v-model增加参数，`v-modle:title="pageTitle"`等同于`:title="pageTitle" @update:title="pageTitle = $event" />`
 - 可以传入多个v-model
 - v-model支持自定义修饰符
+- v3.4版本之后，新增`defineModel`宏，用于简化子组件defineProps+defineEmits+emit的操作，其中：
+  - 该宏返回一个ref，功能和ref功能一致，起到了在父组件和当前变量之间双向绑定的作用
+  - 该宏返回值.value和父组件v-model的值同步变更，即父组件/子组件改变值，子组件/父组件会同时进行更新，意味着可以直接在input元素上使用v-model，绑定的值为使用了该宏的变量，即`model = defineModel(); <input v-model="model"/>`
+  - 该宏内部实现机制是一个名为modelValue的prop（故而，可以给传递prop选项，比如defult、required给该宏的第二个参数）和一个update:modelValue的事件
+  - `v-model="xxx"` => `const model = defineModel()`
+  - `v-model.cap="xxx"` => `const [model, modelModifiers] = defineModel()`
+  - `v-model:title="xxx"` => `const title = defineModel('title')`
+  - `v-model:title.cap="xxx"` => `const [title, titleModifiers] = defineModel('title')`
 
 定义：默认情况下，包含input的封装组件中的v-model在简化前使用modelValue作为prop和update:modelValue作为事件。这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值，因为使用v-model进行简化了。
 
@@ -4632,10 +4678,11 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 ```typescript [v-model简写]
 // 1. 基础用法1
 <My-Input v-model="value"/>
-<!-- 等同于下面 -->
+<!-- 等同于： -->
 <My-Input :modelValue="value" @update:modelValue="val => value = val"></My-Input>
 
 <!-- 子组件 -->
+// <=v3.3
 <input :value="modelValue" @input="e => $emit('update:modelValue', e.target.value)"/>
 
 const emit = defineEmits(['update:modelValue'])
@@ -4651,11 +4698,17 @@ const porps = defineProps({
   }
 })
 
+// v3.4+
+<input v-model="model"/>
+
+const model = defineModel()
+
 // 1. 基础用法2：使用一个具有getter和setter的computed属性
 // 父组件：
 <My-Input v-model="modelValue"/>
 
 // 子组件：
+// <=v3.3
 <input v-model="value"/>
 
 import { computed } from 'vue'
@@ -4670,10 +4723,23 @@ const value = computed({
   }
 })
 
+// v3.4+
+<input v-model="model"/>
+
+const [model, modifiers] = defineModel({
+  set (value) {
+    if (modifiers.xxx) {
+      return value.slice(1)
+    }
+    return value
+  }
+})
+
 // 2. 自定义参数名称
 <My-Input v-model:title="value">
 
 <!-- 子组件 -->
+// <=v3.3
 <input :value="title" @input="e => $emit('update:title', e.target.value)"/>
 
 defineEmits(['update:title'])
@@ -4688,8 +4754,36 @@ const porps = defineProps({
   }
 })
 
+// v3.4+
+<input v-model="title"/>
+// 此处defineModel的第一个参数，即父组件中v-model自定义参数title，两者需对应
+const title = defineModel('title')
+
 // 3. 自定义修饰符
 <My-Input v-model:title.toUpperCase="value"/>
+
+// 子组件
+// <=v3.3
+<script setup>
+const props = defineProps({
+  title: String,
+  titleModifiers: {
+    default: () => ({})
+  }
+})
+const emit = defineEmits(['update:title'])
+</script>
+<template>
+  <input type="text" :value="title" @input="e => $emit('update:title', e.target.value)"/>
+</template>
+
+// v3.4+
+<script setup>
+  const [title, titleModifiers] = defineModel('title')
+</script>
+<template>
+  <input type='text' v-model="title"/>
+</template>
 ```
 
 ```vue [基本用法]
@@ -4707,6 +4801,7 @@ export default {
 
 // 子组件Child
 <script>
+// <=v3.3
 export default {
   props: {
     title: String,
@@ -4720,6 +4815,17 @@ export default {
   `
 }
 </script>
+
+<script setup>
+// v3.4+
+// 宏的返回值可进行解构，以获取值和修饰符对象信息
+const title = defineModel('title')
+const bookDesc = defineModel('bookDesc')
+</script>
+<template>
+  <input type="text" v-model="title"/>
+  <input type="text" v-model="bookDesc"/>
+</template>
 ```
 
 ```vue [带修饰符的v-model]
@@ -4730,11 +4836,15 @@ export default {
 
 <script>
 // 子组件Child
+// <=v3.3
 export default {
   props: {
     title: String,
     bookDesc: String,
-    titleModifiers: Object
+    titleModifiers: {
+      type: Object,
+      default: () => ({})
+    }
   },
   // 若要父组件中的bookTitle同步更新，子组件必须将要emit的事件写明：此处是title
   emits: ['update:title', 'update:bookDesc'],
@@ -4754,6 +4864,16 @@ export default {
   }
 }
 </script>
+
+<script setup>
+// v3.4+，宏返回的值可进行解构，以获取修饰符信息
+const [title, titleModifiers] = defineModel('title')
+const bookDesc = defineModel('bookDesc')
+</script>
+<template>
+  <input type="text" v-model="title"/>
+  <input type="text" v-model="bookDesc"/>
+</template>
 ```
 
 :::
@@ -4772,7 +4892,7 @@ export default {
 - 在使用了v-model的textarea中不支持双大括号插值表达式，因为v-model就代表了它的值
 - 在radio、checkbox、select元素中，v-model绑定的是静态字符串/布尔值，因为v-model绑定的是元素的value或者是checked。若想将值绑定动态数据（可以是非字符串类型），应使用v-bind:value实现
 
-**作用在v-model上的修饰符**
+**作用在v-model上的修饰符**：
 
 `.lazy`：在change事件后更新v-model绑定的数据，默认情况是在input事件后更新。
 
