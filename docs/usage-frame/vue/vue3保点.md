@@ -4647,7 +4647,7 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
 
 ### v-model
 
-本质：v-model本质上是为input元素服务的
+本质：v-model本质上是为表单元素（input、textarea、select）服务的
 
 改动：
 
@@ -4663,6 +4663,8 @@ v-on:native原用于对原生组件实行监听，现在vue3全面兼容，只�
   - `v-model.cap="xxx"` => `const [model, modelModifiers] = defineModel()`
   - `v-model:title="xxx"` => `const title = defineModel('title')`
   - `v-model:title.cap="xxx"` => `const [title, titleModifiers] = defineModel('title')`
+- 对于原生表单元素（input(value/checked, input/change)、textarea(value, input)、select(value, change)），可直接使用v-model（对于IME语言，若想要值实时变动，应该使用value和input事件）
+- 对于元素表单元素，可指定value属性，在选中时，会选定该值
 
 定义：默认情况下，包含input的封装组件中的v-model在简化前使用modelValue作为prop和update:modelValue作为事件。这里的v-model具名参数和vue2中的v-bind和emit类似，只不过这里在父组件中不需要重新写一个函数接收它的值，因为使用v-model进行简化了。
 
