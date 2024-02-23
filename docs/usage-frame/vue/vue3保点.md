@@ -61,11 +61,11 @@ vscode插件：
 
 ### 响应性基本原理
 
-**深层响应性**
+**深层响应性**：
 
 vue中的状态是默认深层响应式的，会检测到响应性变量的深层次属性修改；同时，也可在某些特定场景中使用shallowXxx api创建浅层响应式对象，仅在顶层具有响应性。
 
-**响应式代理 vs 原始对象**
+**响应式代理 vs 原始对象**：
 
 原始对象：不会触发视图更新
 响应式对象（代理对象）：会触发视图更新
@@ -309,7 +309,7 @@ useFeature(() => 1)
 
 定义：如果参数是一个ref值，则返回其.value的值，否则返回参数本身
 
-**shallowRef**
+**shallowRef**：
 
 定义：
 
@@ -318,7 +318,7 @@ useFeature(() => 1)
 
 注意：上述的不引发视图更新，仅仅是指单独操作该属性时。如果混合着操作其他对象/属性，则有可能会引发变更
 
-**shallowReactive**
+**shallowReactive**：
 
 定义：
 
@@ -371,7 +371,7 @@ function changeStates () {
 </template>
 ```
 
-**shallowReadonly**
+**shallowReadonly**：
 
 定义：
 
@@ -382,7 +382,7 @@ function changeStates () {
 
 - 值为ref的属性不会被自动解包（解包：可以不需要调用.value即可访问该值）
 
-**triggerRef**
+**triggerRef**：
 
 定义：
 
@@ -507,7 +507,7 @@ function getNewObj () {
 
 :::
 
-**toRaw**
+**toRaw**：
 
 定义：
 
@@ -515,7 +515,7 @@ function getNewObj () {
 - 返回响应式对象（reactive、readonly、shallowReactive、shallowReadonly）的原对象，返回值再用对应的api包裹，又会返回响应式对象
 - 是一个可用于临时读取而不引起代理访问/跟踪开销，或写入不触发更改的特殊方式，不建议持久引用
 
-**markRaw**
+**markRaw**：
 
 定义：
 
@@ -558,7 +558,7 @@ bar.nested.a = Date.now()   // 视图不会变化
 // 由上述可引申出：若对象是响应式数据(proxy)，则属性修改后视图同步刷新，若对象是普通对象，则属性修改后视图不刷新
 ```
 
-**effectScope**
+**effectScope**：
 
 定义：创建一个effect作用域，在该作用域内部可以捕获其中创建的响应式副作用（计算属性和侦听器）
 
@@ -1042,7 +1042,7 @@ const double = computed<number>(() => count.value * 2)
 
 [生命周期图示](https://cn.vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram)
 
-**onBeforeMount**
+**onBeforeMount**：
 
 定义：注册一个回调函数，在组件挂载前调用的
 
@@ -1083,7 +1083,7 @@ onMounted(() => {
 </script>
 ```
 
-**onBeforeUpdated**
+**onBeforeUpdated**：
 
 作用：注册一个函数，在组件即将因为响应式变更而更新dom之前被调用的
 
@@ -1091,7 +1091,7 @@ onMounted(() => {
 
 - 用来在更新dom之前访问dom状态，可用于更改状态
 
-**onUpdated**
+**onUpdated**：
 
 定义：
 
@@ -1103,11 +1103,11 @@ onMounted(() => {
 - 该钩子会在组件的任意DOM更新后调用，若想在某个特定状态更改后访问更新后的dom，也可使用nextTick
 - 不要在该钩子中更改组件状态，可能会导致无限更新循环
 
-**onBeforeUnmount**
+**onBeforeUnmount**：
 
 定义：注册一个回调，在组件实例卸载前调用，调用时组件实例保留着全部功能
 
-**onUnmounted**
+**onUnmounted**：
 
 定义：
 
@@ -1118,7 +1118,7 @@ onMounted(() => {
 - 组件已卸载情形：所有子组件都已经被卸载；所有相关的响应式作用（computed、watch等）都已经停止
 - 该钩子用于清理一些副作用（计时器、监听器、服务器连接）
 
-**onErrorCaptured**
+**onErrorCaptured**：
 
 定义：注册一个回调，在捕获了后代组件传递的错误时调用
 
@@ -1127,30 +1127,36 @@ onMounted(() => {
 - 错误源有：组件渲染、事件处理器、生命周期钩子、setup函数、侦听器、自定义指令钩子、过渡钩子
 - 回调函数参数：错误对象err、触发错误的组件实例instance、错误来源说明info
 
-**onActivated**
+错误传递规则：
+
+- 默认情况下，所有错误（包括errorCaptured本身抛出的错误）都会发送到`app.config.errorHandler`（可进行错误统一处理）
+- 组件的继承链存在多个errorCaptured钩子，对于同一个错误，会依次向上传递（类似事件冒泡）
+- errorCaptured钩子可以返回false阻止错误向上传递
+
+**onActivated**：
 
 定义：注册一个回调，若组件实例 是keepalive缓存树的一部分，当组件被插入到dom中时被调用
 
-**onDeactivated**
+**onDeactivated**：
 
 定义：注册一个回调，若组件实例 是keepalive缓存树的一部分，当组件从dom中被移除时调用
 
-**onServerPrefetch**
+**onServerPrefetch**：
 
-定义：注册一个回调，组件实例在服务器上被渲染之前调用（ssr only）
+定义：注册一个异步回调，组件实例在服务器上被渲染之前调用（ssr only）
 
 使用：
 
 - 若回调返回要给promise，则服务器渲染会在渲染该组件前等待promise完成
 - 用于执行仅存在于服务器的一些操作（比如数据抓取过程）
 
-**onRenderTracked**
+**onRenderTracked**：
 
 定义：注册一个回调，**开发环境下**，在**组件渲染过程中**追踪到响应式依赖时调用
 
 使用：`onRenderTracked(({effect, target, type, key}) => {/* 处理 */})`
 
-**onRenderTriggered**
+**onRenderTriggered**：
 
 定义：注册一个回调，**开发环境下**，在**响应式依赖变更**触发组件渲染时调用
 
@@ -1374,7 +1380,7 @@ export default defineComponent {
 - 要访问组件实例属性，需要定义provide为一个返回对象的函数（和data选项用法一致）
 - 要想使provide和inject保持响应性（即provide的变化影响inject值的变化），需要传递一个响应式变量（ref或reactive）或computed给provide的属性，同时响应式变量的变更也应该放在provide中，在使用inject的组件中调用变更函数进行provide的变更
 
-**inject**
+**inject**：
 
 - 语法：`const foo = inject('key', default)`
 - 若默认值是一个函数，需要添加第三个参数为false
@@ -1608,7 +1614,7 @@ watch(
 监听选项options：
 
 | 选项 | 类型 | 默认值 | 可选值 | 作用 |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |---|
 | deep | boolean | false | true | false | 是否进行深度监听 |
 | immediate | boolean | false | true | false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化就执行 |
 | flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机，其中post可以访问更新后的dom，或使用`watchPostEffect`函数 |
@@ -2163,29 +2169,6 @@ const props = defineProps({
 
 :::
 
-## 实例property
-
-### $attrs
-
-定义：
-
-- 包含了父作用域中不作为组件props、自定义事件的属性绑定、事件
-- 当组件无声明任何prop时，他会包含所有父作用域的绑定，通过`v-bind="$attrs"`传入内部组件
-- vue3中的$attrs包含了所有传递给组件的attribute，其中包括class和style
-
-## 片段
-
-定义：即多根节点的组件，这要求显式定义attribute（传入的props）所处的位置
-
-```typescript
-<!-- Layout.vue -->
-<template>
-  <header>...</header>
-  <main v-bind="$attrs">...</main>
-  <footer>...</footer>
-</template>
-```
-
 ## 渲染函数
 
 前置知识：
@@ -2312,10 +2295,8 @@ render () {
 | `.stop` | `event.stopPropagation()` |
 | `.prevent` | `event.preventDefault()` |
 | `.self` | `if (event.target !== event.currentTarget) return` |
-| 按键：  
-`.enter`, `.13` | `if (event.keyCode !== 13) return` (对于别的按键修饰符来说，可将 13 改为[另一个按键码(opens new window)](http://keycode.info/) |
-| 修饰键：  
-`.ctrl`, `.alt`, `.shift`, `.meta` | `if (!event.ctrlKey) return` (将 `ctrlKey` 分别修改为 `altKey`, `shiftKey`, 或 `metaKey`) |
+| 按键：  `.enter`, `.13` | `if (event.keyCode !== 13) return` (对于别的按键修饰符来说，可将 13 改为[另一个按键码(opens new window)](http://keycode.info/) |
+| 修饰键：  `.ctrl`, `.alt`, `.shift`, `.meta` | `if (!event.ctrlKey) return` (将 `ctrlKey` 分别修改为 `altKey`, `shiftKey`, 或 `metaKey`) |
 
 ::: code-group
 
@@ -2748,6 +2729,44 @@ function handleClick (arg) {
 定义：
 
 - 使用`defineProps`宏或`props`选项定义，参数和vue2类似（比如字符串数组、对象等）
+
+类型：
+
+```typescript
+interface ComponentOptions {
+  props?: ArrayPropsOptions | ObjectPropsOptions
+}
+
+// 字符串数组：['propA', 'propB']
+type ArrayPropsOptions = string[]
+
+/**
+ * 对象语法：
+ * {
+ *  // 类型1
+ *  propA: String,
+ *  // 类型2
+ *  propB: [String, Number],
+ *  // 类型3
+ *  propC: {
+ *    type: String,
+ *    xxx...
+ *  }
+ * }
+ */
+type ObjectPropsOptions = { [key: string]: Prop }
+
+type Prop<T = any> = PropOptions<T> | PropType<T> | null
+
+interface PropOptions<>{
+  type?: PropType<T>
+  required?: boolean
+  default?: T | ((rawProps: object) => T)
+  validator?: (value: unknown, rawProps: object) => boolean
+}
+
+type PropType<T> = { new () : T } | { new () : T }[]
+```
 
 使用：
 
@@ -3255,7 +3274,7 @@ ssr应用解决方案：
 
 ### typescript与选项式api
 
-**定义组件**
+**定义组件**：
 
 ```vue
 <!-- 当lang=ts存在时，所有模板内（即template块中的）表达式都将享受到更严格的类型检查 -->
@@ -3349,7 +3368,7 @@ type Props = ExtractPropTypes<typeof propsOptions>
 
 定义：从运行时的props选项对象中提取面向外部的（父组件传递的）prop，用法同上
 
-**ComponentCustomProperties**
+**ComponentCustomProperties**：
 
 定义：增强组件实例类型，以支持自定义全局属性
 
@@ -3364,7 +3383,7 @@ declare module 'vue' {
 }
 ```
 
-**ComponentCustomOptions**
+**ComponentCustomOptions**：
 
 定义：扩展组件选项类型，以支持自定义选项
 
@@ -3378,7 +3397,7 @@ declare module 'vue' {
 }
 ```
 
-**CSSProperties**
+**CSSProperties**：
 
 定义：扩展在样式属性绑定的允许的值的类型
 
@@ -3789,7 +3808,16 @@ export default {
 
 ### 片段
 
-即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
+定义：即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
+
+```typescript
+<!-- Layout.vue -->
+<template>
+  <header>...</header>
+  <main v-bind="$attrs">...</main>
+  <footer>...</footer>
+</template>
+```
 
 ## 过渡和动画
 
