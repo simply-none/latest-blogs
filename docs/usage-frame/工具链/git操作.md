@@ -16,6 +16,12 @@
 8. 之后git push提交就不需要github密码了
 9. 验证是否连接到github：`ssh -T git@github.com`
 
+## git提交信息（包括文件名）中文自动编码转义
+
+场景：不显示中文，中文都通过encode自动编码了
+
+解决方法：`git config --global core.quotePath false`
+
 ## git统计操作
 
 ```bash
