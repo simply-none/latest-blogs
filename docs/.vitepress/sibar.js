@@ -660,6 +660,10 @@ export function sidebarUsageDiaries() {
       text: "记录5月29日以后的感想感悟",
       link: "/usage-diaries/感悟",
     },
+    {
+      text: "resume",
+      link: "/usage-diaries/resume",
+    },
   ];
 }
 export function sidebarUsageGames() {
