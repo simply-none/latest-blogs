@@ -232,6 +232,15 @@ window.getToken = function (data) {
 
 打开模拟器安装目录，找到类似`adb.exe`的文件后，然后运行`adb connect 127.0.0.1:[port]`提示连接成功后，打开【运行】-【运行到手机或模拟器】-【运行到安卓基座】，点击刷新，找到相同的`port`即可
 
+### 本地离线打包
+
+建议使用uniapp官方推荐的离线sdk的目录中的项目进行修改更快，而非创建一个新项目
+
+Android Studio打包没有`Generate signed apk`选项，解决方法：
+
+- 必须配置代理，下载控制台提示的某些文件（比如gradle-6.5-all.zip），放在本地，在`gradle\wrapper\gradle-wrapper.properties`文件中通过本地路径`distributionUrl=file:///C:/Users/admin/Downloads/Android-SDK@3.99.81993_20231227/HBuilder-Integrate-AS/gradle-6.5-all.zip`引入它
+- 【必须配置代理，下载控制台提示的某些文件，放在本地，然后通过本地引入它】，再点击`file`，选中`Sync Project with Gradle Files`，等需要增加的文件下载完，在重启就可以了。
+
 ### 复杂布局可多使用插槽
 
 在复杂的页面布局中，可灵活使用（嵌套的）插槽的形式进行组件的开发。这样数据的传递和获取都变得更加的容易。类似下面：
