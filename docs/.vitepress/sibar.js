@@ -129,6 +129,10 @@ export function sidebarUsageFrame() {
               text: "速记",
               link: "/usage-frame/小程序/uniapp/速记",
             },
+            {
+              text: "nvue开发指导",
+              link: "/usage-frame/小程序/uniapp/nvue开发指导",
+            },
           ],
         },
       ],
