@@ -2082,14 +2082,18 @@ class ImageControl implements SelectableControl {
 
 ## 函数
 
-定义：声明式和函数表达式形式，如下：
+定义：
 
-```typescript
-// 函数声明
+::: code-group
+
+```typescript [函数定义1：普通定义]
+// 1
+// 普通函数声明
 function sum(x: number, y: number): number {
   return x + y;
 }
 
+// 2
 // 函数表达式，左边的是函数的定义 (参数类型) => 返回值类型
 // 左边参数的名字，不需要和右边参数的名字一一对应，只要参数类型一致即可
 // 函数的参数类型不一定是必须的，ts编译器可以自动推断出对应类型（上下文归类）
@@ -2100,6 +2104,7 @@ let mySum: (x: number, y: number) => number = function (
   return x + y;
 };
 
+// 3
 // 接口
 interface MySum {
   // 和函数表达式类似，对等号左边的类型进行限制
@@ -2109,9 +2114,11 @@ let mySum: MySum = function (x: number, y: number): number {
   return x + y;
 };
 
+// 4
 // 类型别名
 type MySumT = (x: number, y: number) => number;
 
+// 5
 // 对象方法
 interface AddT {
   add: (x: number, y: number) => number
@@ -2121,7 +2128,155 @@ const obj: AddT = {
     return x + y
   }
 }
+
+// 6
+// 声明具有属性的函数：使用call signatures
+type DescribableFunction =  {
+  // 函数属性声明
+  description: string;
+  // 函数类型声明
+  (someArg: nubmer): boolean;
+}
+
+function myFunc(someArg: number) {
+  return someArg > 3;
+}
+myFunc.description = 'default description';
+
+function doSomething (fn: describableFunction) {
+  console.log(fn.description + " returned " + fn(6));
+}
+doSomething(myFunc);
+
+// 7
+// 构造函数签名，表明该函数是构造函数，可通过new 进行调用生成对象
+type SomeConstructor = {
+  new (s: string): SomeObject;
+};
+
+function fn(ctor: SomeConstructor) {
+  return new ctor('hello')
+}
+
+// 8
+// 同时包含构造函数和普通函数调用
+interface CallOrConstruct {
+  (n?: number): string;
+  new (s: string): Date;
+}
+
+// 9
+// 在函数中声明this
+interface User {
+  id: number;
+  admin: boolean;
+}
+interface DB {
+  filterUsers(filter: (this: User) => boolean): User[];
+}
+declare const getDB: () => DB;
+
+const db = getDB()
+// 这里filterUsers的参数 不能使用箭头函数
+const admin = db.filterUsers(function (this: User) {
+  return this.admin
+})
+
+
 ```
+
+```typescript [函数定义2：泛型]
+// 1
+function firstElement<Type>(arr: Type[]): Type | undefined {
+  return arr[0];
+}
+// number
+type Num = ReturnType<typeof firstElement<number>>
+
+// 2：type inference
+function maps<Input, Output>(arr: Input[], func: (arg: Input): Output[] => Output) {
+  return arr.map(func)
+}
+
+// 此处的parsed会自动被推断为number[]类型
+const parsed = maps(['1', '2', '3'], (n) => parseInt(n))
+
+// 3：type constraint
+function longest<Type extends { length: number }>(a: Type, b: Type) {
+  if (a.length >= b.length) {
+    return a
+  } else {
+    return b
+  }
+}
+// error: Argument of type 'number' is not assignable to parameter of type '{ length: number; }'.
+// 因为number类型没有length属性，而Type限制了参数的类型
+const notOk = longest(10, 100);
+
+// 4：working with constrained values
+function minimumLength<Type extends { length: number }> (
+  obj: Type,
+  minimum: number
+): Type {
+  if (obj.length > minimum) {
+    return obj
+  } else {
+    // 报错：
+    // Type '{ length: number; }' is not assignable to type 'Type'.
+    // '{ length: number; }' is assignable to the constraint of type 'Type', but 'Type' could be instantiated with a different subtype of constraint '{ length: number; }'.
+    // 此处报错的原因是：{ length: minimum }仅仅是符合Type的类型约束{ length: number }
+    // 而实际上，函数的返回值类型，和类型约束可能毫无关联，比如Type是Array类型
+    // 函数的返回值类型是Type，即Array类型，但代码中 { length: minimum }明显不是Array类型
+    return { length: minimum }
+  }
+}
+```
+
+```typescript [编写良好的泛型函数]
+// 1: push type parameters down
+function firstElementGood<Type>(arr: Type[]) {
+  return arr[0]
+}
+
+function firstElementBad<Type extends and[]>(arr: Type) {
+  return arr[0]
+}
+
+// number
+const good = firstElementGood([1, 2, 3])
+// any
+const bad = firstElementBad([1, 2, 3])
+
+// 2: use fewer type parameters
+function filterGood<Type>(arr: Type[], func: (arg: Type) => boolean): Type[] {
+  return arr.filter(func)
+}
+
+function filterBad<Type, Func extends (arg: Type) => boolean>(
+  arr: Type[],
+  func: Func
+): Type[] {
+  return arr.filter(func)
+}
+
+// 3： type parameters should appear twice
+function greetGood<Str extends string>(s: Str) {
+  // 这里虽然代码中只使用了一次Str，但是由于该函数的返回值和参数类型一致
+  // 所以还是相当于使用了2次的
+  return s
+}
+
+function greetBetter(s: string) {
+  // 只使用一次，不应该用泛型
+  console.log(s)
+}
+
+function greetBad<Str extends string>(s: Str) {
+  console.log(s)
+}
+```
+
+:::
 
 场景：
 
@@ -2131,27 +2286,49 @@ const obj: AddT = {
 使用：
 
 - 函数传入的参数类型必须是和定义时一致
-- 函数的可选参数，必须在必须参数后面 `(x: number, y?: number)`
-- 函数无返回值，其返回值类型为 `void`
+- 函数的可选参数，必须在必传参数后面 `(x: number, y?: number)`
+- 函数无返回值，或者`return ;`时，其返回值类型为 `void`
 - 函数参数的默认值 `(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用 `undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
 - 函数定义中参数也可用剩余参数，必须在参数的最后一个 `(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
 - 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把精确的函数定义写在前面*
 - 异步函数的返回值，用 `Promise<T>`定义，这个适用于promise和async...await，其中T是resolve的返回值类型
+- 具有较少参数的函数，可以赋值给较多参数的函数类型
+- 具有较多返回值的函数，可以赋值给较少返回值的函数类型
 
 ::: code-group
 
 ```typescript
-function reverse(x: number): number;
-function reverse(x: string): string;
-// 函数重载中，最后一个出现的必须是函数的实现
+// 函数签名（不限个数）
+function makeDate(timestamp: number): Date;
+function makeDate(timestamp: string): Date;
+function makeDate(m: number, d: number, y: number): Date;
+
+// 函数的实现（函数主体，兼容函数签名的函数类型）：函数重载中，最后一个出现的必须是函数的实现
 // 此时需要把可能涉及到的参数类型都写出来，用于匹配之前的同名函数参数
-function reverse(x: number | string): number | string | void {
-  if (typeof x === "number") {
-    return Number(x.toString().split("").reverse().join(""));
-  } else if (typeof x === "string") {
-    return x.split("").reverse().join("");
+function makeDate(mOrTimestamp: number | string, d?: number, y?: number): Date {
+  if (d !== undefined && y !== undefined && typeof mOrTimestamp === 'number') {
+    return new Date(y, mOrTimestamp, d);
+  } else {
+    return new Date(mOrTimestamp);
   }
 }
+
+// 🟨注意：只能调用 符合【函数签名】的例子
+// No overload expects 2 arguments, but overloads do exist that expect either 1 or 3 arguments.（参数只能1个或3个）
+const d3 = makeDate(1, 3); 
+// No overload matches this call.
+// 是否符合第一个重载
+// Overload 1 of 3, '(timestamp: number): Date', gave the following error.
+//    Argument of type '"hello" | number[]' is not assignable to parameter of type 'number'.
+//    Type 'string' is not assignable to type 'number'.
+//    从实际类型的第一个类型（'hello'即string）来判断是否符合
+// 是否符合第二个重载
+// Overload 2 of 3, '(timestamp: string): Date', gave the following error.
+//    Argument of type '"hello" | number[]' is not assignable to parameter of type 'string'.
+//    Type 'number[]' is not assignable to type 'string'.
+//    第一个类型符合，则判断第二个类型（[0]即number[]是否符合）
+const d4 = makeDate(Math.random() > 0.5 ? 'hello' : [0])
+
 ```
 
 ```typescript
