@@ -47,7 +47,7 @@
   },
   "standard-version": {
     "skip": {
-      "changelog": true,
+      "changelog": false,
       "tag": false,
       "commit": false
     }
