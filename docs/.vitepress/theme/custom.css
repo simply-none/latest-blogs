@@ -48,3 +48,36 @@ html:not(.dark) .vp-doc [class*='language-'] > button.copy.copied, .vp-doc [clas
 html:not(.dark) .vp-doc [class*='language-'] > span.lang {
   color: rgb(166 166 189 / 56%);
 }
+
+/* 修改页面宽度 */
+@media (min-width: 960px) {
+  .VPSidebar {
+    padding-left: 32px !important;
+    width: var(--vp-sidebar-width) !important;
+  }
+  .VPSidebar::-webkit-scrollbar{
+    width: 0;
+  }
+  .VPSidebar:hover::-webkit-scrollbar{
+    width: 6px;
+  }
+  .VPSidebar::-webkit-scrollbar-thumb {
+    background-color: #eee;
+  }
+  
+  .VPContent.has-sidebar {
+    padding-right: 0 !important;
+    padding-left: var(--vp-sidebar-width) !important;
+  }
+  .VPDoc.has-aside .content-container {
+    max-width: unset !important;
+  }
+  .VPNavBar.has-sidebar .content {
+      padding-right: 32px !important;
+      padding-left: var(--vp-sidebar-width) !important;
+  }
+  .VPNavBar.has-sidebar div.title {
+    padding-left: 32px !important;
+    width: var(--vp-sidebar-width) !important;
+  }
+}
