@@ -892,7 +892,7 @@ let value: Disctionary<number>[42]
 - 映射类型是一种泛型类型，使用（通常是通过keyof创建的）键的联合，从而遍历键创建一个新类型
 - 映射类型类似一个函数，将一个类型，通过该函数（映射类型）转换成新的类型
 - 映射类型基于索引签名 `[ xxx ]: type;`
-- 映射修饰符：`readonly`、`?`，可配合`+`(默认), `-`使用
+- 映射修饰符：`readonly`、`?`，可配合 `+`(默认), `-`使用
 - 可通过as重新映射类型中的键
 
 注意：
@@ -902,7 +902,7 @@ let value: Disctionary<number>[42]
 
 ::: code-group
 
-```typescript [映射修饰符]
+```typescript
 type OptionsFlags<Type> = {
   [Property in keyof Type]: boolean;
 };
@@ -925,7 +925,7 @@ type Features = {
 type FeatureOptions = OptionsFlags<Features>;
 ```
 
-```typescript [通过as重新映射]
+```typescript
 type MappedTypeWithNewProperties<Type> = {
   // 将Properties重新映射为NewKeyType
   [Properties in keyof Type as NewKeyType]: Type[Properties];
@@ -987,7 +987,7 @@ type DBFields = {
 type ObjectsNeedingGDPRDeletion = ExtractPII<DBFields>;
 ```
 
-```typescript [内置类型的例子]
+```typescript
 // 内置类型的例子：
 type Readonly<T> = {
   readonly [P in keyof T]: T[P]
@@ -1027,7 +1027,7 @@ type Record<K extends keyof any, T> = {
 18. `Lowercase<StringType>`：将字符串的每个字符转为小写字母
 19. `Capitalize<StringType>`：将字符串的首字母转换为大写字母
 20. `Uncapitalize<StringType>`：将字符串的首字母转为小写字母
-21. `Awaited<Type>`: 用于await async函数、Promise的then方法，同时可以递归解包Promise（即`Promise(Promise(...))`这种形式）
+21. `Awaited<Type>`: 用于await async函数、Promise的then方法，同时可以递归解包Promise（即 `Promise(Promise(...))`这种形式）
 
 注意：
 
@@ -1035,7 +1035,7 @@ type Record<K extends keyof any, T> = {
 
 ::: code-group
 
-```typescript [内置工具类型]
+```typescript
 // partial:可选
 type Partial<T> = {
   [K in keyof T]?: T[K];
@@ -1084,7 +1084,7 @@ type Omit<T, U extends keyof any> = Pick<T, Exclude<keyof T, U>> = {
 type NonNullable<T> = T extends null | undefined ? never : T;
 ```
 
-```typescript [Partial]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1095,7 +1095,7 @@ let p: Partial<Todo> = {
 }
 ```
 
-```typescript [Required]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1107,7 +1107,7 @@ let p: Required<Todo> = {
 }
 ```
 
-```typescript [Readonly]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1121,7 +1121,7 @@ let p: Readonly<Todo> = {
 p.title = 'edit title'
 ```
 
-```typescript [Record]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1135,7 +1135,7 @@ let p: Record<Page, Todo> = {
 }
 ```
 
-```typescript [Pick]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1149,7 +1149,7 @@ let p: Pick<Todo, Page> = {
 }
 ```
 
-```typescript [Omit]
+```typescript
 interface Todo {
   title: string
   description: string
@@ -1162,26 +1162,26 @@ let p: Omit<Todo, Page> = {
 }
 ```
 
-```typescript [Exclude]
+```typescript
 // 'b' | 'c'
 type T0 = Exclude<'a' | 'b' | 'c', 'a'>
 // string | number
 type T2 = Exclude<string | number | (() => void), Function>
 ```
 
-```typescript [Extract]
+```typescript
 // 'a'
 type T0 = Extract<'a' | 'b' | 'c', 'a'>
 // () => void
 type T2 = Extract<string | number | (() => void), Function>
 ```
 
-```typescript [NonNullable]
+```typescript
 // string | number
 type T = NonNullable<string | number | null | undefined>
 ```
 
-```typescript [Parameters]
+```typescript
 declare function f1 (arg: { a: number, b: string }): void
 // []
 type T0 = Parameters<() => string>
@@ -1202,14 +1202,14 @@ type T6 = Parameters<Function>
 type T7 = Parameters<any>
 ```
 
-```typescript [ConstructorParameters]
+```typescript
 // [message?: string | undefined]
 type T0 = ConstructorParameters<ErrorConstructor>
 // 报错，Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
 type T1 = ConstructorParameters<Function>
 ```
 
-```typescript [ReturnType]
+```typescript
 // string
 type T0 = ReturnType<() => string>
 // unknown
@@ -1219,31 +1219,31 @@ type T2 = ReturnType<string>
 type T3 = ReturnType<Function>
 ```
 
-```typescript [Uppercase]
+```typescript
 type Greeting = 'hello'
 // HELLO
 type TitleGreeting = Uppercase<Greeting>
 ```
 
-```typescript [Lowercase]
+```typescript
 type Greeting = 'HeLlo'
 // hello
 type TitleGreeting = Lowercase<Greeting>
 ```
 
-```typescript [Capitalize]
+```typescript
 type Greeting = 'heLlo'
 // HeLlo
 type TitleGreeting = Capitalize<Greeting>
 ```
 
-```typescript [Uncapitalize]
+```typescript
 type Greeting = 'HeLlo'
 // heLlo
 type TitleGreeting = Uncapitalize<Greeting>
 ```
 
-```typescript [Awaited]
+```typescript
 // v4.5+
 // string
 type A = Awaited<Promise<string>>
@@ -1927,7 +1927,7 @@ myArr[0] = 'tom'
 
 :::
 
-5. `<b class="puzzled">`接口描述类类型`</b>`
+5. `<b class="puzzled">`接口描述类类型 `</b>`
 
 使用：
 
@@ -2086,7 +2086,7 @@ class ImageControl implements SelectableControl {
 
 ::: code-group
 
-```typescript [函数定义1：普通定义]
+```typescript
 // 1
 // 普通函数声明
 function sum(x: number, y: number): number {
@@ -2185,7 +2185,7 @@ const admin = db.filterUsers(function (this: User) {
 
 ```
 
-```typescript [函数定义2：泛型]
+```typescript
 // 1
 function firstElement<Type>(arr: Type[]): Type | undefined {
   return arr[0];
@@ -2232,7 +2232,7 @@ function minimumLength<Type extends { length: number }> (
 }
 ```
 
-```typescript [编写良好的泛型函数]
+```typescript
 // 1: push type parameters down
 function firstElementGood<Type>(arr: Type[]) {
   return arr[0]
@@ -2266,6 +2266,7 @@ function greetGood<Str extends string>(s: Str) {
   return s
 }
 
+// 如果函数参数类型是未知的，则还是应该使用泛型；参数类型是具体的，则应该使用对应的具体类型
 function greetBetter(s: string) {
   // 只使用一次，不应该用泛型
   console.log(s)
@@ -2287,7 +2288,7 @@ function greetBad<Str extends string>(s: Str) {
 
 - 函数传入的参数类型必须是和定义时一致
 - 函数的可选参数，必须在必传参数后面 `(x: number, y?: number)`
-- 函数无返回值，或者`return ;`时，其返回值类型为 `void`
+- 函数无返回值，或者 `return ;`时，其返回值类型为 `void`
 - 函数参数的默认值 `(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用 `undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
 - 函数定义中参数也可用剩余参数，必须在参数的最后一个 `(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
 - 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把精确的函数定义写在前面*

@@ -5,22 +5,39 @@
 ### template
 
 - 只能在`text`标签中设置字体大小、颜色等属性
+- 文字内容必须只能在text标签中，放在div、view中无法绑定js变量
+- text组件不能换行写内容，否则会出现无法去除的周边空白
 - 只支持`v-if`，不支持`v-show`
-- `image`标签不支持svg图片
+- `image`标签不支持svg图片，支持base64
+- `:render-whole="true"`：将组件及其子组件信息结构一次性和原生层通信，通过整个节点的重绘提升了排版渲染性能。为false时，总体渲染时间可能更久。该属性在高版本手机中效果不是很明显
+- 页面没有bounce回弹效果，仅有列表组件（list、recycle-list、waterfall）有该效果
+- 原生开发无页面滚动概念，页面高度超过屏幕高度不会自动滚动，需要在外层自动套scroller组件
 
 ### script
 
 - 不支持`onLoad`钩子，可使用`mounted`钩子
+- 在App.vue中定义的全局js变量不会在nvue页面中生效，globalData和vuex是生效的
+- 不支持在nvue页面中使用typescript/ts
 
 ### css
 
 - 只支持`class`选择器
-- 只支持flex布局
-- 只支持`px`，`rpx`，不支持`%`, `rem`, `vw`, `vh`
+- nvue盒模型box-sizing默认为border-box，即`width = content + padding + border`
+- nvue+android中，只支持`overflow:hidden;`，ios中支持hidden和visible
+- 不支持`/deep/`
+- 支持定位布局（position）
+- 支持动画、过渡、转换、阴影（box-shadow，安卓平台不是很完善，故新增elevation属性设置组件层级，层级越大阴影越明显）、线性渐变（linear-gradient）
+- 只支持flex布局，默认布局为column
+- flex成员项，暂不支持flex-shrink、flex-basis、align-content
+- 只支持`px`，`rpx`，不支持`%`, `rem`, `vw`, `vh`, 媒体查询
 - 不支持`background-image`，可使用`image`组件和`position`定位代替
 - `fixed`不支持`z-index`
 - `:class`, `:style`只支持数组模式
 - 全局样式，应该放在`uni.scss`文件中，或者将样式导入到该文件。这样整个项目都可以用这些样式了
+- 切换横竖屏时可能导致样式错乱，在nvue的页面中建议锁定手机方向
+- nvue组件在Android端默认是透明的，不设置背景颜色会导致出现重影问题
+- App.vue中定义的全局css，对nvue和vue页面同时生效
+- 不能在style中引入字体文件，nvue中字体图标的使用参考[加载自定义字体](https://uniapp.dcloud.net.cn/tutorial/nvue-api.html#addrule)，本地字体可用plus.io转换路径
 
 ### nvue获取组件的节点信息
 

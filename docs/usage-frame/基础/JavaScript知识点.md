@@ -1,10 +1,12 @@
 # JavaScript知识点
 
-## 运算符
+## ecmascript
+
+### 运算符
 
 逗号运算符：对他的每一个操作数从左往右求值，然后返回最后一个操作数的值
 
-## 方法
+### 方法
 
 arr.reduce语法如下：
 ```javascript
@@ -83,3 +85,17 @@ function callback (mutationList, observer) {
 }
 
 ```
+
+## 其他
+
+### js引擎
+
+- JavaScriptCore
+- v8
+- ……
+
+**浏览器的js引擎**：js引擎 + 浏览器专用API（比如dom、bom）
+
+**node.js引擎**：v8 + 电脑专用API（比如io）
+
+**手机端引擎**：js引擎 + 手机专用API（比如扫码）
