@@ -1,0 +1,9 @@
+{
+  "当前文件用于vscode的markdownlint插件": true,
+  "主要用于对某些markdownlint的规则进行自定义修改": true,
+  "no-trailing-spaces": false,
+  "no-bare-urls": false,
+  "line-length": false,
+  "no-blanks-blockquote": false,
+  "no-duplicate-heading": false
+}

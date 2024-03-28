@@ -39,6 +39,40 @@
 - App.vue中定义的全局css，对nvue和vue页面同时生效
 - 不能在style中引入字体文件，nvue中字体图标的使用参考[加载自定义字体](https://uniapp.dcloud.net.cn/tutorial/nvue-api.html#addrule)，本地字体可用plus.io转换路径
 
+### 加载自定义字体
+
+```vue
+<template>
+  <view>
+    <text class="my-iconfont">&#xe85c;</text>
+  </view>
+</template>
+
+<script>
+export default {
+  beforeCreate() {
+    const domModule = uni.requireNativePlugin('dom')
+    // fontFace为固定协议名称，不可修改
+    domModule.addRule('fontFace', {
+      // 添加字体，此处的名字可以随便取，
+      // 但是应该保证ttf实际的字体名字（默认为iconfont）特殊，不然注册时会发生冲突，从而注册失败
+      'fontFamily': 'myIconfont',
+      'src': 'url("http://at.alicdn.com/t/font_2234252_v3hj1klw6k9.ttf")'
+    })
+  }
+}
+</script>
+
+<style>
+.my-iconfont {
+  /* 使用字体 */
+  font-family: myIconfont;
+  font-size: 60rpx;
+  color: red;
+}
+</style>
+```
+
 ### nvue获取组件的节点信息
 
 在nvue中，不能使用 uni.createSelectorQuery获取节点信息
@@ -274,7 +308,9 @@ Android Studio打包没有`Generate signed apk`选项，解决方法：
 
 ### 系统导航栏占位
 
-使用`uni-nav-bar`中的`status-bar`组件放在页面/组件顶部即可
+使用`uni-nav-bar`中的`status-bar`组件放在页面/组件顶部即可；
+
+或使用`uni.getSystemInfoSync().statusBarHeight`获取状态栏高度，然后绑定到对应的元素上进行占位
 
 ### u-image图片无法显示
 
