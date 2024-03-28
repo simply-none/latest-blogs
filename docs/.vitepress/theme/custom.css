@@ -80,4 +80,7 @@ html:not(.dark) .vp-doc [class*='language-'] > span.lang {
     padding-left: 32px !important;
     width: var(--vp-sidebar-width) !important;
   }
+  .VPNavBar.has-sidebar .curtain {
+    width: calc(100% - var(--vp-sidebar-width)) !important;
+  }
 }
