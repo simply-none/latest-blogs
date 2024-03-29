@@ -39,6 +39,11 @@ export function nav() {
       text: 'v' + pkg.version,
       items: [
         {
+          text: "CHANGELOG",
+          link: '/CHANGELOG',
+          activeMatch: "/CHANGELOG",
+        },
+        {
           text: "单词表",
           link: getFirstRoute("/usage-dicts/"),
           activeMatch: "/usage-dicts/",
