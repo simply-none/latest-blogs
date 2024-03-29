@@ -1,17 +1,17 @@
 # TypeScript 知识点（第一期）
 
-> 参考文档：
-> http://www.patrickzhong.com/TypeScript/
-> https://juejin.cn/post/7018805943710253086
-> https://juejin.cn/post/7058868160706904078
-> 注意：可能有些过时内容
-> 😢😢😢表示文中不明白的，未记录的内容
+> 参考文档：      
+> http://www.patrickzhong.com/TypeScript/       
+> https://juejin.cn/post/7018805943710253086      
+> https://juejin.cn/post/7058868160706904078      
+> 注意：可能有些过时内容      
+> 😢😢😢表示文中不明白的，未记录的内容      
 
-> **注意事项**
-> ❌：表示实际上和记录有误或不一致的内容
-> 🟢：表示不太熟悉且重要的内容
-> 😢：表示尚未搞懂的内容
-> 🛑：阅读中断标志
+> **注意事项**      
+> ❌：表示实际上和记录有误或不一致的内容      
+> 🟢：表示不太熟悉且重要的内容      
+> 😢：表示尚未搞懂的内容      
+> 🛑：阅读中断标志      
 
 ## 变量声明
 
@@ -115,7 +115,7 @@ import logo from './assets/logo.png'
 
 ## 基础类型概述
 
-1. `unknown`类型
+1️⃣. `unknown`类型
    定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 
 使用：
@@ -126,7 +126,7 @@ import logo from './assets/logo.png'
 
 - unknown只能赋值给unknown和any
 
-2. `any`类型
+2️⃣. `any`类型
 
 定义：表示一个当前时刻不清楚类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 
@@ -145,7 +145,7 @@ let a;
 a.concat([])
 ```
 
-3. `void`类型
+3️⃣. `void`类型
 
 定义：表示没有任何类型，与any相反
 
@@ -158,7 +158,7 @@ a.concat([])
 - null
 - undefined
 
-4. `null`类型
+4️⃣. `null`类型
 
 定义：表示它本身
 
@@ -167,7 +167,7 @@ a.concat([])
 - 是所有类型的子类型，可以赋值给任何类型的变量
 - 指定了 **--strictNullChecks** 之后，只能赋值给any和它本身
 
-5. `undefined`类型
+5️⃣. `undefined`类型
 
 定义：表示它本身
 
@@ -180,7 +180,7 @@ a.concat([])
 
 - 在指定了 **--strictNullChecks** 之后，*函数的可选参数*以及*类的可选属性*的类型会被自动的加上 `| undefined`
 
-6. `never`类型
+6️⃣. `never`类型
 
 定义：表示永远不存在的值的类型
 
@@ -194,13 +194,13 @@ a.concat([])
 - never类型是任何类型的子类型，可以赋值给任何类型的变量
 - **只有never类型才能赋值给never类型**
 
-7. `boolean`类型
-8. `number`类型
-9. `bigint`类型
+7️⃣. `boolean`类型
+8️⃣. `number`类型
+9️⃣. `bigint`类型
 
 - 后缀以n结尾，环境必须是es2020+
 
-10. `string`类型
+🔟. `string`类型
 
 语法：
 
@@ -208,7 +208,7 @@ a.concat([])
 const str: string = `这是一个模板字符串，当前时间：${new Date()}`;
 ```
 
-11. `array`类型
+1️⃣1️⃣. `array`类型
 
 数组类型的定义方式，如下：
 
@@ -234,7 +234,7 @@ interface IArguments {
 }
 ```
 
-12. `tuple`类型
+1️⃣2️⃣.  `tuple`类型
 
 定义：元组表示一个**已知数量和类型**的数组
 
@@ -259,7 +259,7 @@ const [a, b, ...c] = tuple1
 - 解构元组时，超过元组定义时的索引范围（元组的总长度，包括可选的）会报错，若含剩余参数，则不会报错（值为undefined）
 - 当无具名元素名称时，若可选，则在类型后面加上?，比如 `boolean?`（这个只有所有的元素都是非具名的时候才行）
 
-13. `enum`类型
+1️⃣3️⃣. `enum`类型
 
 定义：
 
@@ -319,7 +319,7 @@ type ColorKeyType = keyof ColorType
 let k: ColorKeyType = 'Red'
 ```
 
-14. `object`类型
+1️⃣4️⃣. `object`类型
 
 定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
 
@@ -329,7 +329,7 @@ let k: ColorKeyType = 'Red'
 - 所有类型都能够赋值给Object和{}类型，undefined和null除外
 - Object是object的父类型，也是object的子类型
 
-15. 构造函数类型
+1️⃣5️⃣. 构造函数类型
 
 定义：使用大写字母开头，与相对应的小写版本类型一致
 
@@ -1796,7 +1796,7 @@ let mySquare = createSquare(squareOptions);
 
 ### 内部结构解释
 
-1. 可选属性
+1️⃣. 可选属性
 
 场景：用于只有在某些条件下存在，或者根本不存在的属性
 
@@ -1823,7 +1823,7 @@ function createSquare (config: SquareConfig): { color: string; area: number} {
 }
 ```
 
-2. 只读属性
+2️⃣. 只读属性
 
 定义：一些对象属性只能在创建的时候被赋值，不能修改，若该属性还是可选的，则仅能在对象创建时赋值，其他地方不能操作
 
@@ -1851,7 +1851,7 @@ ra[0] = 12
 a = ra
 ```
 
-3. 接口描述函数类型
+3️⃣. 接口描述函数类型
 
 语法：类似一个只有参数列表和返回值类型的函数定义，如下：
 
@@ -1869,7 +1869,7 @@ mySearch = function (src: string, sub: string) {
 }
 ```
 
-4. 接口描述具有索引的对象类型（数组、map等）
+4️⃣. 接口描述具有索引的对象类型（数组、map等）
 
 前置描述：
 
@@ -1927,7 +1927,7 @@ myArr[0] = 'tom'
 
 :::
 
-5. `<b class="puzzled">`接口描述类类型 `</b>`
+5️⃣. `<b class="puzzled">`接口描述类类型 `</b>`
 
 使用：
 
@@ -1992,7 +1992,7 @@ const Clock: ClockConstructor = class Clock implements ClockInterface {
 
 :::
 
-6. 接口继承
+6️⃣. 接口继承
 
 定义：接口可以相互继承，即能够从一个接口复制成员到另一个接口，从而更灵活将接口分割到可重用的模块中
 
@@ -2017,7 +2017,7 @@ square.penWidth = 10
 square.sideLength = 20
 ```
 
-7. 接口实现混合类型
+7️⃣. 接口实现混合类型
 
 定义：接口能够描述JavaScript中丰富的类型，比如一个对象可以同时作为函数、对象使用，并拥有额外的方法/属性
 
@@ -2046,7 +2046,7 @@ c.reset();
 c.interval = 5.0;
 ```
 
-8. 接口继承类
+8️⃣. 接口继承类
 
 使用
 
@@ -2394,16 +2394,59 @@ queryData().then(data => console.log(data))
 
 ## 类
 
-1. 类的修饰符
+1️⃣. 类的修饰符
 
 修饰符类型：
 
-- public：可以自由的访问，若未具体声明，则默认为public类型
-- private：不能在被声明的类的外部访问，不能通过实例访问
-- protected：能够在继承的类内部被访问，不能通过类的实例访问；当构造函数是protected时，则不能被实例化，只能被继承，然后被继承的类实例化
+- public：可以自由的访问，若未具体声明，则默认为public类型🥨
+- private：只能在类内部访问，不能在被声明的类的外部和继承的类中访问，不能通过实例点运算符访问（但可通过方括号进行访问不报错`const s = new S(); s['a']`）；
+- protected：能够在类和继承的类的内部被访问，不能通过类的实例(new XXX)访问🍠，不能在其他类的内部进行访问🍧；当构造函数是protected时，则不能被实例化，只能被继承，然后被继承的类实例化🍚；同时protected的成员可以被子类public🍣
 - readonly：只读属性，只能在声明时或通过构造函数进行初始化
+- 修饰符警告仅在类型检查时发生，在js运行时会忽略这些警告，然后执行代码
 
-2. 参数属性
+```typescript
+// protected
+class A {
+  protected age = 10
+  protected sex = 'man'
+  protected getName () {
+    return 'jade'
+  }
+
+  wel () {
+    // 🍠：可以在类内部访问
+    console.log(this.getName())
+  }
+}
+
+class AA extends A {
+  protected sex = 'man'
+  // 🍣：protected => public，此时就能够被自由读写不受限制了
+  age = 20
+  // 🥨：未声明，默认为public
+  welcome () {
+    // 🍠：可以在被继承的类内部访问
+    console.log('welcome, ' + this.getName())
+  }
+}
+
+class AB extends A {
+  f1(other: AA) {
+    // 🍧：此处sex是protected型的，只能在AA类的内部被访问，但此处却位于AB类中，会报错
+    other.sex = 'man'
+  }
+
+  f2(other: AB) {
+    other.sex = 'man'
+  }
+}
+
+const aa = new AA()
+// 🍠：不能被类的实例访问，会报错
+g.welcome()
+```
+
+2️⃣. 参数属性
 
 定义：
 
@@ -2420,11 +2463,36 @@ class Animal {
 }
 ```
 
-3. 静态属性
+3️⃣. 静态属性
 
-定义：存在于类本身，而非类的实例上，直接通过类名来访问
+定义：
 
-4. 存取器（get、set）
+- 关键字static
+- 存在于类本身，而非类的实例上，直接通过类名来访问
+- static可以和public、protected、private一起使用，使用注意事项是两者的综合
+- static不能作用于name、length、call等特殊的名称上
+- static可以用于块中，此处编写的变量不会被泄漏，并且可以完全访问类内部的结构，可编写功能的初始化代码，该块内容，在构造函数之前执行
+
+```typescript
+class A {
+  // 私有变量
+  static #count = 0
+
+  get count() {
+    return Foo.#count;
+  }
+
+  // 静态块的代码
+  static {
+    console.log('count: ' + Foo.#count)
+  }
+}
+
+// 此时会运行上面静态块中的代码
+new A()
+```
+
+4️⃣. 存取器（get、set）
 
 定义：截取控制对对象成员的访问，返回截取后的内容
 
@@ -2458,9 +2526,13 @@ if (employee.fullName) {
 }
 ```
 
-5. 类的继承
+5️⃣. 类的继承
 
-解释：一个类若从另一个类继承了属性和方法，则该类称为子类/派生类，另一个类成为基类/超类/父类
+解释：
+
+- 关键字：extends
+- 一个类若从另一个类继承了属性和方法，则该类称为子类/派生类，另一个类成为基类/超类/父类
+- 在类的继承中，子类的属性声明必须是父类对应的属性声明的子类型，而不能由其扩展新的类型；对于父类没有的属性，子类是可以新增扩展类型的
 
 场景：
 
@@ -2488,9 +2560,69 @@ tom.move(34);
 
 ```
 
-6. 抽象类
+5️⃣.1️⃣. 类的初始化顺序
 
-定义：用关键字 `abstract`定义抽象类和抽象类内的抽象方法，一般作为类的基类使用，一般不会直接被实例化
+1. 初始化基类字段
+2. 运行基类构造函数
+3. 初始化子类字段
+4. 运行子类构造函数
+
+```typescript
+class Base {
+  name = 'base'
+  constructor() {
+    // 根据初始化顺序，此处打印的值是base，而非sub
+    // 因为在基类构造函数中，它读取到的值就是基类的name，此时子类字段尚未初始化
+    console.log(this.name)
+  }
+}
+
+class Sub extends Base {
+  name = 'sub'
+}
+
+const d = new Sub()
+```
+
+6️⃣. 类的实现
+
+解释：
+
+- 关键字：implements
+- 类若implements一个接口，则类中的属性的类型声明必须是接口对应的属性的类型声明的子类型🍂。
+- 类若implements一个接口，必须对接口中的属性进行显式的类型声明，因为implements不会隐式让类继承接口中的类型🧃
+- 类implements一个接口，对于同一个属性类型声明，类不能进行类型扩展；对于接口中未声明的属性，类才能对该属性进行新增扩展🌷
+- 类可以继承多个接口`class C implements A, B {}`
+
+```typescript
+interface Pingable {
+  ping(): void;
+  pong(): boolean;
+  kong(s: string): string;
+}
+
+class Ball implements Pingable {
+  // 🍂Ball类中，必须实现ping，由于无ping，会报错
+
+  // 🍂Ball类中，pong的类型必须是接口的pong的类型的子类才行，由于pong的类型是(a: string) => boolean，不能分配给Pingable的pong：() => boolean，会报错
+  pong(a: string){
+    return !!a
+  }
+
+  // 🧃Ball类中，kong的类型必须和Pingable中的一致，且显式声明出来，也就是`s: string`必须写出来才行
+  // Parameter 's' implicitly has an 'any' type.
+  kong(s) {
+    return s.toString()
+  }
+
+  // 🌷Pingable没有的属性，Ball可以进行新增扩展
+  down() {}
+}
+```
+
+7️⃣. 抽象类
+
+定义：用关键字 `abstract`定义抽象类和抽象类内的抽象方法，一般作为类的基类使用，一般不会直接被实例化（即不能使用new）
 
 使用：
 
@@ -2498,7 +2630,31 @@ tom.move(34);
 - 抽象类的抽象方法（必须用abstract修饰）可以包含修饰符（不能是private），且必须在继承类中实现其具体细节
 - 抽象类内的方法，若无abstract修饰符，则必须有具体的实现
 
-7. 构造函数的使用
+8️⃣. 泛型类
+
+解释：
+
+- 类和接口一样，也可以使用泛型，可以使用和接口一样的泛型约束和默认值
+- 当泛型类被实例化时，类型参数的推断方式和函数调用相同
+- 泛型类的static静态成员不能使用泛型类的类型参数🥦
+
+```typescript
+class A<Type>{
+  contents: Type;
+  // 🥦：此处会报错
+  // Static members cannot reference class type parameters.
+  static name: Type;
+
+  constructor(value: Type) {
+    this.contents = value
+  }
+}
+
+// 此处a的类型：A<string>
+const a = new A('jade')
+```
+
+9️⃣. 构造函数的使用
 
 ```typescript
 class Greeter {
@@ -2527,7 +2683,63 @@ let greeter2: Greeter = new greeterMaker();
 console.log(greeter2.greet());
 ```
 
-8. 把类当作接口使用
+9️⃣.1️⃣. 构造函数的参数属性
+
+解释：
+
+- 在构造函数的参数上加上public、protected、private、readonly修饰符之后，即使构造函数内部无任何操作，也会将这些参数转成类实例的属性
+
+```typescript
+class A {
+  constructor(
+    public readonly x: number,
+    protected y: number,
+    private z: number
+  ) {
+    // 不做任何事
+  }
+
+  // 上面会自动给class A添加 如下内容：
+  public readonly x: number;
+  protected y: number;
+  private z: number;
+}
+```
+
+9️⃣.2️⃣. 获取类的实例类型
+
+```typescript
+class A {
+  x: number = 3
+}
+
+// 获取类的实例类型
+type AInstance = InstanceType<typeof A>
+
+function getX(a: AInstance) {
+  console.log(a.x)
+}
+
+const a = new A()
+getX(a)
+```
+
+9️⃣.3️⃣. 抽象类的构造函数类型
+
+```typescript
+abstract class B {}
+class BB extends B {}
+
+// 对于抽象类B：
+type BInstance = new () => B
+
+// 不能是：Cannot create an instance of an abstract class.
+// 不过普通函数可以使用
+type BInstance = typeof B
+
+```
+
+🔟. 把类当作接口使用
 
 场景：由于类的定义会创建类型（类的实例类型和构造函数），所以在可以使用接口的地方也可以使用类
 
@@ -2544,11 +2756,144 @@ interface Point3d extends Point {
 let point3d: Point3d = {x: 1, y: 2, z: 3};
 ```
 
+1️⃣1️⃣. this
+
+解释：
+
+- 普通函数内部的this值取决于函数调用的地方，而非函数定义的地方。除非使用箭头函数代替
+- 普通函数的this参数，在ts中具有特殊含义，在编译为js时，该参数会被移除
+- 类中的this，指代类本身
+- 可以给函数/方法的参数标注为this类型
+
+```typescript
+// this参数
+function fn(this: SomeType, x: number) {}
+
+// 编译后：
+function fn(x) {}
+
+// 给函数添加this参数，强制ts正确调用该方法
+class A {
+  name = 'a';
+  getName(this: A) {
+    return this.name
+  }
+}
+
+const a = new A()
+// 正确调用
+a.getName()
+
+// 错误调用，会报错
+// The 'this' context of type 'void' is not assignable to method's 'this' of type 'A'.
+const e = a.getName
+console.log(e())
+
+// 给函数参数标为this类型
+class B {
+  content: string = ''
+  // 此处的other的类型，只能是B的子类的实例，否则会报错
+  sameAs(other: this) {
+    return other.content === this.content;
+  }
+}
+
+class BB extends B {
+  otherContent: string = ''
+}
+
+const b = new B()
+const bb = new BB()
+// 报错：因为b不是bb的子类的实例
+bb.sameAs(b)
+
+// this配合实现类型收窄
+class C {
+  isD(): this is D {
+    return this instanceof D
+  }
+  isE(): this is E {
+    return this instanceof E
+  }
+  isF(): this is F & this {
+    return this.f
+  }
+  constructor(public a: string, private f: boolean) {}
+}
+
+class D extends C {
+  constructor(a: string, public d: string) {
+    super(a, false)
+  }
+}
+
+class E extends C {
+  children: C[];
+}
+
+interface F {
+  host: string;
+}
+
+// type: F & C
+class FF extends C implements F {
+  host = ''
+}
+
+const c: C = new F('jade', true);
+
+if (c.isD()) {
+  // type: D
+  c.d;
+} else if (c.isE()) {
+  // type: E
+  c.children;
+} else if (c.isF()) {
+  // type: F & C
+  c.host()
+}
+```
+
+1️⃣2️⃣. 类间的关系
+
+解释：
+
+- 多数情况下，ts的类是在结构上进行比较的。换句话说，如果两个类的结构相同，就可以进行赋值
+- 对于一个空类，所有的类型都可以替代他
+
+```typescript
+class A {
+  x = 0
+}
+
+class B {
+  x = 0
+}
+
+class C {
+  x = 2
+  y = 2
+}
+
+// ok
+const a: A = new B()
+const a: A = new C()
+
+// error：少的不能赋值给多的
+const c: C = new A()
+
+// 空类
+class E {}
+
+// ok
+let e: E = ''
+```
+
 ## 泛型
 
-> 参考：
-> https://zhuanlan.zhihu.com/p/149767010
-> https://zhuanlan.zhihu.com/p/141887346
+> 参考：    
+> <https://zhuanlan.zhihu.com/p/149767010>    
+> <https://zhuanlan.zhihu.com/p/141887346>    
 
 定义：
 
