@@ -115,8 +115,9 @@ import logo from './assets/logo.png'
 
 ## 基础类型概述
 
-1️⃣. `unknown`类型
-   定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
+### `unknown`
+
+定义：表示一个当前时刻还不知道类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 
 使用：
 
@@ -126,7 +127,7 @@ import logo from './assets/logo.png'
 
 - unknown只能赋值给unknown和any
 
-2️⃣. `any`类型
+### `any`
 
 定义：表示一个当前时刻不清楚类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 
@@ -145,7 +146,7 @@ let a;
 a.concat([])
 ```
 
-3️⃣. `void`类型
+### `void`
 
 定义：表示没有任何类型，与any相反
 
@@ -158,7 +159,7 @@ a.concat([])
 - null
 - undefined
 
-4️⃣. `null`类型
+### `null`
 
 定义：表示它本身
 
@@ -167,7 +168,7 @@ a.concat([])
 - 是所有类型的子类型，可以赋值给任何类型的变量
 - 指定了 **--strictNullChecks** 之后，只能赋值给any和它本身
 
-5️⃣. `undefined`类型
+### `undefined`
 
 定义：表示它本身
 
@@ -180,7 +181,7 @@ a.concat([])
 
 - 在指定了 **--strictNullChecks** 之后，*函数的可选参数*以及*类的可选属性*的类型会被自动的加上 `| undefined`
 
-6️⃣. `never`类型
+### `never`
 
 定义：表示永远不存在的值的类型
 
@@ -194,13 +195,15 @@ a.concat([])
 - never类型是任何类型的子类型，可以赋值给任何类型的变量
 - **只有never类型才能赋值给never类型**
 
-7️⃣. `boolean`类型
-8️⃣. `number`类型
-9️⃣. `bigint`类型
+### `boolean`
+
+### `number`
+
+### `bigint`
 
 - 后缀以n结尾，环境必须是es2020+
 
-🔟. `string`类型
+### `string`
 
 语法：
 
@@ -208,7 +211,7 @@ a.concat([])
 const str: string = `这是一个模板字符串，当前时间：${new Date()}`;
 ```
 
-1️⃣1️⃣. `array`类型
+### `array`
 
 数组类型的定义方式，如下：
 
@@ -221,6 +224,10 @@ let b: Array<number | string> = [1, "2"];
 let c: {
   [index: number]: string | number;
 } = [1, "2"];
+
+// 只读数组：
+// 只读数组不能赋值给常规数组，毕竟常规数组有的方法/属性，只读数组没有，在调用的时候就可能报错
+let d: ReadonlyArray<string> = ['a', 'b', 'c']
 ```
 
 常用的类数组类型都有自己的接口定义，分别有 `IArguments`, `NodeList`, `HTMLCollection`等，其中
@@ -234,7 +241,7 @@ interface IArguments {
 }
 ```
 
-1️⃣2️⃣.  `tuple`类型
+### `tuple`
 
 定义：元组表示一个**已知数量和类型**的数组
 
@@ -259,7 +266,7 @@ const [a, b, ...c] = tuple1
 - 解构元组时，超过元组定义时的索引范围（元组的总长度，包括可选的）会报错，若含剩余参数，则不会报错（值为undefined）
 - 当无具名元素名称时，若可选，则在类型后面加上?，比如 `boolean?`（这个只有所有的元素都是非具名的时候才行）
 
-1️⃣3️⃣. `enum`类型
+### `enum`
 
 定义：
 
@@ -319,9 +326,12 @@ type ColorKeyType = keyof ColorType
 let k: ColorKeyType = 'Red'
 ```
 
-1️⃣4️⃣. `object`类型
+### `object`
 
-定义：非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
+定义：
+
+- 非原始类型，表示除了number、string、boolean、bigint、symbol、null、undefined之外的类型
+- 类型定义使用接口或类型别名均可
 
 **object vs Object vs {}**：
 
@@ -329,7 +339,7 @@ let k: ColorKeyType = 'Red'
 - 所有类型都能够赋值给Object和{}类型，undefined和null除外
 - Object是object的父类型，也是object的子类型
 
-1️⃣5️⃣. 构造函数类型
+### 构造函数类型
 
 定义：使用大写字母开头，与相对应的小写版本类型一致
 
@@ -1399,7 +1409,7 @@ type User = { name: string, age: number }
 
 - `value as type`
 - `<type>value`
-- `value!`：后缀表达式操作符 `!`，用于1️⃣排除该值可能是null、undefined，以及2️⃣表明value会被明确的赋值
+- `value!`：后缀表达式操作符 `!`，用于：排除该值可能是null、undefined，以及表明value会被明确的赋值
 - `value as Type1 as OtherType`：双重断言，先将value断言为type1（比如any或unknown，因为any可以断言为任何类型，同时任何类型都可以断言为any），然后又将type1的类型断言为OtherType
 
 ```typescript
@@ -1794,9 +1804,7 @@ let mySquare = createSquare(squareOptions);
 - 类型断言 `obj as SquareConfig`
 - 索引签名 `[key: string]: any`
 
-### 内部结构解释
-
-1️⃣. 可选属性
+### 可选属性(重点🟥🟥🟥)
 
 场景：用于只有在某些条件下存在，或者根本不存在的属性
 
@@ -1816,14 +1824,38 @@ interface SquareConfig {
 function createSquare (config: SquareConfig): { color: string; area: number} {
   let newSquare = { color: 'white', area: 100 }
   // 此处使用了不存在的属性，报错Property 'clor' does not exist on type 'SquareConfig'. Did you mean 'color'?
+  // 若想此处不报错，需要在SquareConfig中加上`[s: string]: any;`
+  // 这样就能使用任何未提前声明的属性了
   if (config.clor) {
     newSquare.color = config.clor
   }
   return newSquare
 }
+
+// 如果参数config含有squareConfig未声明的属性，会报以下错误
+// Object literal may only specify known properties, and 'abc' does not exist in type 'SquareConfig'.
+createSquare({ abc: 'red', width: 100 })
+
+// 解决方法1：使用类型断言
+createSquare({ abc: 'red', width: 100} as SquareConfig)
+
+// 解决方法2：给squareConfig接口添加
+// [s: string]: any;
+
+// 解决方法3：将对象分配给另一个变量，然后使用该变量（下面两种都是ok的）
+// 由于赋值不会进行多余的属性检查，因此编译器不会给出错误
+// 此方法仅作用于config和接口SquareConfig具有重叠的属性，无则报错
+let config = { abc: 'red', width: 100 }
+createSquare(config)
+let s: SquareConfig = config
+
+let config2 = { abc: 'red' }
+// 报错：Type '{ abc: string; }' has no properties in common with type 'SquareConfig'.
+let s: SquareConfig = config2
+
 ```
 
-2️⃣. 只读属性
+### 只读属性
 
 定义：一些对象属性只能在创建的时候被赋值，不能修改，若该属性还是可选的，则仅能在对象创建时赋值，其他地方不能操作
 
@@ -1851,7 +1883,7 @@ ra[0] = 12
 a = ra
 ```
 
-3️⃣. 接口描述函数类型
+### 接口描述函数类型
 
 语法：类似一个只有参数列表和返回值类型的函数定义，如下：
 
@@ -1869,7 +1901,7 @@ mySearch = function (src: string, sub: string) {
 }
 ```
 
-4️⃣. 接口描述具有索引的对象类型（数组、map等）
+### 接口描述具有索引的对象类型（数组、map等）
 
 前置描述：
 
@@ -1927,7 +1959,7 @@ myArr[0] = 'tom'
 
 :::
 
-5️⃣. `<b class="puzzled">`接口描述类类型 `</b>`
+### 接口描述类类型
 
 使用：
 
@@ -1992,7 +2024,7 @@ const Clock: ClockConstructor = class Clock implements ClockInterface {
 
 :::
 
-6️⃣. 接口继承
+### 接口继承
 
 定义：接口可以相互继承，即能够从一个接口复制成员到另一个接口，从而更灵活将接口分割到可重用的模块中
 
@@ -2017,7 +2049,7 @@ square.penWidth = 10
 square.sideLength = 20
 ```
 
-7️⃣. 接口实现混合类型
+### 接口实现混合类型
 
 定义：接口能够描述JavaScript中丰富的类型，比如一个对象可以同时作为函数、对象使用，并拥有额外的方法/属性
 
@@ -2046,7 +2078,7 @@ c.reset();
 c.interval = 5.0;
 ```
 
-8️⃣. 接口继承类
+### 接口继承类
 
 使用
 
@@ -2394,7 +2426,7 @@ queryData().then(data => console.log(data))
 
 ## 类
 
-1️⃣. 类的修饰符
+### 类的修饰符
 
 修饰符类型：
 
@@ -2446,24 +2478,7 @@ const aa = new AA()
 g.welcome()
 ```
 
-2️⃣. 参数属性
-
-定义：
-
-- 参数属性可以在一个地方同时定义并初始化成员属性，将声明和赋值合并到一处
-- 参数属性通过给构造函数添加一个访问修饰符（public、private、protected）来声明，修饰符不能省略
-
-```typescript
-// 声明了一个私有属性name
-class Animal {
-    constructor(private name: string) { }
-    move(distanceInMeters: number) {
-        console.log(`${this.name} moved ${distanceInMeters}m.`);
-    }
-}
-```
-
-3️⃣. 静态属性
+### 静态属性
 
 定义：
 
@@ -2492,7 +2507,7 @@ class A {
 new A()
 ```
 
-4️⃣. 存取器（get、set）
+### 存取器（get、set）
 
 定义：截取控制对对象成员的访问，返回截取后的内容
 
@@ -2526,7 +2541,7 @@ if (employee.fullName) {
 }
 ```
 
-5️⃣. 类的继承
+### 类的继承
 
 解释：
 
@@ -2560,7 +2575,7 @@ tom.move(34);
 
 ```
 
-5️⃣.1️⃣. 类的初始化顺序
+### 类的初始化顺序
 
 1. 初始化基类字段
 2. 运行基类构造函数
@@ -2584,7 +2599,7 @@ class Sub extends Base {
 const d = new Sub()
 ```
 
-6️⃣. 类的实现
+### 类的实现
 
 解释：
 
@@ -2620,7 +2635,7 @@ class Ball implements Pingable {
 }
 ```
 
-7️⃣. 抽象类
+### 抽象类
 
 定义：用关键字 `abstract`定义抽象类和抽象类内的抽象方法，一般作为类的基类使用，一般不会直接被实例化（即不能使用new）
 
@@ -2630,7 +2645,7 @@ class Ball implements Pingable {
 - 抽象类的抽象方法（必须用abstract修饰）可以包含修饰符（不能是private），且必须在继承类中实现其具体细节
 - 抽象类内的方法，若无abstract修饰符，则必须有具体的实现
 
-8️⃣. 泛型类
+### 泛型类
 
 解释：
 
@@ -2654,7 +2669,7 @@ class A<Type>{
 const a = new A('jade')
 ```
 
-9️⃣. 构造函数的使用
+### 构造函数的使用
 
 ```typescript
 class Greeter {
@@ -2683,11 +2698,12 @@ let greeter2: Greeter = new greeterMaker();
 console.log(greeter2.greet());
 ```
 
-9️⃣.1️⃣. 构造函数的参数属性
+### 构造函数的参数属性
 
 解释：
 
-- 在构造函数的参数上加上public、protected、private、readonly修饰符之后，即使构造函数内部无任何操作，也会将这些参数转成类实例的属性
+- 在构造函数的参数上加上public、protected、private、readonly修饰符之后，即参数属性可以在一个地方同时定义并初始化类的成员属性，将声明和赋值合并到一处
+- 参数属性通过给构造函数添加的修饰符不能省略
 
 ```typescript
 class A {
@@ -2706,7 +2722,7 @@ class A {
 }
 ```
 
-9️⃣.2️⃣. 获取类的实例类型
+### 获取类的实例类型
 
 ```typescript
 class A {
@@ -2724,7 +2740,7 @@ const a = new A()
 getX(a)
 ```
 
-9️⃣.3️⃣. 抽象类的构造函数类型
+### 抽象类的构造函数类型
 
 ```typescript
 abstract class B {}
@@ -2739,7 +2755,7 @@ type BInstance = typeof B
 
 ```
 
-🔟. 把类当作接口使用
+### 把类当作接口使用
 
 场景：由于类的定义会创建类型（类的实例类型和构造函数），所以在可以使用接口的地方也可以使用类
 
@@ -2756,7 +2772,7 @@ interface Point3d extends Point {
 let point3d: Point3d = {x: 1, y: 2, z: 3};
 ```
 
-1️⃣1️⃣. this
+### this
 
 解释：
 
@@ -2854,7 +2870,7 @@ if (c.isD()) {
 }
 ```
 
-1️⃣2️⃣. 类间的关系
+### 类间的关系
 
 解释：
 
