@@ -57,7 +57,7 @@ onMounted(() => {
             :underline="false"
             >GitHub</el-link
           >
-          <el-link href="./README" :underline="false">Getting Started</el-link>
+          <el-link href="./about" :underline="false">Getting Started</el-link>
         </p>
       </div>
     </section>

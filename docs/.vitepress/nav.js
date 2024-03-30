@@ -31,9 +31,19 @@ export function nav() {
       activeMatch: "/usage-interview/",
     },
     {
-      text: "关于我",
-      link: "/README",
-      activeMatch: "/README",
+      text: "README",
+      items: [
+        {
+          text: "鉴&谏",
+          link: "/README",
+          activeMatch: "/README",
+        },
+        {
+          text: "关于本站",
+          link: "/about",
+          activeMatch: "/about",
+        },
+      ]
     },
     {
       text: 'v' + pkg.version,
@@ -48,21 +58,22 @@ export function nav() {
           link: getFirstRoute("/usage-dicts/"),
           activeMatch: "/usage-dicts/",
         },
-        {
-          text: "突发灵感",
-          link: getFirstRoute("/usage-inspiration/"),
-          activeMatch: "/usage-inspiration/",
-        },
-        {
-          text: "随感",
-          link: getFirstRoute("/usage-diaries/"),
-          activeMatch: "/usage-diaries/",
-        },
-        {
-          text: "游戏攻略",
-          link: getFirstRoute("/usage-games/"),
-          activeMatch: "/usage-games/",
-        },
+        // 隐藏这部分内容
+        // {
+        //   text: "突发灵感",
+        //   link: getFirstRoute("/usage-inspiration/"),
+        //   activeMatch: "/usage-inspiration/",
+        // },
+        // {
+        //   text: "随感",
+        //   link: getFirstRoute("/usage-diaries/"),
+        //   activeMatch: "/usage-diaries/",
+        // },
+        // {
+        //   text: "游戏攻略",
+        //   link: getFirstRoute("/usage-games/"),
+        //   activeMatch: "/usage-games/",
+        // },
       ],
     },
   ];

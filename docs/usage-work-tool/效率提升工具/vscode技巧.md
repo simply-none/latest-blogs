@@ -94,11 +94,17 @@
 
 :::
 
-## vscode 代码图片
+## 其他VScode使用技巧
+
+### json不能添加注释
+
+点击右下角的文件类型文字【JSON】，选择【Configure File Association for '.json'，选择【JSON with Comments】即可
+
+### vscode 代码图片
 
 > polacode
 
-## 创建运行任务
+### 创建运行任务
 
 - 创建运行任务（ctrl+shift+B），会得到一个.vscode 文件夹，包含 tasks.json 和 launch.json 俩个文件
 
@@ -117,7 +123,7 @@
 }
 ```
 
-## vscode 代码片段
+### vscode 代码片段
 
 代码片段：可直接键入相对应的名称（html:5）就生成一个原始代码
 
@@ -140,14 +146,14 @@
 }
 ```
 
-## vscode 代码格式化
+### vscode 代码格式化
 
-### 安装代码格式化插件
+#### 安装代码格式化插件
 
 1. prettier
 2. vetur
 
-### 格式化设置
+#### 格式化设置
 
 - 第一种：搜索 vetur，然后将主要的后缀（js、vue）等的格式化设置成 prettier
 - 第二种：直接在 setting.json 中进行设置
@@ -382,12 +388,12 @@
 
 :::
 
-### 代码格式化操作
+#### 代码格式化操作
 
 1. 设置默认格式化程序为 prettier
 2. 全局格式化，可在 package.json 添加脚本：`"prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,vue}\" "`，然后运行`npm run prettier`
 
-### 注意事项
+#### 注意事项
 
 1. 在 setting.json 设置为单引号，去除分号的设置无效，需在`.prettierrc.json`中设置
 

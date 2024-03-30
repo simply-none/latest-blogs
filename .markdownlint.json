@@ -5,5 +5,8 @@
   "no-bare-urls": false,
   "line-length": false,
   "no-blanks-blockquote": false,
-  "no-duplicate-heading": false
+  "no-duplicate-heading": false,
+  "no-trailing-punctuation": false,
+  "no-inline-html": false,
+  "first-line-h1": false
 }
