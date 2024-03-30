@@ -2,6 +2,17 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.1.5](https://github.com/simply-none/latest-blogs/compare/0.1.4...0.1.5) (2024-03-30)
+
+### Docs
+
+* 2024-03-30 23:15:01  更新typescript中声明合并、类型推导的内容 ([739cba5](https://github.com/simply-none/latest-blogs/commit/739cba5f7f68f73f4cb7ccd23bed8cf0d4915eba))
+* 2024-03-30 20:27:08  更新vscode技巧笔记 ([99ce58d](https://github.com/simply-none/latest-blogs/commit/99ce58db8ad994954c364cd422653451830d0df5))
+
+### Build System
+
+* 2024-03-30 23:13:14  内容展示排版优化 ([19167c8](https://github.com/simply-none/latest-blogs/commit/19167c854341f226995e09a0813cccecf54a7054))
+
 ## [0.1.4](https://github.com/simply-none/latest-blogs/compare/0.1.3...0.1.4) (2024-03-30)
 
 ### Build System
