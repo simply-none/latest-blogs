@@ -20,9 +20,9 @@
 | Function         |           |      | ✔    |
 | Variable         |           |      | ✔    |
 
-声明合并分类：
+### 接口合并
 
-1. 接口合并：把双方的成员放到一个同名的接口里
+解释：把双方的成员放到一个同名的接口里
 
 注意：
 
@@ -30,21 +30,6 @@
 - 接口的函数成员若有多个，则会当成该函数的重载
 - 接口合并时，后者优先级更高（后者的成员放在合并接口的前面）
 - 若同名函数有多个，并且包含有单一的字符串字面量的参数类型，则该函数会提升到重载列表的顶端，并按照后来者居上原则排序
-
-2. 命名空间合并：同名的命名空间也会合并其成员，命名空间会创建出命名空间和值
-
-注意：
-
-- 命名空间内模块导出的同名接口会进行合并
-- 后面的命名空间的导出成员会加到第一个命名空间里面
-- 命名空间的非导出成员仅在原有的命名空间内可见，其他命名空间合并过来的成员无法访问
-
-3. 命名空间可以和类、函数、枚举类型合并，只要命名空间的定义符合将要合并类型的定义，合并结果包含两者的声明类型（可以使用这个实现JavaScript的设计模式）
-4. 命名空间与类合并：合并结果是一个类带有一个内部类，可以使用命名空间为类增加静态属性，类只能访问已导出的命名空间成员
-5. 命名空间与函数合并：可以给函数添加一些属性，保证类型安全
-6. 命名空间与枚举类型合并：扩展枚举类型，这里的扩展，更多的是对枚举类型的应用罢了
-
-::: code-group
 
 ```typescript
 interface Document {
@@ -69,7 +54,86 @@ interface Document {
 
 ```
 
+### 命名空间合并
+
+解释：
+
+- 同名的命名空间也会合并其成员，命名空间会创建出命名空间和值
+
+注意：
+
+- 命名空间内模块导出的同名接口会进行合并
+- 后面的命名空间的导出成员会加到第一个命名空间里面
+- 命名空间的非导出成员仅在原有的命名空间内可见，其他命名空间合并过来的成员无法访问
+
 ```typescript
+namespace Animals {
+  // 未导出的成员
+  let havaMuscles = true
+
+  export class Zebra {}
+
+  // 未导出的成员仅在当前命名空间可见
+  export function animalsHaveMuscles () {
+    return havaMuscles;
+  }
+}
+
+namespace Animals {
+  export interface Legged {
+    numberOfLegs: number;
+  }
+  export class Dog {}
+
+  export function doAnimalsHaveMuscles () {
+    // error：Cannot find name 'havaMuscles'.
+    return havaMuscles
+  }
+}
+
+// 相当于
+namespace Animals {
+  export interface Legged {
+    numberOfLegs: number;
+  }
+  export class Zebra {}
+  export class Dog {}
+
+  // 未导出的成员仅在当前命名空间可见
+  export function animalsHaveMuscles () {
+    return havaMuscles;
+  }
+
+  export function doAnimalsHaveMuscles () {
+    // error：Cannot find name 'havaMuscles'.
+    return havaMuscles
+  }
+}
+
+// 使用
+let a = Animals.animalsHaveMuscles()
+let b: Animals.Legged = {
+  numberOfLegs: 1
+}
+
+```
+
+### 命名空间和其他类型合并
+
+解释：
+
+- 命名空间可以和类、函数、枚举类型合并，只要命名空间的定义符合将要合并类型的定义，合并结果将包含两者的声明类型（可以使用这个实现JavaScript的设计模式）
+- 命名空间与类合并：合并结果是一个类带有一个内部类，可以使用命名空间为类增加静态属性，类只能访问已导出的命名空间成员
+- 命名空间与函数合并：可以给函数添加一些属性，保证类型安全
+- 命名空间与枚举类型合并：扩展枚举类型，相当于通过与枚举类型结合，得到一个新的内容（类似vue中的computed）
+
+注意：
+
+- 类不能与其他类或变量合并
+
+::: code-group
+
+```typescript [命名空间和类合并]
 class Album {
   // 使用命名空间中的类
   label: Album.AlbumLabel
@@ -79,7 +143,7 @@ namespace Album {
 }
 ```
 
-```typescript
+```typescript [命名空间和函数合并]
 function buildLabel (name: string): string {
   // 使用命名空间中的属性
   return buildLabel.prefix + name + buildLabel.suffix
@@ -91,28 +155,94 @@ namespace buildLabel {
 console.log(buildLabel('sam smith'))
 ```
 
-```typescript
+```typescript [命名空间和枚举类型合并]
 enum Color {
   red = 1,
-  green = 2
+  green = 2,
+  blue = 4,
 }
 namespace Color {
-  export function mixColor (colorName: string) {
-    if (colorName === 'yellow') {
-      return Color.red + Color.green
+  export function mixColor(colorName: string) {
+    // yellow = red + green，后续的类似
+    // 即通过enum的值计算得出新的目标值
+    if (colorName == "yellow") {
+      return Color.red + Color.green;
+    } else if (colorName == "white") {
+      return Color.red + Color.green + Color.blue;
+    } else if (colorName == "magenta") {
+      return Color.red + Color.blue;
+    } else if (colorName == "cyan") {
+      return Color.green + Color.blue;
     }
-    return Color.red
   }
 }
-// 使用，得出一个新的值罢了（所谓的扩展？😢😢😢）
+
+// 使用
 console.log(Color.mixColor('yellow'))
 ```
 
 :::
 
-**声明合并注意事项**：
+### 模块合并效果
 
-- 类不能与其他类或变量合并
+解释：
+
+- 目前ts不支持模块合并，但能够通过import模块对内容进行update来达到该效果
+
+注意：
+
+- 不能增加新的顶级声明，只能对导入模块存在的声明进行修补增删
+- 只能对具名导出进行修补
+
+```typescript
+// observable.ts
+export class Observable<T> {
+  // ...
+}
+
+// map.ts
+// 具名导出
+import { Observable } from './observable'
+
+declare module './observable' {
+  // 声明新的类型，让ts识别到新增的内容的类型
+  interface Observable<T> {
+    map<U>(f: (x: T) => U): Observable<U>
+  }
+}
+
+// 给Observable添加新的方法
+Observable.prototype.map = function (f) {
+  // ...
+}
+
+// 使用
+import { Observable } from './observable'
+import './map'
+
+let o: Observable<number>
+o.map(x => x.toFixed())
+```
+
+### 在模块中新增全局声明
+
+注意：限制条件和上述一致
+
+```typescript
+// observable.ts
+export class Observable<T> {
+  // ...
+}
+
+declare global {
+  // 给数组新增toObservable方法
+  interface Array<T> {
+    toObservable(): Observable<T>;
+  }
+}
+
+Array.prototype.toObservable = function () {}
+```
 
 ## 混入mixins
 

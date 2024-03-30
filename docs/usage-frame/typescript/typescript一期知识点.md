@@ -1704,6 +1704,52 @@ type Yikes = Array<Yikes>
 - 接口创建了一个新的名字，可以在其他任何地方使用；而类型别名并非创建一个新名字，且错误信息不会使用别名
 - 由于软件中的对象应该对于扩展是开放的，对于修改是封闭的，应该尽量使用接口代替类型别名
 
+### satisfies
+
+定义：
+
+- 让typescript确保值和设置的类型（宽类型）匹配，但能为值推导出更精确的类型（窄类型）用来类型推导而不报错
+
+```typescript
+type Colors = 'red' | 'green' | 'blue'
+type RGB = [red: number, green: number, blue: number]
+
+const palette: Record<Colors, string | RGB> = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  blue: [0, 0, 255]
+}
+
+// type green: string | RGB
+const green = palette.green
+// 由于green是联合类型（虽然说值是字符串），故而只能使用共有的属性/方法
+// error：
+// Property 'toUpperCase' does not exist on type 'string | RGB'.
+// Property 'toUpperCase' does not exist on type 'RGB'.
+const greenNormalized = palette.green.toUpperCase()
+
+// 解决方法1，使用类型守卫
+if (typeof palette.green === 'string') {
+  const greenNormalized = palette.green.toUpperCase()
+}
+
+// 解决方法2，使用类型断言
+const greenNormalized = (palette.green as string).toUpperCase()
+
+// 解决方法3，使用类型断言as const，固定类型，注意，删除了类上的Record类型
+// 注意，此时会让palette变为只读类型，不能进行复制操作
+// 注意，若as const和变量标注const palette: Record<>同时存在，变量标注会覆盖as const让其发挥不了作用
+const palette = {
+  // ...
+} as const
+
+// 解决方法4，使用satisfies，注意，删除了类上的Record类型
+// satisfies可以和as const一起使用，这时变量是readonly的，用法：as const satisfies Type
+const palette = {
+  // ...
+} satisfies Record<Colors, string | RGB>
+```
+
 ### 多态的this类型
 
 定义：表示某个包含类或接口的子类型，称为F-bounded多态性，能够很容易的表现连贯接口间的继承；同时继承他的新类也能使用之前的方法
