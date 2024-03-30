@@ -9,7 +9,7 @@ const options = {
   number: 1000000,
   branch: 'master',
   fields: ["hash", "abbrevHash", "subject", "authorName", "authorDate", "authorDateRel", "tag"],
-  execOptions: { maxBuffer: 1000 * 1024 },
+  execOptions: { maxBuffer: 1000 * 1024 * 10 },
 };
 
 // Synchronous
@@ -24,6 +24,25 @@ let s = 0
 let firstCommit = {}
 let currentTag = {}
 
+// type标题
+let typeSort = [
+  { "type": "fix", "section": "Bug Fixes", "hidden": false },
+  { "type": "feat", "section": "Features", "hidden": false },
+  { "type": "improvement", "section": "Feature Improvements", "hidden": false },
+  { "type": "perf", "section": "Performance Improvements", "hidden": false },
+  { "type": "docs", "section": "Docs", "hidden": false },
+  { "type": "refactor", "section": "Code Refactoring", "hidden": false },
+
+  { "type": "chore", "section": "Others", "hidden": false },
+  { "type": "other", "section": "Others", "hidden": false },
+  { "type": "revert", "section": "Reverts", "hidden": false },
+  { "type": "style", "section": "Styling", "hidden": false },
+  { "type": "config", "section": "Code Refactoring", "hidden": false },
+  { "type": "test", "section": "Tests", "hidden": false },
+  { "type": "build", "section": "Build System", "hidden": false },
+  { "type": "ci", "section": "CI", "hidden": false }
+]
+
 let commitObj = {
 }
 
@@ -36,12 +55,13 @@ for (let i = 0; i < commits.length; i++) {
       s = i
     }
     // 对tag进行分类
-    let tag = commit.tag.replace('tag:', '').replace('v', '').trim()
+    let tag = commit.tag.split(',').find(name => name.includes('tag:'))
+    tag = tag.replace('tag:', '').replace('v', '').trim()
     let tagSort = tag.split('.').map(t => t.padStart(3, '0')).join('.')
-    // console.log(tag, 'tag')
+    console.log(commit, tagSort, 'tag')
     currentTag = tagSort
 
-    if(!commitObj[currentTag]) {
+    if (!commitObj[currentTag]) {
       commitObj[currentTag] = {
         info: {
           ...commit,
@@ -72,13 +92,13 @@ for (let i = 0; i < commits.length; i++) {
   const firstLine = commit.subject.match(/^(.*?)(\((.*?)\))?(\:)(.*)$/)
   // firstLine  && console.log(commit, firstLine, 'fl')
   firstLine && (count = count + 1)
-  !firstLine   && (nc = nc + 1)
-  
+  !firstLine && (nc = nc + 1)
+
   // 匹配git规范提交的commit
   if (firstLine) {
     let curType = firstLine[1].replace(/[^a-zA-Z]/g, '')
-    
-    if (firstLine[1].includes('Merge branch')) {
+
+    if (firstLine[1].includes('Merge branch') || commit.subject.includes('chore(release):')) {
       // 忽略
       if (!commitObj[currentTag].items.other) {
         commitObj[currentTag].items.other = []
@@ -93,7 +113,7 @@ for (let i = 0; i < commits.length; i++) {
         commit
       })
     } else {
-      
+
       if (curType) {
         // 干正事
         let subjectTitle = firstLine[3] ? `**${firstLine[3] + ':'}**` : ''
@@ -147,7 +167,7 @@ for (let i = 0; i < commits.length; i++) {
           type.push(curType)
         }
 
-        
+
       }
     }
 
@@ -167,7 +187,7 @@ for (let i = 0; i < commits.length; i++) {
       show: isMeaningCommit,
       commit
     })
-    
+
   }
 }
 
@@ -190,9 +210,9 @@ const a = Object.keys(commitObj).reduce((pre, cur) => {
   return {
     total: pre.total + b.total
   }
-}, {total: 0})
+}, { total: 0 })
 
-let tagArr = Object.keys(commitObj).sort(function(a, b) {
+let tagArr = Object.keys(commitObj).sort(function (a, b) {
   return a < b ? 1 : -1
 })
 
@@ -214,7 +234,7 @@ tagArr.forEach((tag, index) => {
   } else if (index === tagArr.length - 1) {
     tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${firstCommit.abbrevHash}...${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
   } else {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.tag.replace('tag: ', '')}...${curTagObj.info.tag.replace('tag: ', '')}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.tagNum}...${curTagObj.info.tagNum}) (${authorDate})\n\n`
 
   }
 
@@ -222,34 +242,25 @@ tagArr.forEach((tag, index) => {
 
   let typeItems = {}
 
-  // type标题
-  let typeSort = [
-    {"type": "fix", "section": "Bug Fixes", "hidden": false},
-    {"type": "feat", "section": "Features", "hidden": false},
-    {"type": "improvement", "section": "Feature Improvements", "hidden": false},
-    {"type": "perf", "section":"Performance Improvements", "hidden": false},
-    {"type": "docs", "section":"Docs", "hidden": false},
-    {"type": "refactor", "section":"Code Refactoring", "hidden": false},
-
-    {"type": "chore", "section":"Others", "hidden": false},
-    {"type": "other", "section":"Others", "hidden": false},
-    {"type": "revert", "section":"Reverts", "hidden": false},
-    {"type": "style", "section":"Styling", "hidden": false},
-    {"type": "config", "section":"Code Refactoring", "hidden": false},
-    {"type": "test", "section":"Tests", "hidden": false},
-    {"type": "build", "section":"Build System", "hidden": false},
-    {"type": "ci", "section":"CI", "hidden":false}
-  ]
+  
 
   typeSort.forEach(typeItem => {
     let typeTitle = `### ${typeItem.section}\n\n`
 
-    if (!curTagObj.items[typeItem.type]) {
+    let curTagTypeObj = curTagObj.items[typeItem.type]
+
+    if (!curTagTypeObj || curTagTypeObj.length === 0 ) {
       return false
     }
 
-    // console.log(curTagObj.items, [typeItem.type], curTagObj.items[typeItem.type], 'type')
-    let tItems = curTagObj.items[typeItem.type].sort(function (a, b) {
+    let isAllhide = curTagTypeObj.every(item => item.show === false)
+
+    if (isAllhide) {
+      return false
+    }
+
+    // console.log(curTagObj.items, [typeItem.type], curTagTypeObj, 'type')
+    let tItems = curTagTypeObj.sort(function (a, b) {
       return a.line < b.line ? 1 : -1
     })
     let tItemsLine = ''
@@ -286,15 +297,11 @@ tagArrLine = tagArrLine.replace(/\n*$/, '\n')
 
 // console.log(a, 'a', type, firstCommit)
 
-fs.writeFile('./docs/CHANGELOG.md', (tagArrLine), {
+fs.writeFileSync('./docs/CHANGELOG.md', (tagArrLine), {
   flag: 'w'
-}, (err) => {
-  if (err) {
-    console.error(err)
-  }
 })
 
-// fs.writeFile('zzz.json', JSON.stringify(commitObj), {
+// fs.writeFileSync('zzz.json', JSON.stringify(commitObj), {
 //   flag: 'w'
 // }, (err) => {
 //   if (err) {
