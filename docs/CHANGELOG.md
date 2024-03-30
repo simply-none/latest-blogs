@@ -2,7 +2,13 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
-## [HEAD -> master,  0.1.3, origin/master, origin/HEAD](https://github.com/simply-none/latest-blogs/compare/v0.1.2...HEAD -> master, v0.1.3, origin/master, origin/HEAD) (2024-03-29)
+## [0.1.4](https://github.com/simply-none/latest-blogs/compare/0.1.3...0.1.4) (2024-03-30)
+
+### Build System
+
+* 2024-03-30 10:40:10  优化changelog文件生成脚本 ([5c8aaa3](https://github.com/simply-none/latest-blogs/commit/5c8aaa30b4d7fd8b3d03093ccac4754fc18ee3d1))
+
+## [0.1.3](https://github.com/simply-none/latest-blogs/compare/0.1.2...0.1.3) (2024-03-29)
 
 ### Docs
 
@@ -20,8 +26,8 @@
 ### Others
 
 * 2024-03-27 08:43:03  优化pc端的样式展示 ([9b3c048](https://github.com/simply-none/latest-blogs/commit/9b3c0484918075930b30e42a90c2cd4061c9bd82))
-,
-## [0.1.2](https://github.com/simply-none/latest-blogs/compare/v0.1.1...v0.1.2) (2024-03-26)
+
+## [0.1.2](https://github.com/simply-none/latest-blogs/compare/0.1.1...0.1.2) (2024-03-26)
 
 ### Bug Fixes
 
@@ -69,12 +75,7 @@
 * 2023-12-05 15:59:45  更新感悟 ([0ce8f60](https://github.com/simply-none/latest-blogs/commit/0ce8f604409b75c8dec130a2fe8f4901abbf0979))
 * 2023-12-02 15:09:27  感悟更新 ([0bd99e5](https://github.com/simply-none/latest-blogs/commit/0bd99e58857f6fda86113dab0590f501d585b902))
 
-### Others
-
-* 2024-03-26 11:52:53 **release:** 0.1.2 ([d429611](https://github.com/simply-none/latest-blogs/commit/d4296111b617b2571fd472d660313e7f9e706f3d))
-* 2024-03-26 11:37:05 **release:** 0.1.2 ([6ddd79d](https://github.com/simply-none/latest-blogs/commit/6ddd79d8af39d73fff8cd4d628b05dd011c67bab))
-,
-## [0.1.1](https://github.com/simply-none/latest-blogs/compare/v0.1.0...v0.1.1) (2023-11-16)
+## [0.1.1](https://github.com/simply-none/latest-blogs/compare/0.1.0...0.1.1) (2023-11-16)
 
 ### Features
 
@@ -94,11 +95,7 @@
 * 2023-10-17 10:54:15  新增vitepress使用 ([5fcc7f1](https://github.com/simply-none/latest-blogs/commit/5fcc7f1cc406ebc212a5506fad6c2e98d937c0b9))
 * 2023-10-15 16:16:52 **新增笔记:** 新增重要的工作共识文档 ([0fce120](https://github.com/simply-none/latest-blogs/commit/0fce120fe4598d6918a932356bc283e8598be702))
 
-### Others
-
-* 2023-11-16 20:01:11 **release:** 0.1.1 ([9f18451](https://github.com/simply-none/latest-blogs/commit/9f184519b6c3e52bdd3204f2bc00e7a7595a7eb4))
-
-## [0.1.0](https://github.com/simply-none/latest-blogs/compare/v0.0.3...v0.1.0) (2023-10-15)
+## [0.1.0](https://github.com/simply-none/latest-blogs/compare/0.0.3...0.1.0) (2023-10-15)
 
 ### Bug Fixes
 
@@ -186,39 +183,6 @@
 * 2023-10-15 10:37:17 **其他:** 调整文档目录结构 ([d08c355](https://github.com/simply-none/latest-blogs/commit/d08c355b0057a56be71851fd9f9adae39236d48c))
 * 2023-06-12 14:49:51 **其他:** 文件名变更，使得更符合语义化 ([ed480c5](https://github.com/simply-none/latest-blogs/commit/ed480c5d064463f08fea06595e4b6a0e2d19c230))
 
-### Others
-
-* 2023-10-15 16:05:09 **release:** 0.1.0 ([3f95dd8](https://github.com/simply-none/latest-blogs/commit/3f95dd8595034d7f88bff9dc692e268c143cfe99))
-* 2023-10-15 16:02:49 **release:** 3.2.0 ([e1c5d5b](https://github.com/simply-none/latest-blogs/commit/e1c5d5b3314803d1c7f0cc9d4160342c81e205e2))
-* 2023-10-15 16:00:26 **release:** 3.1.0 ([50c0d6a](https://github.com/simply-none/latest-blogs/commit/50c0d6a2d1e66b1cadae703da2f86c0b853aede7))
-* 2023-10-15 15:58:15 **release:** 4.0.0 ([696441c](https://github.com/simply-none/latest-blogs/commit/696441ca705a75386497b4c7db8538a766cc1b9f))
-* 2023-06-11 11:14:19 **release:** 6.0.1 ([48c6e5a](https://github.com/simply-none/latest-blogs/commit/48c6e5a6162e642f94aa4a1bbefd3d20acb4e4e0))
-* 2023-06-11 11:11:34 **release:** 6.0.0 ([3e467b3](https://github.com/simply-none/latest-blogs/commit/3e467b354bd4ab3b4177869b2f646c6550a41f8f))
-* 2023-06-09 15:43:19 **release:** 3.0.0 ([05c25ec](https://github.com/simply-none/latest-blogs/commit/05c25ec9c0cd50ffe0651f67f787490586179252))
-* 2023-04-20 15:40:02 **release:** 5.1.12 ([d33c404](https://github.com/simply-none/latest-blogs/commit/d33c404c8d8b2ae1be6dfdc7bd8b85c821259ae3))
-* 2023-04-20 15:39:40 **release:** 5.1.11 ([1fafdab](https://github.com/simply-none/latest-blogs/commit/1fafdab3da48ce5e9d2cdaa1282579a8b53e83ab))
-* 2023-04-20 15:38:27 **release:** 5.1.10 ([3d3e9a3](https://github.com/simply-none/latest-blogs/commit/3d3e9a3085d42a729bd4c58bb2e9922a6695b53e))
-* 2023-04-20 15:34:15 **release:** 5.1.9 ([8edaa56](https://github.com/simply-none/latest-blogs/commit/8edaa564638584c219ba05627e2205c65b81e830))
-* 2023-04-20 15:32:11 **release:** 5.1.8 ([5d31062](https://github.com/simply-none/latest-blogs/commit/5d3106211df81f1e7bf4ab42d4b59ada07671c02))
-* 2023-04-20 15:12:15 **release:** 5.1.7 ([4067885](https://github.com/simply-none/latest-blogs/commit/40678855d7680d1deece77e3ce8da10ba46ede97))
-* 2023-04-20 14:52:37 **release:** 5.1.6 ([e397836](https://github.com/simply-none/latest-blogs/commit/e3978363b1c3e216c7da007b9d7926ae9abd0e74))
-* 2023-04-20 14:25:14 **release:** 2.0.19 ([c9928ca](https://github.com/simply-none/latest-blogs/commit/c9928cafbe35654a69e5bbad11959ff419dbcf52))
-* 2023-04-20 14:25:09 **release:** 2.0.18 ([8b0a256](https://github.com/simply-none/latest-blogs/commit/8b0a25676f3f51db0dc411940d0c809aa12b026e))
-* 2023-04-20 14:25:06 **release:** 2.0.17 ([1b26884](https://github.com/simply-none/latest-blogs/commit/1b268847f267e5af065487796b5926473ede5fc0))
-* 2023-04-20 14:25:02 **release:** 2.0.16 ([9653308](https://github.com/simply-none/latest-blogs/commit/9653308b1646e62d566bc97ba12cc7c2278abe7f))
-* 2023-04-20 14:24:59 **release:** 2.0.15 ([c177ad8](https://github.com/simply-none/latest-blogs/commit/c177ad805e175e9ebc3719bcdb4dec63b1724341))
-* 2023-04-20 14:24:57 **release:** 2.0.14 ([b36b4d9](https://github.com/simply-none/latest-blogs/commit/b36b4d9c0ed3ec0ae87ccc4d6738ff9ad44363cd))
-* 2023-04-20 14:24:55 **release:** 2.0.13 ([dc1eff3](https://github.com/simply-none/latest-blogs/commit/dc1eff3f4c5c352c793916115283d62c87a85a3c))
-* 2023-04-20 14:24:52 **release:** 2.0.12 ([294ecdb](https://github.com/simply-none/latest-blogs/commit/294ecdbac651f5c2693ee2e3e3ef83e1506ec6c1))
-* 2023-04-20 14:24:50 **release:** 2.0.11 ([4a21a86](https://github.com/simply-none/latest-blogs/commit/4a21a8664a657d524bfb081288fe760478d27926))
-* 2023-04-20 14:24:48 **release:** 2.0.10 ([bf08e7d](https://github.com/simply-none/latest-blogs/commit/bf08e7d94da13c25ec1a6c4845bf8802a1212933))
-* 2023-04-20 14:24:45 **release:** 2.0.9 ([5167f38](https://github.com/simply-none/latest-blogs/commit/5167f381a585e153dd573c9d939bdf4fa60a11f4))
-* 2023-04-20 14:24:43 **release:** 2.0.8 ([a4bc5ba](https://github.com/simply-none/latest-blogs/commit/a4bc5ba81155ee2af4fe7af74af4865a760c5d0a))
-* 2023-04-20 14:24:40 **release:** 2.0.7 ([c6efc05](https://github.com/simply-none/latest-blogs/commit/c6efc051adfced385d4422900f127ee97f87bca1))
-* 2023-04-20 14:24:37 **release:** 2.0.6 ([20b194e](https://github.com/simply-none/latest-blogs/commit/20b194e39f86d5db60e56bb9ea774dc8ef00ab02))
-* 2023-04-20 14:24:02 **release:** 2.0.5 ([dab37e3](https://github.com/simply-none/latest-blogs/commit/dab37e3f7710baf78e85fbef1a3fb3fceefe2e9d))
-* 2023-04-20 14:22:30 **release:** 2.0.4 ([ebfa0fc](https://github.com/simply-none/latest-blogs/commit/ebfa0fc79f9241b55b244a1097335b5717ad3de2))
-,
 ### Tests
 
 * 2023-06-07 09:58:05 **jousin:** jousin ([3745c87](https://github.com/simply-none/latest-blogs/commit/3745c8768129e86aed2291a89d7f5955e513fa37))
