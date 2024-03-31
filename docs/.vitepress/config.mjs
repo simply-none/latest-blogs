@@ -7,6 +7,9 @@ import {
 import { nav } from "./nav";
 import { sidebar } from "./sibar";
 
+import GitChangelogMarkdownSection from '../../log'
+import log2 from '../../log2'
+
 export default defineConfig({
   markdown: {
     lineNumbers: true,
@@ -106,6 +109,8 @@ export default defineConfig({
     esbuild: {
     },
     plugins: [
+      log2(),
+      GitChangelogMarkdownSection()
     ],
     optimizeDeps: { 
       include: [ 

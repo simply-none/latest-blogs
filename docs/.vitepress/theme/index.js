@@ -1,6 +1,8 @@
 import Theme from 'vitepress/theme'
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
+
+import CA from '../../../utils/a.vue'
 // import { 
 //   NolebaseEnhancedReadabilitiesMenu, 
 //   NolebaseEnhancedReadabilitiesScreenMenu, 
@@ -30,5 +32,6 @@ export default {
   },
   enhanceApp({app}) {
     install(app)
+    app.component('CA', CA)
   }
 }

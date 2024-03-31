@@ -30,6 +30,7 @@
     "gitlog": "^4.0.8",
     "pagefind": "^1.0.3",
     "shelljs": "^0.8.5",
+    "simple-git": "^3.24.0",
     "vitepress-plugin-pagefind": "^0.2.10"
   },
   "devDependencies": {
