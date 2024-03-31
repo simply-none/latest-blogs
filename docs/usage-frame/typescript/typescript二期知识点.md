@@ -413,6 +413,8 @@ printPoint(new Point(2, 3))
 - 模块内的变量、函数、类仅在模块内使用，除非使用export等形式进行导出操作
 - 模块是自声明的，两模块之间的关系使用import和export建立
 - 模块使用 `模块加载器`去导入其他的模块
+- 在模块导入导出时，可使用as对（默认）变量/函数进行重命名，即`name as newName`的形式
+- commonjs和es模块在默认导入和模块命名空间对象导入之间存在不匹配，typescript可以使用compiler选项`esModuleInterop`减小这种差距
 
 模块加载器：在执行此模块代码前去查找并执行这个模块的所有依赖，其分类有：
 
@@ -443,8 +445,41 @@ export { ZipCodeValidator as mainValidator }
 // **重新导出**：不会在当前模块导入该模块或定义一个新的局部变量，而是直接就导出
 export { ZipCodeValidator as RegexpBasedZipCodeValidator } from './ZipCodeValidator'
 
+// 导出多个
+export {
+  a,
+  b,
+  c
+}
+
 // 导出一个模块中的所有内容：包括该模块导入的其他模块
 export * from 'module-path'
+
+// 导出类型
+export type Cat = 'cat'
+export interface Dog = {}
+
+// 直接写死export，相当于默认导出
+interface Options = {}
+export = Options;
+
+// 直接写死export，相当于默认导出，commonjs语法
+module.exports = fs.readFileSync('./hello.ts')
+
+// commonjs语法导出
+module.exports = {
+  name: 'jade'
+}
+
+// 环境模块声明导出语法：用于声明运行时存在但没有对应声明文件的模块
+declare module "path" {
+  export function normalize(p: string): string;
+  export function join(...paths: any[]): string;
+  export var sep: string;
+}
+// 使用
+/// <reference path="path.d.ts" />
+import { normalize, join } from "path";
 ```
 
 ### 导入
@@ -453,14 +488,39 @@ export * from 'module-path'
 // 导入一个模块中的某个导出内容
 import { ZipCodeValidator } from './ZipCodeValidator'
 
-// 导入一个模块中的某个导出内容并重命名
+// 导入一个模块中的某个导出内容并重命名为zcv
 import { ZipCodeValidator as ZCV } from './ZipCodeValidator'
 
-// 将整个模块导入到一个变量，通过该变量访问模块的导出部分
+// 同时导入一个默认、具名变量
+import defaultValue, { ZipCodeValidator } from './ZipCodeValidator'
+
+// 将整个模块的export导入到一个变量，通过该变量访问模块的导出部分
 import * as validator from './ZipCodeValidator'
 
 // 模块的直接导入：该模块可能没有任何的导出或用户根本不关注他的导出
 import './module-path'
+
+// 可以使用和JavaScript相同语法导入类型
+import { Cat, Dog } from './animals'
+// 也可以使用type标明导入的是一个类型
+import type { Cat, Dog } from './animals'
+// ts4.5+，混合导入类型和其他内容
+import { type Cat, type Dag, age } from './animals'
+
+// 同时导入具名类型和默认类型
+import type { default as defaultType , namedType } from './types'
+
+// 具有commonjs行为的es模块导入语法，确保ts文件和commonjs输出进行一对一匹配
+import fs = require('fs')
+const code = fs.readFileSync('hello.js', 'utf8')
+
+// 类似动态导入类型的语法
+type WriteType = import('./types').WriteType
+
+// commonjs语法导入
+const person = require('./person')
+const { name } = require('./person')
+console.log(person.name)
 ```
 
 ### 默认导入导出
@@ -654,6 +714,18 @@ Array.property.toObse = function () {}
 ```
 
 :::
+
+### 模块与脚本的区别
+
+两者的区别在于是否有export：
+
+- 脚本文件无export，同时脚本内的变量和类型声明被全局共享
+- 模块有export，只有通过export的变量和类型声明才能被其他文件共享
+
+将脚本文件变为一个模块：
+
+- 给需要共享给其他文件的变量添加export
+- 若整个文件的变量都不共享，添加一个空的export即可，即`export {}`
 
 ## 模块解析
 
