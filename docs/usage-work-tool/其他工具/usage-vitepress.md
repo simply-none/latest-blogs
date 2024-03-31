@@ -4,19 +4,19 @@
 
 ::: code-group
 
-```text [提示]
+```bash [提示]
 # ::: [info | tip | warning | danger | details] 标题名
 info box
 # :::
 ```
 
-```text [块折叠]
+```bash [块折叠]
 # ::: details 标题名
 内部可以展示任何markdown语法
 # :::
 ```
 
-```text [块折叠]
+```bash [块折叠]
 # ::: code-group
 
 #```js [标题名]
@@ -47,5 +47,9 @@ info box
 
 **引入组件**：
 
-
 先通过`script`标签import导入组件，然后直接使用该组件即可，和vue一样
+
+## vitepress插件
+
+- @nolebase/vitepress-plugin-enhanced-readabilities：阅读增强，可自由切换布局
+- @nolebase/vitepress-plugin-highlight-targeted-heading：闪烁高亮当前的目标标题
