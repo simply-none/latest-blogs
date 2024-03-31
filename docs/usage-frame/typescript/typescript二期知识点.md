@@ -1,8 +1,6 @@
 # TypeScript 知识点（第二期）
 
 > 参考文档：http://www.patrickzhong.com/TypeScript/
-> 注意：可能有些过时内容
-> 😢😢😢表示文中不明白的，未记录的内容
 
 ## 声明合并
 
