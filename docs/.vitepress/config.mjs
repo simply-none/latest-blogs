@@ -1,3 +1,4 @@
+import { dirname, join, resolve } from 'path'
 import { defineConfig } from "vitepress";
 import {
   chineseSearchOptimize,
@@ -106,6 +107,18 @@ export default defineConfig({
     },
     plugins: [
     ],
+    optimizeDeps: { 
+      include: [ 
+        '@nolebase/vitepress-plugin-enhanced-readabilities > @nolebase/ui > @rive-app/canvas', 
+      ], 
+    }, 
+    ssr: { 
+      noExternal: [ 
+        // 如果还有别的依赖需要添加的话，并排填写和配置到这里即可
+        '@nolebase/vitepress-plugin-enhanced-readabilities', 
+        '@nolebase/vitepress-plugin-highlight-targeted-heading', 
+      ], 
+    }, 
   },
 });
 

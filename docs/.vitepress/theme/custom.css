@@ -49,6 +49,10 @@ html:not(.dark) .vp-doc [class*='language-'] > span.lang {
   color: rgb(166 166 189 / 56%);
 }
 
+.VPSocialLinks.VPNavBarSocialLinks.social-links {
+  margin-right: 0;
+}
+
 /* 修改页面宽度 */
 @media (min-width: 960px) {
   .VPSidebar {

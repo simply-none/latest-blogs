@@ -36,6 +36,8 @@
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5",
     "@commitlint/cz-commitlint": "^17.5.0",
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "^1.27.2",
+    "@nolebase/vitepress-plugin-highlight-targeted-heading": "^1.27.2",
     "commitizen": "^4.3.0",
     "conventional-changelog-atom": "^3.0.0",
     "conventional-changelog-cli": "^3.0.0",
