@@ -1,5 +1,5 @@
 const gitlog = require("gitlog").default;
-const pkg = require('./package.json')
+const pkg = require('../package.json')
 const fs = require('fs')
 
 const repo = pkg.repository.url.replace('.git', '')

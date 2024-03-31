@@ -1,5 +1,5 @@
 const shell = require('shelljs')
-const pkg = require('./package.json')
+const pkg = require('../package.json')
 
 let gitAddMsg = shell.exec('git add .')
 console.log(gitAddMsg, 'git')

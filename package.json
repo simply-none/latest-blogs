@@ -14,10 +14,10 @@
     }
   },
   "scripts": {
-    "cg": "node ./generateChangelog.js",
+    "cg": "node ./utils/generateChangelog.js",
     "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git pull && git add . && git-cz",
-    "r": "standard-version --release-as patch && npm run cg && node ./gitCommit.js && git push --follow-tags origin master",
+    "r": "standard-version --release-as patch && npm run cg && node ./utils/gitCommit.js && git push --follow-tags origin master",
     "prepare": "husky install",
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
