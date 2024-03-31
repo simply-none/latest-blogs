@@ -2,6 +2,23 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.1.6](https://github.com/simply-none/latest-blogs/compare/0.1.5...0.1.6) (2024-03-31)
+
+### Docs
+
+* 2024-03-31 18:00:08  更新typescript模块内容 ([4a05315](https://github.com/simply-none/latest-blogs/commit/4a05315a9ac2507c52e25243b3f47ce876afd6eb))
+* 2024-03-31 15:26:01  vitepress笔记新增推荐插件内容 ([fcfb114](https://github.com/simply-none/latest-blogs/commit/fcfb114ddc1240df4cbbd8e6883a9cbe1cbb6975))
+
+### Code Refactoring
+
+* 2024-03-31 18:10:36  gitignore解除忽略.vscode目录，便于统一开发环境 ([36fa03e](https://github.com/simply-none/latest-blogs/commit/36fa03e6566df6f4332437aaf6dc63b9f88dba27))
+* 2024-03-31 18:05:00  调整项目部分文件的结构 ([1b4ee7f](https://github.com/simply-none/latest-blogs/commit/1b4ee7f2c4de42cc04c09fdb01daadfc17b64d99))
+* 2024-03-31 15:11:27  删除typescript笔记中的无效内容 ([9ee2ecb](https://github.com/simply-none/latest-blogs/commit/9ee2ecb53d2327da7ff41d750b70417807a6cd8b))
+
+### Build System
+
+* 2024-03-31 15:09:55  新增vitepress@nolebase/*插件，用于美化页面布局 ([d4fa660](https://github.com/simply-none/latest-blogs/commit/d4fa6606c59c00e76339a6f8a7187099ad5be35f))
+
 ## [0.1.5](https://github.com/simply-none/latest-blogs/compare/0.1.4...0.1.5) (2024-03-30)
 
 ### Docs
