@@ -10,6 +10,11 @@ import { sidebar } from "./sibar";
 import GitChangelogMarkdownSection from '../../log'
 import log2 from '../../log2'
 
+console.log(join(__dirname, '../', '../'))
+const commitsOptions = {
+  repo: join(__dirname, '../', '../')
+}
+
 export default defineConfig({
   markdown: {
     lineNumbers: true,
@@ -109,7 +114,7 @@ export default defineConfig({
     esbuild: {
     },
     plugins: [
-      log2(),
+      log2(commitsOptions),
       GitChangelogMarkdownSection()
     ],
     optimizeDeps: { 

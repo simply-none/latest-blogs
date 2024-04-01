@@ -45,9 +45,8 @@ export default function GitChangelogMarkdownSection(options) {
         file: id,
         fields: ["hash", "abbrevHash", "subject", "authorName", "authorDate", "authorDateRel", "tag"],
       })
-      // console.log(thislog, path, 'arguments')
 
-      return test(code, id, '测试标题')
+      return test(code, id, '文件历史')
     },
   }
 }
