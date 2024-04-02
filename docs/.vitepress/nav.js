@@ -34,6 +34,11 @@ export function nav() {
       text: "README",
       items: [
         {
+          text: "待办事项",
+          link: "/todo-list",
+          activeMatch: "/todo-list",
+        },
+        {
           text: "鉴&谏",
           link: "/README",
           activeMatch: "/README",
