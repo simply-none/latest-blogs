@@ -110,7 +110,7 @@ function filterCommit() {
   Object.keys(Changelog.commits).forEach(key => {
   })
 
-  currentFileCommit.value = Changelog.commits[path.value]
+  currentFileCommit.value = Changelog.commits[path.value] || []
 }
 
 onMounted(() => {
