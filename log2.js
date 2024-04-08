@@ -67,7 +67,7 @@ function toChinese(str) {
       str = str.replace(match, cChar);
   });
   // 删除首尾的双引号
-  str = str.replace(/^"|"$/, '')
+  str = str.replace(/^"|"$/g, '')
   return str;
 }
 
