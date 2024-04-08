@@ -71,8 +71,9 @@ function toChinese(str) {
 
 function generateFileCommits (commits) {
   return commits.reduce((pre, cur) => {
-    cur.files.map((file) => {
-      file = toChinese(file)
+    cur.files.map((originFile) => {
+      let file = toChinese(originFile)
+      console.log(file, originFile)
       if (!file.startsWith("docs") || !file.endsWith(".md")) {
         return false;
       }
