@@ -32,6 +32,7 @@ export default function GitChangelogMarkdownSection(options = {}) {
         ...options
       })
       commits = generateFileCommits(commits)
+      console.log(Object.keys(commits), 'com', Object.keys(commits).length)
     },
     resolveId(id) {
       if (id === ResolvedVirtualModuleId) {
