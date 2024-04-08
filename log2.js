@@ -31,7 +31,6 @@ export default function GitChangelogMarkdownSection(options = {}) {
         fields: ["hash", "abbrevHash", "subject", "authorName", "authorDate", "committerName", "committerDate", "authorDateRel", "tag", 'rawBody'],
         ...options
       })
-      console.log(commits, 'commits')
       commits = generateFileCommits(commits)
     },
     resolveId(id) {
@@ -57,11 +56,22 @@ function commitSortByDate (commits) {
   });
 }
 
+function toChinese(str) {
+  const matches = str.match(/(\\\d{3}){3}/g);
+  if (matches) matches.forEach(match => {
+      let decoded = '';
+      const splits = match.split('\\');
+      splits.forEach(code => !code || (decoded += '%' + parseInt(code, 8).toString(16)));
+      const cChar = decodeURI(decoded);
+      str = str.replace(match, cChar);
+  });
+  return str;
+}
+
 function generateFileCommits (commits) {
   return commits.reduce((pre, cur) => {
-    console.log(pre, 'pre', cur, 'cur')
     cur.files.map((file) => {
-      
+      file = toChinese(file)
       if (!file.startsWith("docs") || !file.endsWith(".md")) {
         return false;
       }
@@ -71,13 +81,11 @@ function generateFileCommits (commits) {
       }
       delete cur.files;
       delete cur.status;
-      cur.committerDate = moment(cur.committerDate).format('YYYY-MM-DD hh:mm:ss')
+      cur.committerDate = moment(new Date(cur.committerDate)).format('YYYY-MM-DD hh:mm:ss')
       pre[file].push(cur);
       pre[file] = commitSortByDate(pre[file])
       
     });
-
-    console.log(Object.keys(pre).length, 'len')
 
     return pre;
   });
