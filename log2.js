@@ -31,6 +31,7 @@ export default function GitChangelogMarkdownSection(options = {}) {
         fields: ["hash", "abbrevHash", "subject", "authorName", "authorDate", "committerName", "committerDate", "authorDateRel", "tag", 'rawBody'],
         ...options
       })
+      console.log(commits, 'commits')
       commits = generateFileCommits(commits)
     },
     resolveId(id) {
@@ -58,6 +59,7 @@ function commitSortByDate (commits) {
 
 function generateFileCommits (commits) {
   return commits.reduce((pre, cur) => {
+    console.log(pre, 'pre', cur, 'cur')
     cur.files.map((file) => {
       
       if (!file.startsWith("docs") || !file.endsWith(".md")) {
