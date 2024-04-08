@@ -24,7 +24,7 @@ export default function GitChangelogMarkdownSection(options = {}) {
     name: '@jadeq/vitefdsfsfpress-plugin-markdown-changelog',
     buildStart () {
       commits = gitlog.default({
-        // repo: './',
+        repo: './',
         branch: 'master',
         number: 1000000,
         includeMergeCommitFiles: true,
@@ -74,6 +74,8 @@ function generateFileCommits (commits) {
       pre[file] = commitSortByDate(pre[file])
       
     });
+
+    console.log(Object.keys(pre).length, 'len')
 
     return pre;
   });
