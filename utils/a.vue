@@ -107,8 +107,8 @@ function useRawPath(route) {
 
 function filterCommit() {
   let path = useRawPath(route);
-  Object.keys(Changelog.commits).forEach(key => {
-  })
+
+  console.log(Changelog.commits, path.value, '测试')
 
   currentFileCommit.value = Changelog.commits[path.value] || []
 }
