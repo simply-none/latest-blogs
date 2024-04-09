@@ -916,3 +916,7 @@ namespace Validation {
 let a = new Letter()
 let b = new Upper()
 ```
+
+## `.d.ts`文件模板
+
+> 参考：https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html   

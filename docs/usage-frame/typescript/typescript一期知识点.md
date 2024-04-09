@@ -79,6 +79,7 @@ console.log(first, second)
 - ts编译器会根据tsconfig.json中的file、include、exclude三个字段去处理过滤后包含的所有的ts、tsx、d.ts文件，默认情况下是加载和tsconfig同级目录下的所有上述文件
 - d.ts声明文件禁止定义具体的实现
 - 当使用第三方库时，需引用对应的声明文件，才能获得对应的代码补全、接口提示等功能
+- declare用来告诉编译器，某个类型是存在的，可以在当前文件中使用
 
 ::: code-group
 
@@ -90,6 +91,23 @@ declare enum {}
 declare namespace {}
 interface A {}
 type A = {}
+
+// 声明模块
+// a.ts
+export interface A {
+  x: number;
+}
+
+// b.ts
+import { A } from './a'
+
+declare module './a' {
+  interface A {
+    y: number;
+  }
+}
+
+const a: A = { x: 0, y: 0 };
 ```
 
 ```typescript
@@ -263,10 +281,16 @@ const [a, b, ...c] = tuple1
 定义：
 
 - 枚举类型表示可以有特殊名字的一组值
+- 枚举成员分为常量成员(字面量枚举表达式、对先前枚举成员的引用、带括号的常量枚举表达式、应用于常量枚举表达式的一元运算符`+`, `-`, `~`之一、二进制操作符`+`, `-`, `*`, `/`, `%`, `<<`, `>>`, `>>>`, `&`, `|`, `^`)和计算成员(除常量枚举表达式情形下的其他情形，且值必须是数值，不然报错)
+- 字面量
 - 字面量枚举成员类型：指不带初始值的常量枚举成员、值被初始化为字符串字面量、数字字面量的成员。
 - 当所有枚举成员都有字面量枚举值时，他们就成为了字面量枚举成员类型。而枚举类型也是枚举成员类型的联合类型
 - 常量枚举通过修饰符const定义，只能使用常量枚举表达式（无计算成员等），且会在编译阶段进行删除
-- 外部枚举，使用修饰符declare定义，描述已经存在的枚举类型的形状
+- 没有初始值设置项的枚举要么排在前面，要么排在用数字常量或其他常量枚举成员初始化的数值枚举之后
+- 外部枚举（环境枚举），使用修饰符declare定义，描述已经存在的枚举类型的形状。和常规枚举相比，没有初始值设定项的环境枚举成员始终是计算的（而非常量的）
+- 引用枚举成员作为值时，可以说，该值的类型就是枚举类型。所以若枚举类型和变量的类型不一致时，会报错
+- 在现代typescript中，一个`as const`的对象(`const obj = { up: 0 } as const`)足以代替枚举
+- 枚举和数值是互相兼容的，但是不同枚举之间是不兼容的
 
 ::: code-group
 
@@ -279,17 +303,65 @@ const c: Color = Color.Red
 
 // s的类型是string，s的值是'Red'
 const s: string = Color[1]
-```
-
-```typescript
-enum Color { Red = 1, Blue, Green }
 
 type enumChildType = Color.Red
-// enumChildType的类型是1，故而该类型的值，只能是1，不能是其他值
+// enumChildType的类型是1，故而该类型的值，只能是1或Color.Blue，不能是其他值
 // Type 'Color.Blue' is not assignable to type 'Color.Red'.
 let a: enumChildType = Color.Blue
 // Type '23' is not assignable to type 'Color.Red'.
 let a: enumChildType = 23
+
+// 常量成员和计算成员
+enum FileAccess {
+  // 常量成员
+  None,
+  Read = 1 << 1,
+  Write = 1 << 2,
+  ReadWrite = Read | Write,
+  // 计算成员，例如
+  G = '123'.length,
+}
+
+// 未初始化枚举成员不能像下面这样
+const getSomeValue = () => 23
+
+enum Error {
+  A = getSomeValue(),
+  // Error: Enum member must have initializer.
+  B,
+}
+
+// 枚举类型的引用，值的类型和变量类型不匹配
+enum Color {
+  Red = 1,
+  Blue = '2',
+}
+
+interface IColor {
+  Red: Color.Red;
+  Blue: string;
+}
+
+let c: IColor = {
+  Red: 1,
+  // Error: Type 'Color' is not assignable to type 'string'.
+  // 此处值Color.Blue为Color类型（包括字符串和数字），此处变量Blue为string（仅是字符串），所以两者不兼容，故而报错
+  Blue: Color.Blue
+}
+
+interface JColor {
+  Red: Color.Red;
+  Blue: Color.Blue;
+}
+
+let d: JColor = {
+  Red: 1,
+  // Error: Type '"2"' is not assignable to type 'Color.Blue'.
+  // 当变量Blue类型是Color.Blue（类型是字符串）时，值为字符串时，报错
+  // 而当变量Blue类型是Color.Blue（类型是数值）时，值为数值时，正确
+  Blue: '2'
+}
+
 ```
 
 :::
@@ -301,7 +373,7 @@ let a: enumChildType = 23
 - 若枚举常量表达式的结果为NaN或infinite，则会在编译阶段出错；直接赋值NaN或infinite不会出错
 - 枚举是一个在运行时真正存在的对象，故而在兼容的情况下，枚举可以赋值给对象
 - 可以使用 `keyof typeof enumVal`获取enumVal里面所有枚举成员的键的字符串字面量的类型联合
-- 数字枚举成员具有反向映射，例如 `enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`
+- 数字枚举成员具有反向映射，例如 `enum A { a }; let aa = A.a;// a的key为A[aa]; let nameOfa = A[aa];`，字符串枚举成员则不会生成反向映射
 
 ```typescript
 // 关于keyof和typeof解释
@@ -587,6 +659,7 @@ person.on('ageChanged', (newAge) => {
 
 - 用作对象属性的键
 - 与计算出的属性名声明相结合来声明对象的属性和类成员
+- 表示唯一文本，可用`unique symbol`作用于`Symbol()`、`Symbol.for()`上，该变量仅允许使用const或readonly static属性，同时为了引用该文本，必须使用typeof运算符。同时由于每种unique symbol类型都是完全独立的，所以该类型之间不可通过比较运算符进行比较
 
 ```typescript
 // 用过对象的键
@@ -605,6 +678,28 @@ class C {
 }
 let c = new C()
 console.log(c[getClassNameSymbol](), 'get c')
+
+// 唯一文本
+declare const sym1: unique symbol;
+
+let sym2: typeof sym1 = sym1;
+
+// Error: A variable whose type is a 'unique symbol' type must be 'const'.
+// 此处应该用const代替let
+let sym3: unique symbol = Symbol()
+
+// 正常工作
+const sym4: unique symbol = Symbol()
+class C {
+  static readonly StaticSymbol: unique symbol = Symbol();
+}
+
+// 不可比较
+// Error: This comparison appears to be unintentional because the types 'typeof sym2' and 'typeof sym1' have no overlap.
+if (sym1 === sym3) {}
+
+// 正常
+if (sym1 === sym2) {}
 ```
 
 内置的symbols😢😢😢
@@ -1509,6 +1604,18 @@ const obj3 = {
 - 赋值扩展了子类型的兼容性，增加了一些规则，允许和any来回赋值，以及enum和number来回赋值
 - 类型兼容性实际上是由赋值兼容性控制，即使是在implements和extends语句中😢😢😢
 
+类型兼容性：
+
+|  | any | unknown | object | void | undefined | null | never |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| any → |  | ✓ | ✓ | ✓ | ✓ | ✓ | ✕ |
+| unknown → | ✓ |  | ✕ | ✕ | ✕ | ✕ | ✕ |
+| object → | ✓ | ✓ |  | ✕ | ✕ | ✕ | ✕ |
+| void → | ✓ | ✓ | ✕ |  | ✕ | ✕ | ✕ |
+| undefined → | ✓ | ✓ | ✓ | ✓ |  | ✓ | ✕ |
+| null → | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✕ |
+| never → | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
+
 ::: code-group
 
 ```typescript
@@ -2361,7 +2468,7 @@ function greetBad<Str extends string>(s: Str) {
 - 函数无返回值，或者 `return ;`时，其返回值类型为 `void`
 - 函数参数的默认值 `(x: number = 1, y: number)`，出现位置无特殊要求，但是，若不想传某些值，必须用 `undefined`作为占位，这样就会跳过对应的值，后面的值就能够传过去了。在必须参数后面的带默认值的参数都是可选的（其他位置要传），可不传任何值。
 - 函数定义中参数也可用剩余参数，必须在参数的最后一个 `(x: number, ...y: any[])`，用于获取剩下的传入参数。其中在函数内调用时，y 是一个数组
-- 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把精确的函数定义写在前面*
+- 函数重载，允许一个函数接受不同数量或类型的参数，并进行不同的处理；ts 会优先从最前面的函数定义开始匹配，*若多个函数定义有包含关系，需要把更精确的函数定义写在前面*
 - 异步函数的返回值，用 `Promise<T>`定义，这个适用于promise和async...await，其中T是resolve的返回值类型
 - 具有较少参数的函数，可以赋值给较多参数的函数类型
 - 具有较多返回值的函数，可以赋值给较少返回值的函数类型
@@ -2908,12 +3015,13 @@ if (c.isD()) {
 }
 ```
 
-### 类间的关系
+### 类间的关系(类的兼容性)
 
 解释：
 
 - 多数情况下，ts的类是在结构上进行比较的。换句话说，如果两个类的结构相同，就可以进行赋值
 - 对于一个空类，所有的类型都可以替代他
+- 比较类类型的两个对象时，仅比较实例成员（包括私有成员和受保护的成员），静态成员和构造函数不会影响其兼容性
 
 ```typescript
 class A {
@@ -2943,6 +3051,80 @@ class E {}
 let e: E = ''
 ```
 
+## Minxins
+
+```typescript
+// 1. minxin定义
+class Sprite {
+  name = '';
+  x = 0;
+  y = 0;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+type Constructor = new (...args: any[]) => {};
+
+// 工厂函数
+function Scale<TBase extends Constructor>(Base: TBase) {
+  return class Scaling extends Base {
+    _scale = 1
+
+    setScale(scale: number) {
+      this._scale = scale;
+    }
+
+    get scale(): number {
+      return this._scale;
+    }
+  }
+}
+
+// 创建一个类表示应用了mixins的基类
+const EightBitSprite = Scale(Sprite);
+const flappySprite = new EightBitSprite('bird');
+flappySprite.setScale(0.8);
+console.log(flappySprite.scale);
+
+// 2. constrained mixins：通过泛型进行约束
+type GConstructor<T = {}> = new (...args: any[]) => T;
+
+type Positionable = GConstructor<{ setPos: (x: number, y: number) => void }>;
+
+function Jumpable<TBase extends Positionable>(Base: TBase) {
+  return class Jumpable extends Base {
+    jump(){
+      // 由于继承了基类Positionable，故而可以调用该方法
+      this.setPos(0, 20)
+    }
+  }
+}
+
+// 3. 包含静态属性的mixins
+function Base<T>(){
+  class Base {
+    static prop: T;
+  }
+  return Base;
+}
+
+function derived<T>(){
+  class Derived extends base<T>(){
+    static anotherProp: T;
+  }
+  return Derived;
+}
+
+class Spec extends derived<string>() {}
+
+// string
+Spec.prop;
+// string
+Spec.anotherProp;
+
+```
+
 ## 泛型
 
 > 参考：    
@@ -2954,6 +3136,7 @@ let e: E = ''
 - 使用泛型来定义可重用的组件，一个组件可以支持多个类型的数据（不仅是目前的，还可能是未来的），这样用户就可以以自己的数据类型来使用组件
 - 泛型，即类型的函数（使用类似函数的用法，比如接收多个类型变量作为参数），声明一个类型变量，在类型函数代码中使用这个类型变量。
 - 只有在泛型调用的时候，才给定该泛型实际的类型
+- 泛型的兼容性，只有当泛型使用到了具体的地方时，才会影响其兼容性，不然是互相兼容的，例如`type A<T> = {}`, `A<number>`和`A<string>`是互相兼容的，因为A的结构体并没有用到泛型T
 
 类型变量：是一种特殊的变量，只用于表示类型，而不是值（比如下面的T）
 
