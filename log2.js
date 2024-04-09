@@ -2,7 +2,7 @@
  * @Author: 简隐 jousindea@163.com
  * @Date: 2024-03-31 19:15:45
  * @LastEditors: 简隐 jousindea@163.com
- * @LastEditTime: 2024-03-31 23:34:05
+ * @LastEditTime: 2024-04-10 00:46:47
  * @FilePath: \latest-blogs\log2.js
  * @Description: 
  * 
@@ -24,7 +24,7 @@ export default function GitChangelogMarkdownSection(options = {}) {
     name: '@jadeq/vitefdsfsfpress-plugin-markdown-changelog',
     buildStart () {
       commits = gitlog.default({
-        repo: './',
+        // repo: './',
         branch: 'master',
         number: 1000000,
         includeMergeCommitFiles: true,
@@ -32,7 +32,6 @@ export default function GitChangelogMarkdownSection(options = {}) {
         ...options
       })
       commits = generateFileCommits(commits)
-      console.log(Object.keys(commits), 'com', Object.keys(commits).length)
     },
     resolveId(id) {
       if (id === ResolvedVirtualModuleId) {
@@ -75,7 +74,6 @@ function generateFileCommits (commits) {
   return commits.reduce((pre, cur) => {
     cur.files.map((originFile) => {
       let file = toChinese(originFile)
-      console.log(file, originFile)
       if (!file.startsWith("docs") || !file.endsWith(".md")) {
         return false;
       }
@@ -92,7 +90,7 @@ function generateFileCommits (commits) {
     });
 
     return pre;
-  });
+  }, {});
   
 }
 
