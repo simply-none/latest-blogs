@@ -43,7 +43,8 @@
 vscode插件：
 
 - typescript vue plugin
-- volar
+- volar（已废弃，继续使用会导致vscode编辑器代码出现类型报错，可迁移到vue official）
+- vetur：vue2专用，用在vue3中会产生报错信息
 
 注意：
 
