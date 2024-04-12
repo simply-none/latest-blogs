@@ -14,7 +14,6 @@ const options = {
 
 // Synchronous
 const commits = gitlog(options);
-console.log('total: ', commits?.length);
 
 let type = ['others']
 let start = false
@@ -58,7 +57,6 @@ for (let i = 0; i < commits.length; i++) {
     let tag = commit.tag.split(',').find(name => name.includes('tag:'))
     tag = tag.replace('tag:', '').replace('v', '').trim()
     let tagSort = tag.split('.').map(t => t.padStart(3, '0')).join('.')
-    console.log(commit, tagSort, 'tag')
     currentTag = tagSort
 
     if (!commitObj[currentTag]) {
@@ -90,7 +88,6 @@ for (let i = 0; i < commits.length; i++) {
   let commitCtx = ''
 
   const firstLine = commit.subject.match(/^(.*?)(\((.*?)\))?(\:)(.*)$/)
-  // firstLine  && console.log(commit, firstLine, 'fl')
   firstLine && (count = count + 1)
   !firstLine && (nc = nc + 1)
 
@@ -120,8 +117,6 @@ for (let i = 0; i < commits.length; i++) {
 
         let isMeaningCommit = !!firstLine[5].trim() && firstLine[5].trim().length >= 2 && firstLine[5] !== null && firstLine[5].trim() !== 'null'
 
-        // console.log(firstLine[5].trim(), '值', isMeaningCommit)
-
         if (isMeaningCommit) {
           let authorDate = commit.authorDate.split(' ').slice(0, 2).join(' ')
           commitCtx = `* ${authorDate} ${subjectTitle} ${firstLine[5].trim()} ([${commit.abbrevHash}](${repo + '/commit/' + commit.hash}))`
@@ -147,8 +142,6 @@ for (let i = 0; i < commits.length; i++) {
             commit
           })
         }
-
-        // console.log(commitCtx, 'ctx', commit.subject)
       } else {
         // 这里是一些非英文主题的subject type
         if (!commitObj[currentTag].items.other) {
@@ -191,8 +184,6 @@ for (let i = 0; i < commits.length; i++) {
   }
 }
 
-console.log(s, nc, count, commits.length)
-
 // 计算commit次数
 const a = Object.keys(commitObj).reduce((pre, cur) => {
   let b = Object.keys(commitObj[cur].items).reduce((p, c) => {
@@ -216,16 +207,12 @@ let tagArr = Object.keys(commitObj).sort(function (a, b) {
   return a < b ? 1 : -1
 })
 
-console.log(a, 'tagarr')
-
 // 开始生成changelog
 
 let tagArrLine = ''
 
 tagArr.forEach((tag, index) => {
   let curTagObj = commitObj[tag]
-
-  console.log(tag, tagArr)
 
   let tagTitle = ''
   let authorDate = curTagObj.info.authorDate.split(' ').slice(0, 1).join(' ')
@@ -238,11 +225,7 @@ tagArr.forEach((tag, index) => {
 
   }
 
-  // console.log(tagTitle)
-
   let typeItems = {}
-
-  
 
   typeSort.forEach(typeItem => {
     let typeTitle = `### ${typeItem.section}\n\n`
@@ -259,7 +242,6 @@ tagArr.forEach((tag, index) => {
       return false
     }
 
-    // console.log(curTagObj.items, [typeItem.type], curTagTypeObj, 'type')
     let tItems = curTagTypeObj.sort(function (a, b) {
       return a.line < b.line ? 1 : -1
     })
@@ -294,8 +276,6 @@ tagArr.forEach((tag, index) => {
 tagArrLine = `# Changelog\n\n` + `本文档通过规范的git commit，结合gitlog npm包生成\n\n` + tagArrLine
 
 tagArrLine = tagArrLine.replace(/\n*$/, '\n')
-
-// console.log(a, 'a', type, firstCommit)
 
 fs.writeFileSync('./docs/CHANGELOG.md', (tagArrLine), {
   flag: 'w'

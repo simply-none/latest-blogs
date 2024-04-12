@@ -2,6 +2,41 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [list](https://github.com/simply-none/latest-blogs/compare/0.1.6...list) (2024-04-11)
+
+### Bug Fixes
+
+* 2024-04-10 01:15:43  修复文档历史插件获取日志的错误 ([8905b63](https://github.com/simply-none/latest-blogs/commit/8905b639b1d58dffdad9f1d916df5b22041f34bc))
+* 2024-04-08 15:05:20  修复由于git提交中文文件名乱码造成的文档历史插件显示错误的问题 ([eaa07c0](https://github.com/simply-none/latest-blogs/commit/eaa07c07992520562faa7ccb60d67377499f606b))
+* 2024-04-02 08:53:00  修复日志插件不展示的报错 ([b8ba125](https://github.com/simply-none/latest-blogs/commit/b8ba1255615174e2a7e2cc0d9713f4acba177314))
+
+### Docs
+
+* 2024-04-11 16:27:08  修订部分内容 ([baefd50](https://github.com/simply-none/latest-blogs/commit/baefd500e54e3756382e16376510017ae326e8b6))
+* 2024-04-10 10:40:12  更新vite文档 ([69cc210](https://github.com/simply-none/latest-blogs/commit/69cc21038dc60054f59db1ff08f90c02f1839cf6))
+* 2024-04-09 13:52:17  修订typescript部分内容 ([88af33d](https://github.com/simply-none/latest-blogs/commit/88af33dcdac4e455447f32f7c9afc4bcf6229825))
+* 2024-04-02 08:57:24  新增待办事项文档 ([0b05471](https://github.com/simply-none/latest-blogs/commit/0b05471ebe29aa0819b42e052b657d2da5c8f27d))
+
+### Others
+
+* 2024-04-10 10:55:07  固定vitepress版本号 ([99cc4fb](https://github.com/simply-none/latest-blogs/commit/99cc4fb7b0fec8cafd5335e06875cc130bb70eec))
+
+### Build System
+
+* 2024-04-11 16:37:38  由于修改node版本导致的lock文件更新 ([0d8f73c](https://github.com/simply-none/latest-blogs/commit/0d8f73cf67865801342a22549899a7a69e47e12e))
+* 2024-04-11 16:29:44  修改部署时的node版本 ([032b228](https://github.com/simply-none/latest-blogs/commit/032b228f0f4e17eb5d7aad10c78fdbc3a7107a67))
+* 2024-04-08 15:22:05  测试文档历史插件报错问题 ([81f15d6](https://github.com/simply-none/latest-blogs/commit/81f15d63d3b9318905a415b6f7b60ce95f73bb2c))
+* 2024-04-08 15:17:11  测试文档历史插件报错问题 ([6cf9bd5](https://github.com/simply-none/latest-blogs/commit/6cf9bd57c7fabc6177d23e5a25ac93f46edf8e01))
+* 2024-04-08 15:13:14  测试文档历史插件报错问题 ([fca3d5e](https://github.com/simply-none/latest-blogs/commit/fca3d5e63fa15046b07afd9d5bd532c6e7ac62cb))
+* 2024-04-08 15:11:01  测试文档历史插件报错问题 ([9d60dfb](https://github.com/simply-none/latest-blogs/commit/9d60dfb0b6eaf66f79c89ba5950af1e3363cfebf))
+* 2024-04-08 14:28:23  测试文档历史插件报错问题 ([a04a045](https://github.com/simply-none/latest-blogs/commit/a04a045a69a74b79ee0070e0c34c909c7be83b9e))
+* 2024-04-08 14:25:54  测试文档历史插件报错问题 ([5a9c07e](https://github.com/simply-none/latest-blogs/commit/5a9c07e91ba4b4eb20ae5a2c3de3f0c22309ad36))
+* 2024-04-08 14:06:25  测试文档历史插件报错问题 ([0385c5b](https://github.com/simply-none/latest-blogs/commit/0385c5b309318a5421f263a167fe555cfce8d0d1))
+* 2024-04-02 08:48:14  改进日志插件中组件注册的方式 ([5cc13ef](https://github.com/simply-none/latest-blogs/commit/5cc13efa96257fe5da980f37b760de11b5919f78))
+* 2024-04-01 10:09:19  文件历史插件开发暂存 ([c935947](https://github.com/simply-none/latest-blogs/commit/c9359471aba45a8f3baa0a58cd2714d66ada063b))
+* 2024-04-01 00:35:00  自定义插件代码暂存 ([368f88e](https://github.com/simply-none/latest-blogs/commit/368f88e0cca222536d233dc4864aec266da9d84c))
+* 2024-03-31 18:34:06  移除vitepress@nolebase/*插件，生产环境无效 ([18a5820](https://github.com/simply-none/latest-blogs/commit/18a5820dce10b9e0707f7f3aa0de675168fbdae6))
+
 ## [0.1.6](https://github.com/simply-none/latest-blogs/compare/0.1.5...0.1.6) (2024-03-31)
 
 ### Docs

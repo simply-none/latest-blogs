@@ -1,6 +1,6 @@
 {
   "name": "latest-blogs",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "engines": {
     "node": ">=20"
   },
@@ -17,7 +17,7 @@
     "cg": "node ./utils/generateChangelog.js",
     "c": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git pull && git add . && git-cz",
-    "r": "node ./utils/generateVersion.js && npm run cg && node ./utils/gitCommit.js && git push --follow-tags origin master",
+    "r": "npm run cg && node ./utils/generateVersion.js && node ./utils/gitCommit.js  && git push --follow-tags origin master",
     "prepare": "husky install",
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
