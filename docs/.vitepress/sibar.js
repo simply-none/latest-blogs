@@ -382,6 +382,10 @@ export function sidebarUsageInterview() {
       text: "速记",
       items: [
         {
+          text: '工作梳理',
+          link: '/usage-interview/工作梳理',
+        },
+        {
           text: "手册",
           collapsed: true,
           // link: "/usage-interview/quick-look",
