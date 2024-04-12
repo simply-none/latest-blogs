@@ -2,7 +2,7 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
-## [list](https://github.com/simply-none/latest-blogs/compare/0.1.6...list) (2024-04-11)
+## [0.1.7](https://github.com/simply-none/latest-blogs/compare/0.1.6...0.1.7) (2024-04-12)
 
 ### Bug Fixes
 
@@ -23,6 +23,7 @@
 
 ### Build System
 
+* 2024-04-12 08:58:16  增加自定义仓库版本号脚本 ([099ec13](https://github.com/simply-none/latest-blogs/commit/099ec135db2b0b67a8d343f41b180391f2434cd3))
 * 2024-04-11 16:37:38  由于修改node版本导致的lock文件更新 ([0d8f73c](https://github.com/simply-none/latest-blogs/commit/0d8f73cf67865801342a22549899a7a69e47e12e))
 * 2024-04-11 16:29:44  修改部署时的node版本 ([032b228](https://github.com/simply-none/latest-blogs/commit/032b228f0f4e17eb5d7aad10c78fdbc3a7107a67))
 * 2024-04-08 15:22:05  测试文档历史插件报错问题 ([81f15d6](https://github.com/simply-none/latest-blogs/commit/81f15d63d3b9318905a415b6f7b60ce95f73bb2c))
