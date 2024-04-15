@@ -64,6 +64,10 @@ export function sidebarUsageFrame() {
           text: "vue-router迁移指南",
           link: "/usage-frame/vue/vue-router迁移指南",
         },
+        {
+          text: "nuxtjs官网文档demo",
+          link: "/usage-frame/vue/nuxtjs-demo-doc",
+        }
       ],
     },
     {
