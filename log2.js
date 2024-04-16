@@ -2,7 +2,7 @@
  * @Author: 简隐 jousindea@163.com
  * @Date: 2024-03-31 19:15:45
  * @LastEditors: 简隐 jousindea@163.com
- * @LastEditTime: 2024-04-10 00:46:47
+ * @LastEditTime: 2024-04-16 22:28:34
  * @FilePath: \latest-blogs\log2.js
  * @Description: 
  * 
@@ -83,7 +83,7 @@ function generateFileCommits (commits) {
       }
       delete cur.files;
       delete cur.status;
-      cur.committerDate = moment(new Date(cur.committerDate)).format('YYYY-MM-DD hh:mm:ss')
+      cur.committerDate = moment(new Date(cur.committerDate)).format('YYYY-MM-DD HH:mm:ss')
       pre[file].push(cur);
       pre[file] = commitSortByDate(pre[file])
       
