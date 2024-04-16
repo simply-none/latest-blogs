@@ -2,6 +2,20 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.1.8](https://github.com/simply-none/latest-blogs/compare/0.1.7...0.1.8) (2024-04-16)
+
+### Bug Fixes
+
+* 2024-04-16 22:30:33  修复历史提交插件的时间显示错误的问题 ([9901d46](https://github.com/simply-none/latest-blogs/commit/9901d46dd3baab2fd016edfacaf1939c1eb01ace))
+
+### Docs
+
+* 2024-04-16 22:10:05  更新nuxt文档，基础内容记录完毕 ([eab19e8](https://github.com/simply-none/latest-blogs/commit/eab19e8bbe8e5d8dfd8d6a9a7830780ab05280fa))
+* 2024-04-16 17:24:49  更新nuxt文档 ([f2de379](https://github.com/simply-none/latest-blogs/commit/f2de379c0b53d797e89f8d5d88e47e403e6b35f1))
+* 2024-04-15 23:59:16  新增nuxt文档 ([1a441ca](https://github.com/simply-none/latest-blogs/commit/1a441cad135a8b9e3edec0a2a6a5110ac0303d09))
+* 2024-04-12 17:28:24  新增工作梳理文档 ([eab72a1](https://github.com/simply-none/latest-blogs/commit/eab72a1e8f7d39e667ea65c3f5da72e597c29cde))
+* 2024-04-12 09:54:33  更新changelog ([b299518](https://github.com/simply-none/latest-blogs/commit/b2995182cf72553ecb99bcffea6191943626fa15))
+
 ## [0.1.7](https://github.com/simply-none/latest-blogs/compare/0.1.6...0.1.7) (2024-04-12)
 
 ### Bug Fixes
