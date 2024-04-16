@@ -21,7 +21,7 @@
 
 ```bash
 - public: 静态资源目录
-- assets:资源目录
+- assets:资源目录（样式表、字体、图像等）
 - components:组件目录
 - composables:组合函数目录
 - middleware: 中间件目录
@@ -50,6 +50,8 @@
 - .nuxtignore: 构建时忽略项目中的某些文件，用法和.gitignore一致
 - .gitignore
 - .env: 指定环境变量，`.env.local`, `.env.production`, `.env.development`
+- .output: 构建生产应用时创建的目录
+- .nuxt: 开发时生成vue app的目录
 
 ```
 
@@ -87,12 +89,12 @@ export default defineNuxtConfig({
 
   // 导出全局可用的环境变量，给server-side和client-side使用；
   // 在构建后需要指定的变量（比如私有token）
-  // 该变量可通过env环境进行覆盖他们，比如在env文件中使用 NUXT_API_SECRET=api_secret_token 替代下面的apiSecret变量
+  // 该变量可被.env文件覆盖，比如在env文件中使用 NUXT_API_SECRET=api_secret_token 替代下面的apiSecret变量
   // 该配置内容可通过useRuntimeConfig()获取
   runtimeConfig: {
     // 非public的仅在server-side中可用
     apiSecret: '123',
-    // public内部的可以在client-side中使用
+    // public内部的可以在client-side中使用，在template使用$config.public.xxx访问
     public: {
       apiBase: '/api'
     }
@@ -108,6 +110,14 @@ export default defineNuxtConfig({
     // 注入scss文件
     "~/assets/global.scss"
   ],
+
+  // 启用源映射，方便代码调试
+  // 或者使用命令行:nuxi dev --inspect
+  sourcemap: true,
+  sourcemap: {
+    server: true,
+    client: true
+  },
 
   app: {
     head: {
@@ -206,8 +216,31 @@ export default defineNuxtConfig({
   },
   components: {
     // 禁用从当前项目为基准的`~/components`导入，设置为空数组即可
-    dirs: []
+    dirs: [],
+    // ~/components下的所有组件都注册全局变量
+    global: true,
+    dirs: ['~/components'],
   },
+  // 默认情况下，仅对~/components目录进行自动导入
+  // 可修改该配置对其他目录自动导入
+  components: [
+    {
+      path: '~/components',
+      // 仅根据组件名而非组件路径自动导入组件
+      pathPrefix: false,
+      // 限制组件的扩展类型，即只有指定的后缀才能作为组件
+      extensions: ['vue'],
+    },
+    {
+      path: "~/calendar-module/components",
+      pathPrefix: false
+    },
+    {
+      path: "~/components/special-components",
+      // 设置该值后，此时`~/components/special-components/Btn.vue`通过<SpecialBtn>使用组件
+      prefix: 'Special'
+    }
+  ],
 
   // 将模块添加到modules中，能够提供额外的使用步骤和详情
   modules: [
@@ -224,6 +257,16 @@ export default defineNuxtConfig({
     '~/plugins/example',
   ],
 
+  // 使用路由器选项
+  router: {
+    options: {
+      // 启用hashmode，启用后url不会发送到服务器，且不支持ssr
+      hashMode: true,
+      // 自定义hash链接的滚动行为，比如平滑滚动到该锚点
+      scrollBehaviorType: 'smooth',
+    }
+  },
+
   hooks: {
     // 添加命名路由中间件到符合条件的页面
     'pages:extend'(pages) {
@@ -239,6 +282,16 @@ export default defineNuxtConfig({
         }
       }
       setMiddleware(pages)
+    },
+    // 添加更多的路由器选项文件，files后面的会覆盖前面的
+    // 此挂钩添加options将仅基于页面路由启用时有效
+    'pages:routerOptions'({ files }) {
+      const resolver = createResolver(import.meta.url)
+      // 添加路由
+      files.push({
+        path: resolver.resolve('./runtime/app/router-options'),
+        optional: true
+      })
     }
   },
 
@@ -463,7 +516,7 @@ const handleError = () => clearError({ redirect: '/' })
 使用布局：(未指定，默认使用layouts/default.vue)
 
 - 在页面中使用definePageMeta设置layout属性，该值为布局组件的文件名
-- 设置<NuxtLayout>的name prop，覆盖所有页面的默认布局
+- 设置`<NuxtLayout>`的name prop，覆盖所有页面的默认布局
 
 可以在页面中使用setPageLayout动态更改布局
 
@@ -684,6 +737,62 @@ export const useHello = () => {
 export { utils } from './nested/utils.ts'
 
 ```
+
+### components/xxx.ts
+
+嵌套组件的名称：基于路径目录和文件名，同时删除重复的片段，比如`components/base/foo/Button.vue`，组件名为`<BaseFooButton>`，为了清晰起见，建议组件名和名称相匹配，比如将Button重命名为BaseFooButton
+
+如果只想根据组件名，而非路径使用该组件，需要在nuxt.config.ts中配置pathPrefix
+
+动态组件：若想使用component+is语法，需要使用resolveComponent函数或从`#components`显式导入
+
+动态导入组件（延迟加载）：给对应的组件添加Lazy前缀即可
+
+全局组件：使用`.global.vue`后缀，或者通过nuxt.config.ts设置
+
+客户端组件（仅在挂载后才会渲染， onMounted+nextTick或使用ClientOnly组件）使用.client.vue后缀，服务端组件使用.server.vue后缀
+
+::: code-group
+
+```vue [pages/index.vue]
+<script setup lang="ts">
+// 直接导入组件（非自动导入）
+import { SomeComponent } from '#components'
+
+// 该方式，确保参数必须是字符串，而非变量
+const MyButton = resolveComponent('MyButton')
+
+let show = ref(false)
+</script>
+
+<template>
+  <div>
+    <component :is="clickable ? MyButton : 'div'"/>
+    <component :is="SomeComponent"/>
+
+    <!-- 动态导入 -->
+    <LazyMountainsList v-if="show"/>
+    <button v-if="!show" @click="show = !show">show list</button>
+  </div>
+</template>
+```
+
+```typescript [mudules/register-component.ts]
+import { addComponent, defineNuxtModule } from '@nuxt/kit'
+
+export default defineNuxtModule({
+  setup() {
+    addComponent({
+      // 该设置相当于在使用时自动导入了import { MyComponent as MyAutoImportedComponent } from 'my-npm-package'
+      // 后面直接使用MyAutoImportedComponent即可
+      name: 'MyAutoImportedComponent',
+      export: 'MyComponent',
+      filePath: 'my-npm-package'
+    })
+  }
+})
+
+:::
 
 ### 使用资源assets
 
@@ -1051,6 +1160,63 @@ export default defineNuxtComponent({
 
 :::
 
+## 自定义路由
+
+添加自定义路由的方式：
+
+- `app/router.options.ts`
+- `pages:extend` hook：在扫描路由时增加/修改/删除路由
+- nuxt module + nuxt kit：添加路由的方法extendPages、extendRouteRules
+
+::: code-group
+
+```typescript [app/router.options.ts]
+import type { RouterConfig } from '@nuxt/schema'
+
+export default <RouterConfig>{
+  // 若返回null或undefined，则回退到默认路由
+  routes: (_routes) => [
+    {
+      name: 'home',
+      path: '/',
+      component: () => import("~/pages/home.vue").then(r => r.default || r)
+    }
+  ]
+}
+```
+
+```typescript [nuxt.config.ts]
+export default defineNuxtConfig({
+  hooks: {
+    'pages:extend'(pages) {
+      // 添加路由
+      pages.push({
+        name: 'profile',
+        path: '/profile',
+        file: '~/extra-pages/profile.vue'
+      })
+
+      // 删除路由
+      function removePagesMatching (pattern: RegExp, pages: NuxtPage[] = []) {
+        const pagesToRemove = []
+        for (const page of pages) {
+          if (pattern.test(page.file)) {
+            pagesToRemove.push(page)
+          } else {
+            removePagesMatching(pattern, page.children)
+          }
+        }
+        for (const page of pagesToRemove) {
+          page.splice(pages.indexOf(page), 1)
+        }
+      }
+      removePagesMatching(/\.ts$/, pages)
+    }
+  }
+})
+```
+:::
+
 ## 自动导入
 
 Nuxt能够自动导入组件(`components/`)、组合函数(`composables/`)、辅助函数(`utils/`)、`server/utils/`的函数变量、插件的一级文件(`plugins/xx.ts`)、vue api,而无需显式导入，禁用可在nuxt.config.ts中设置
@@ -1096,6 +1262,109 @@ Nuxt支持的渲染模式:通用渲染（默认）、客户端渲染、混合渲
 - 自动对chunks进行代码拆分和异步加载
 - 支持静态+serverless站点的混合模式
 - 开发服务器热重载
+
+## 生命周期钩子
+
+构建时的nuxt hooks（可在nuxt.config.ts和模块中使用）：
+
+- close
+
+运行时的app hooks：
+
+- page:start
+
+运行时的服务器钩子：
+
+- render:html
+- render:response
+
+其他钩子：自定义钩子
+
+## Nuxt kit
+
+该套件为模块作者提供相关功能
+
+## NuxtApp
+
+NuxtApp：应用程序上下文实例（通过useNuxtApp()访问），能够在插件、nuxt hooks、nuxt middleware、页面和组件的setup函数中使用
+
+可以提供一个provide，后续使用时通过useNuxtApp().$xxx获取
+
+```typescript
+const nuxtApp = useNuxtApp()
+// 提供provide：hello
+nuxtApp.provide('hello', (name) => `hello, ${name}`)
+
+// 在能使用nuxtApp的地方使用（$hello）提供的provide
+console.log(nuxtApp.$hello('world'))
+```
+
+## Nuxt Layers
+
+nuxt layers可用于monorepo或git/npm中共享重用部分nuxt app。
+
+nuxt layers的结构和nuxt app几乎相同，最小的nuxt layer至少要包含一个nuxt.config.ts（表示他是一个layer）
+
+layers中的其他结构会自动扫描，和标准nuxt app一致
+
+在layer组件和组合函数中使用别名（`~/`, `@/`）导入时，是相对于用户项目路径解析的。相对当前目录可使用相对路径`./`等
+
+```bash [基础示例]
+# 基础示例，项目结构
+# nuxt需要继承base/nuxt.config.ts（'extends: ["./base"]'）
+# 如果是github仓库或npm包的layers，也应放在extends中
+- nuxt.config.ts
+# 当前，可在app.vue中使用BaseComponent组件
+- app.vue
+# 这是一个nuxt layer
+- base
+  - nuxt.config.ts
+  - components
+    - BaseComponent.vue
+```
+
+## debugging
+
+可在nuxt.config.ts中配置sourcemap
+
+在vscode中调试：需要安装nuxi作为开发依赖
+
+```json
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "client: chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "server: nuxt",
+      "outputCapture": "std",
+      "program": "${workspaceFolder}/node_modules/nuxi/bin/nuxi.mjs",
+      "args": [
+        "dev"
+      ],
+    }
+  ],
+  "compounds": [
+    {
+      "name": "fullstack: nuxt",
+      "configurations": [
+        "server: nuxt",
+        "client: chrome"
+      ]
+    }
+  ]
+}
+
+```
 
 ## 部署
 
