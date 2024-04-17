@@ -336,6 +336,20 @@ export default defineNuxtConfig({
   // webpack代替webpack.config.ts
   webpack: {},
 
+  // 实验性设置（该配置可能随版本变更而失效）
+  experimental: {
+    defaults: {
+      // 设置NuxtLink的默认属性
+      nuxtLink: {
+        componentName: 'NuxtLink',
+        externalRelAttribute: 'noopener noreferrer',
+        activeClass: 'nuxt-link-active',
+        exactActiveClass: 'nuxt-link-exact-active',
+        prefetchedClass: 'nuxt-link-prefetched',
+        trailingSlash: 'append',
+      }
+    }
+  },
   
 })
 ```
@@ -1252,6 +1266,10 @@ Nuxt支持的渲染模式:通用渲染（默认）、客户端渲染、混合渲
 
 - 支持该模式的平台有：cloudflare pages、vercel edge functions、netlify functions
 
+注意：
+
+- 🔴🔴🔴全篇中服务端或服务端渲染，通俗来说指设置了`ssr: true`（默认设置），客户端或客户端渲染指`ssr: false`（需手动在nuxt.config.ts设置）
+
 ## 服务器引擎nitro
 
 提供的功能：
@@ -1279,6 +1297,250 @@ Nuxt支持的渲染模式:通用渲染（默认）、客户端渲染、混合渲
 - render:response
 
 其他钩子：自定义钩子
+
+## 内置组件
+
+### ClientOnly
+
+仅在客户端渲染的组件。默认插槽的内容将从服务器中进行tree-shaken，意味着渲染初始html时，组件中石油的任何css都不会被内联
+
+props：
+
+- placeholderTag/fallbackTag：指定要在服务端渲染的标签
+- placeholder/fallback：指定在服务端渲染的内容
+
+slots：
+
+- #fallback：指定在服务端渲染显示的内容，直到ClientOnly挂载到浏览器中
+
+```vue
+<!-- 
+当前组件的渲染逻辑是：
+  在ssr: true时，最先是服务端渲染（此时展示<span><p>...</p></span>），然后是客户端渲染(此时展示<comments/>)
+  在ssr: false时，直接客户端渲染（此时展示<comments/>）
+ -->
+<template>
+  <div>
+    <Sidebar/>
+    <!-- 在服务端渲染模式下会被渲染成span -->
+    <ClientOnly fallbackTag="span">
+      <!-- 此处仅渲染在客户端模式中 -->
+      <Comments/>
+      <template #fallback>
+        <!-- 将渲染在服务端模式中 -->
+        <p>加载comments中...</p>
+      </template>
+    </ClientOnly>
+  </div>
+</template>
+```
+
+### NuxtPage
+
+显示位于pages/目录中的页面（顶级/嵌套页面），通常用在布局组件/app.vue（顶级）中，或用于嵌套页面的父组件（嵌套页面）中
+
+NuxtPage是vue router的RouterView组件包装器，接受name和route属性。
+
+应该使用NuxtPage代替RouterView，因为使用RouterView时，useRoute()可能会返回不正确的路径
+
+props:
+
+- name：用在命名视图中，即一个页面分割成多个视图，通过name指定当前显示的视图
+- route: 
+- pageKey：控制NuxtPage何时重新渲染
+- transition：为所有页面定义的全局的transition
+- keepalive：
+- ref：获取页面组件的ref，调用页面的方法
+- 其他自定义属性：在页面视图中通过useAttrs()或$attrs获取
+
+```vue
+<template>
+  <!-- 仅在挂载时渲染一次 -->
+  <NuxtPage page-key="static"/>
+  <!-- 路由改变时重渲染，此处不要使用$route对象 -->
+  <!-- 此处的page-key也可不定义，放在具体的页面定义definePageMeta的key属性，两者值相同 -->
+  <NuxtPage ref="page" :page-key="route => route.fullPath"/>
+</template>
+
+<script setup lang="ts">
+const page = ref()
+
+function logFoo(){
+  // 获取页面中暴露（defineExpose）的foo方法
+  page.value.pageRef.foo()
+}
+</script>
+```
+
+### NuxtLayout
+
+用于页面和错误页面的布局显示，可以在app.vue或error.vue中使用`<NuxtLayout>`组件激活默认布局
+
+通过插槽slot渲染传入的内容，然后将其包裹在Transition组件中进行布局转换，建议不要使用NuxtLayout组件作为根元素
+
+props：
+
+- name：指定要显示的布局名称（必须和layouts的文件名匹配，使用kebab-case的形式），未设置则显示layouts/default.vue的布局
+- ref：获取布局组件的ref，调用布局组件暴露的方法
+- 其他自定义属性：在layouts/xxx.vue中通过useAttrs()或$attrs获取
+
+::: code-group
+
+```vue [app.vue]
+<!-- app.vue -->
+<script setup lang="ts">
+const layout = ref()
+
+function logFoo(){
+  // 获取布局暴露（defineExpose）的foo方法
+  layou.value.layoutRef.foo()
+}
+</script>
+
+<template>
+  <div>
+    <NuxtLayout ref="layout">
+      default layout
+    </NuxtLayout>
+  </div>
+</template>
+```
+
+```vue [layouts/default.vue]
+<script setup lang="ts">
+const foo = () => console.log('foo')
+
+defineExpose({
+  foo
+})
+</script>
+
+<template>
+  <div>
+    default layout
+    <slot/>
+  </div>
+</template>
+```
+
+:::
+
+### NuxtLink
+
+处理app的链接，替代RouterLink组件和a标签，能够智能识别内外部链接
+
+props（可在nuxt.config.ts中`experimental.defaults.nuxtLink`进行覆盖）：
+
+- RouterLink属性：
+  - to：指定链接的地址，可以是vue router的路由位置对象/字符串
+  - custom：是否将其包裹在a标签内，允许完全控制链接的呈现方式和点击效果
+  - replace
+  - activeClass
+- NuxtLInk属性：
+  - href：to的别名，和to一起使用时将被忽略
+  - noRef：不会添加ref属性
+  - external：强制呈现为a标签，而非RouterLink
+  - prefetch：是否预拉取链接中的资源
+  - noPrefetch
+  - prefetchedClass
+- Anchor：
+  - target：打开链接的方式，_blank在新的tab中打开
+  - rel：应用于绝对链接和新tab打开的链接，值有noopener（解决旧版浏览器的安全错误）和noreferrer（不将Referer标头发生到目标网站，提高用户隐私性）
+
+::: code-group
+
+```vue [pages/indx.vue]
+<template>
+  <!-- 内部链接 -->
+  <NuxtLink to="/">首页</NuxtLink>
+    首页
+  </NuxtLink>
+  <!-- 外部链接：这里展示的是public文件下的资源，同时替换成a标签 -->
+  <!-- 使用绝对路径或url地址时，会自动应用外部逻辑 -->
+  <NuxtLink to="/the-important-report.pdf" external>下载报告</NuxtLink>
+  <NuxtLink to="https://google.com">谷歌</NuxtLink>
+</template>
+```
+
+:::
+
+### NuxtErrorBoundary
+
+处理发生在默认插槽中发生的客户端错误，底层使用了vue onErrorCaptured钩子
+
+events:
+
+- error：捕获默认插槽抛出的错误
+
+slots：
+
+- #error：发生错误时展示的后备内容
+
+```vue
+<template>
+  <NuxtErrorBoundary @error="logSomeError">
+    <!-- ...other content -->
+    <template #error="{ error }">
+      <p>发生错误: {{ error }}</p>
+    </template>
+  </NuxtErrorBoundary>
+</template>
+```
+
+## composables
+
+### useAsyncData
+
+数据请求方法（可异步）
+
+如果仅在客户端渲染中获取数据（即`ssr: false`），则在页面挂载之前该方法获取到的data是null（可以在mounted中使用）
+
+```vue
+<script setup lang="ts">
+const page = ref(1)
+
+/**
+ * data: 异步函数的结果
+ * pending：是否仍在获取数据
+ * refresh、execute：用于重新获取data
+ * error：错误对象
+ * status：数据请求状态，有idle、pending、success、error
+ */
+const { data: posts, pending, status, error, refresh } = await useAsyncData(
+  // key：跨请求获取数据能够去重，唯一性，可不提供（会自动生成）
+  'posts',
+  // handler：必须是返回truthy值的异步函数
+  () => $fetch(`/api/posts?page=${page.value}`, {
+    params: {
+      page: page.value
+    }
+  }),
+  // options
+  {
+    // 监听响应式源自动更新，当page变化时，重新请求
+    watch: [page],
+    // 是否获取服务器上的数据
+    server: true,
+    // 加载路由后是否解析异步函数，而非阻止客户端导航
+    lazy: true,
+    // 是否立即触发请求
+    immediate: true,
+    // 在异步函数解析之前设置结果值data（上面的返回值）的默认值工厂函数
+    // 和lazy: true、immediate: false一起使用
+    default: () => ({
+      posts: [],
+    }),
+    // 返回的数据是否是深度响应式的，为false时表示是浅层响应式（shallow）
+    deep: true,
+    // 避免多次请求同一个key，值有cancel（发出新请求取消旧请求）、defer（有待处理的请求时不会发出新请求）
+    dedupe: 'cancel',
+  }
+</script>
+```
+
+### useAppConfig
+
+获取app.cofig.ts中的配置
 
 ## Nuxt kit
 
