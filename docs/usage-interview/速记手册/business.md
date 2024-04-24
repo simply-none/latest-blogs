@@ -57,4 +57,10 @@ qiankun自带的样式隔离通过选项属性sandbox配置，可以设为两种
 - 使用electron-store进行内容持久化
 - 客户端和web端之间的通信使用postMessage方法（触发）+message事件（监听）
 
+## 复杂页面的设计
 
+主子表、参照框
+
+## 其他技术
+
+flex、grid、position、海量数据虚拟滚动
