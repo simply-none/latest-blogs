@@ -24,16 +24,18 @@
 注意：
 
 - hook只能在组件的顶层或自己的hook中调用，不能用于循环或条件语句中
-- 可以传递一个函数`fn`作为初始化参数（仅在初始化期间调用），若传递一个函数的调用`fn()`作为参数，则每次渲染都会进行调用（在执行复杂计算时可能浪费资源）
-- 若state是一个函数，则在更新的时候，应该使用箭头函数的方式，因为默认的直接传函数名方式，会将其当作初始化函数。
-- set函数参数若是依据之前状态计算的表达式（比如a+1），若连续调用多次，则实际上就只调用了一次（批量状态更新策略的缘故）；若参数是函数（比如a => a+1），连续调用多次，实际也是调用多次
+- 🔴可以传递一个函数名`fn`作为初始化参数（仅在初始化期间调用），若传递一个函数的调用`fn()`作为参数，则每次重渲染都会进行调用（如果函数执行的时间过长，则容易阻塞页面渲染，造成性能浪费）
+- 若state是一个函数，则在更新的时候，应该使用箭头函数的方式`setFn(() => newFn)`，因为默认的直接传函数名方式`setFn(newFn)`，会将其当作初始化函数。
+- set函数参数若是依据之前状态计算的表达式`setCount(count + 1)`，若连续调用多次，则实际上就只调用了一次（批量状态更新策略的缘故）；若参数是函数`setCount(prev => prev + 1)`，连续调用多次，实际也是调用多次
 - set函数仅更新下一次渲染的状态变量，即在调用该函数之后紧接着调用该状态变量，得到的值还是原来的值
 - 如果提供的新值和上一个相同（指的是引用相同，即内存中的地址），将跳过组件重渲染
-- 给组件传递一个key，key改变时，可以重置组件的状态（即进行初始化渲染）
-- 当更新一个对象/数组时，请进行整个替换（也就是引用也随之变更，可使用展开语法复制对象和数组、concat添加、filter删除、slice截取、map等改变数组），而非使用不改变对象引用的方式（比如数组的push等、直接设置属性等）改变对象，不然屏幕可能不会更新。对于复杂的对象或数组，可以使用[`immer`](https://zh-hans.react.dev/learn/updating-arrays-in-state#write-concise-update-logic-with-immer)进行修改，让修改操作更加简洁
+- 给组件传递一个key，key改变时，可以重置组件的状态（即重新进行初始化渲染）
+- 当更新一个对象/数组时`setObj(newObj)`，请进行整个替换`setObj({...newObj})`（也就是引用也随之变更，可使用展开语法复制对象和数组、concat添加、filter删除、slice截取、map等改变数组），而非使用不改变对象引用的方式（比如数组的push等、直接设置属性等）改变对象，不然屏幕可能不会更新。对于复杂的对象或数组，可以使用[`immer`](https://zh-hans.react.dev/learn/updating-arrays-in-state#write-concise-update-logic-with-immer)进行修改，让修改操作更加简洁
 - react执行的是批量状态更新策略，即调用set函数后不会立即执行更新，而是等待所有的事件处理函数（比如点击，换句话说，得等待set函数所处的块代码执行完毕）执行完毕后才会更新状态（也就是组件重渲染更新屏幕）。如果你想调用set函数后迫切的更新屏幕（访问dom），可以使用flushSync（影响性能，大多数时候都不用）
 - 在调用set函数的代码块中包括异步操作，若异步操作内部也包括state变量，变量的值还是之前的，react执行的是批量状态更新策略，不影响已经运行的事件处理程序中的变量的值（即使是异步的）
-- 若出现`too many re-renders`的错误，表明此时组件进行循环`渲染->设置状态（重渲染）-> 渲染`的循环等，通常情况是由于错误指定事件处理函数引起的(即`onClick={handleClick()}`)，正确的处理是`onClick={handleClick}`或`onClick={(e) => handleClick(e)}`。也可查看控制台的JavaScript调用堆栈
+- 🔴🍡若出现`Too many re-renders. React limits the number of renders to prevent an infinite loop.`的错误，表明此时组件进行循环`渲染->设置状态（重渲染）-> 渲染`的循环等，需要注意下列情形：
+  - 错误指定事件处理函数引起的(即`onClick={handleClick()}`)，正确的处理是`onClick={handleClick}`或`onClick={(e) => handleClick(e)}`。也可查看控制台的JavaScript调用堆栈
+  - 当一个state的状态依赖于其他state状态的变更，应该注意，在组件顶层作用域中，应该在某种条件下修改state的变更
 - 在开发且严格模式下，将两次调用初始化函数，用于找出意外的不纯性
 
 ```javascript
@@ -46,11 +48,32 @@ function Messsage({messageColor}) {
    const color = messageColor
 }
 
+// 🔴🍡
+function CountLabel ({ count }) {
+   const [prevCount, setPrevCount] = useState(count)
+   const [trend, setTrend] = useState(null)
+
+   // 注意，在顶层作用域中，必须根据条件修改，否则一直重渲染导致报错
+   if (preCount !== count) {
+      setPrevCount(count)
+      setTrend(count > prevCount ? 'up' : 'down')
+   }
+
+   function getCount () {
+      return count
+   }
+
+   return (<div onClick={getCount}>...</div>)
+   return (<div onClick={() => getCount()}></div>)
+   // warn: 这种用法也会导致重渲染多次
+   return (<div onClick={getCount()})></div>
+}
+
 ```
 
 ### useEffect
 
-作用：将组件与外部系统（网络等）同步
+作用：将组件与外部系统（不受react控制的内容，比如web api、http、第三方库等）同步
 
 定义：`useEffect(setup, dependencies?)`
 
@@ -64,6 +87,7 @@ function Messsage({messageColor}) {
    - 依赖项列表的元素数量必须固定
    - 使用 Object.is 比较依赖项和其先前的值
    - 省略参数，则在重渲染后，重新运行 effect（setup）
+   - 若effect内部代码不使用任意响应式值，则依赖项列表为空数组，此时组件的props、state变更时，该 effect 不会重新运行
 3. setup 的返回值`cleanup`的作用：与 setup 逻辑对称，用于停止/撤销 setup 做的事情
 
 注意：
@@ -79,7 +103,7 @@ function Messsage({messageColor}) {
 - 非交互（点击）引起的 effect 运行，会让浏览器在运行 effect 前绘制出更新后的屏幕
 - 交互引起的 effect 运行，也可能会在运行 effect 前重绘屏幕。当要阻止屏幕重绘，应使用 useLayoutEffect 代替 useEffect
 - 视觉相关的事情（如定位）且有明显的延迟，应使用 useLayoutEffect 代替 useEffect
-- 仅在客户端（非 ssr）运行
+- 仅在客户端（非 ssr）运行，所以可能通过这useEffect内修改变量标志，然后在后的代码中来分别运行客户端和服务端的内容
 - 在开发模式下，会在 setup 首次运行前，额外运行一次 setup 和 cleanup，这是一个压力测试，用于验证 effect 逻辑是否正确实现。若此时出现问题，则表明 cleanup 函数缺少一些逻辑
 - 在服务器和客户端中显示不同的内容，可通过 effect 实现，将某个标志性变量置为真值（因为 effect 在服务器是不可用的，所以此仅在客户端可用），之后将运行你编写的真值条件下的代码。若用户网络环境缓慢，将一直显示初始代码，可能造成不良影响。许多情况下，可通过 css 条件显示不同内容
 
@@ -110,7 +134,7 @@ function Page({ url, shoppingCart }) {
 
 ### useMemo
 
-作用：在每次重新渲染时缓存计算的结果
+作用：缓存计算的结果m（通常缓存变量，虽然说可以缓存函数和JSX节点），在组件重渲染时，若依赖项没有发生变化，则直接返回缓存的m，不重新进行计算
 
 定义：`const m = useMemo(calculateValue, dependencies)`
 
@@ -126,6 +150,28 @@ function Page({ url, shoppingCart }) {
 - useMemo不会让渲染变得更快，只是跳过了跟他依赖无关的渲染（不执行），对于依赖相关的渲染，还是会重新执行的
 - 开发环境且严格模式下，将调用calculateValue两次
 - 使用useMemo的情况：useMemo中的计算很耗时、将计算结果作为props传递给包裹在memo中的组件时、传递的值用作某些hook的依赖项时
+- 跳过由于父组件重渲染导致组件渲染的问题，可使用memo函数包裹组件，此时memo（缓存JSX节点）包裹的组件在父组件重渲染时，不会重新渲染，除非传入给组件的props发生了变更
+
+```jsx
+import { memo } from 'react'
+
+const List = memo(function List({ items }) {
+   const [name, setName] = useState('')
+
+   const itemName = useMemo(() => {
+      // 此处，仅当name、itmes发生变化时，才会重新计算
+      // ...
+   }, [name, items])
+})
+
+function App(){
+   return (
+      // 由于被memo包裹，因此非props：items 的变化，其他父组件的重渲染 不会导致List组件重新渲染
+      <List items={[]} />
+   )
+}
+
+```
 
 ### useCallback
 
@@ -139,12 +185,12 @@ function Page({ url, shoppingCart }) {
 定义说明：
 
 1. 参数fn：想要缓存的函数，将在初次渲染时（非调用时）返回该函数，后续仅在依赖变更时返回最新的函数
-2. 参数dependencies：是否要更新fn的所有响应式的列表
+2. 参数dependencies：是否要更新fn的所有响应式的列表，当为空时，每次都将重新计算
 3. 返回值cachedFn：初次渲染和依赖变更时，返回传入的fn，否则返回上一次的
 
 useMemo vs. useCallback：
 
-- useMemo返回函数调用的结果：`useMemo(() => fn(), dep)`
+- useMemo返回函数调用的结果：`useMemo(() => fn, dep)`
 - useCallback返回函数本身：`useCallback(fn, dep)`
 
 注意：同useMemo
@@ -420,21 +466,23 @@ function delayForDemo (promise) {
 
 ### memo
 
-作用：允许组件在props未改变时跳过重渲染
+作用：当父组件重新渲染时，通常子组件也会重渲染，memo的作用就是在传入的props未改变时跳过子组件的重渲染（通常是这样的，某些时候即使用了memo也会进行重渲染）
 
 定义：`const MemoizedComponent = memo(SomeComponent, arePropsEqual?)`
 
 定义说明：
 
 1. 参数SomeComponent：要进行记忆化的组件
-2. 可选参数arePropsEqual函数：该函数接收2个参数，组件的上一个props和新的props，若两者相同应返回true。通常情况下，不用指定该函数（默认用Object.is）
+2. 可选参数arePropsEqual函数：该函数接收2个参数，组件的上一个props和新的props，若两者相同应返回true。通常情况下，不用指定该函数（默认用Object.is），极端情况下，可以自定义重渲染的规则
 3. 返回值：返回一个新的记忆化组件（函数组件、forwardRef组件），功能和SomeComponent相同
 
 注意：
 
 - 如果传递给组件的props一直不同（比如普通对象和函数），则memo是无效的，所以通过和useMemo、useCallback一起使用
-- 只有props不改变是不触发重渲染，当自身的状态（state、使用的context）改变时，会触发重渲染
+- 只有传入的props不改变时不触发重渲染，当组件自身的状态（state、使用的context）改变时，会触发重渲染
 - 只应该将其作为性能优化方案，若离开他无法运行，则应该修复潜在问题
+- 如果props是一个对象，为了避免父组件每次都重新创建该对象导致memo效果打折，可以将该对象用useMemo包裹，或者拆分将该对象拆分成多个单独的props
+- 如果props是一个函数（引用地址），为了避免每次都是不同的引用，可以将该函数放在组件外部，或者用useCallback包裹
 
 ## 和vue对比的写法
 
@@ -499,6 +547,12 @@ export default function App() {
 }
 
 ```
+
+## 心得
+
+传入组件的props变更、组件的key属性变更、组件内的state变更、组件内由自定义hooks创建的变量的变更、组件内使用的context值变更、组件的父组件重渲染，都会触发组件的重渲染
+
+在触发组件重渲染时，组件顶层作用域内的**语句**都会重新执行 => 当一个变量是对象时，该变量的地址，以及其他顶层函数的地址会发生变更 => 若该变量/函数也是useEffect的依赖项，则会触发useEffect的执行，这将导致一些异常的情况（比如本应该不执行的却执行了）发生。所以应该避免对象（变量、函数）作为useEffect的依赖项
 
 ## 附录
 
