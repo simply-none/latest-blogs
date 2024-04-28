@@ -446,7 +446,7 @@ let annarr: any[] = [1, true, '1']
 const voi: void = undefined
 // never
 function nev (): never {
-  // 下面的条件只能为 true ，若是其他比较符(比如：1， 1 > 0等)，会报错：
+  // 下面的条件只能为 true ，若是其他比较符(比如：1， 1 > 0等)，或者使用变量的形式（比如a = true, while(a)），会报错：
   // A function returning 'never' cannot have a reachable end point.
   while(true) {}
 }
@@ -715,7 +715,7 @@ if (sym1 === sym2) {}
 - 交叉类型**常用来定义公共的部分**
 - 原子类型合并成交叉类型，得到的类型是never，因为不能同时满足这些原子类型
 - 交叉类型常用于将多个接口类型合并为一个类型，等同于接口继承（合并接口类型）
-- 若接口交叉时，属性相同，属性类型不相同，比如string和number，则合并的类型可以是never，也可以是该相同属性为never类型的对象类型；比如string和boolean，则合并的类型只能是never类型
+- 🔴若接口交叉时，属性相同，属性类型不相同，则合并的接口类型可以是never（原始值属性合并），也可以是相同属性为never类型的对象类型（对象属性合并）；比如类型分别为string和boolean的属性x，交叉合并后，则合并的类型是never类型（这里是原始值属性），若属性x是一个对象，对象下分别包含类型为string和boolean的属性d，则合并后的类型是never或{ x: never }（这里是对象属性）
 
 ```typescript
 // 普通类型交叉，无交集，类型为never
@@ -737,15 +737,20 @@ interface X {
 }
 
 interface Y {
-  // 此处的c类型若为boolean，则 X & Y，必然是never，而非下列的结果
   c: number;
   e: string
 }
 
 // 交叉类型结果为：{ c: string & number, d: string, e: string }
+// 即{ c: never, d: string, e: string }
 type XY = X & Y;
 // Type 'number' is not assignable to type 'never'.
 let p: XY = { c: 6, d: "d", e: "e" };
+
+// 接口交叉，原始值属性合并
+// 此处AB的类型：never
+type AB = { x: string } & { x: number }
+
 
 // 接口交叉，相同属性值的对象属性，则直接合并
 interface D { d: boolean; }
@@ -757,13 +762,14 @@ interface B { x: E; }
 interface C { x: F; }
 // 交叉类型结果为：{ x: { d: boolean, e: string, f: number } }
 /**
- * 若改成下面类型：则结果为：{ x: { d: boolean & string } }，解释：
+ * 若改成下面类型：则结果为：{ x: never } 或 never，（这里对象值属性，所有有2种情形）
+ * 解释：
  *      对象obj某个属性x的类型为never，则该对象obj可以是never类型，或该对象obj的属性x类型为never类型
- *      对象obj某个属性x若也是一个对象，该属性对象x下的某个属性d类型为never，则该属性对象x并不是对象类型，而是never类型
-interface D { d: boolean; }
-interface E { d: string; }
-interface F { f: number; }
- * /
+  * interface D { d: boolean; }
+  * interface E { d: string; }
+  * interface F { f: number; }
+ */
+
 type ABC = A & B & C;
 
 let abc: ABC = {
@@ -823,6 +829,36 @@ enum U {
 }
 // UU的类型是U，因为U包括了枚举成员类型U.A
 type UU = U.A | U
+
+```
+
+#### 交叉类型 vs 联合类型
+
+```typescript
+type A = {
+  x: number;
+  y: string;
+}
+
+type B = {
+  x: string;
+  y: string;
+}
+// 交叉类型，每个属性之间都进行交叉，若属性交叉后为never，则可以说整个类型都是never
+type AandB = A & B;
+
+// 联合类型，只要满足A或B即可
+type AorB = A | B;
+
+let a: AandB = {
+  x: 1,
+  y: '1'
+} as never
+
+let b: AorB = {
+  x: '1',
+  y: '1'
+}
 
 ```
 
@@ -1132,7 +1168,7 @@ type Record<K extends keyof any, T> = {
 
 ::: code-group
 
-```typescript
+```typescript [内置类型]
 // partial:可选
 type Partial<T> = {
   [K in keyof T]?: T[K];
@@ -1153,6 +1189,13 @@ type Pick<T, K extends keyof T> = {
   [P in K]: T[P];
 }
 
+// omit: 忽略，忽略t中和u类型一样的属性，返回筛选后的t
+type Omit<T, U extends keyof any> = Pick<T, Exclude<keyof T, U>> = {
+  [P in Exclude<keyof T, U>]: T[P];
+} = {
+  [P in (keyof T extends U ? never : T)]: T[P];
+}
+
 // record: 录制，将T类型赋值给K中的每个键
 type Record<K extends keyof any, T> = {
   [P in K]: T;
@@ -1170,18 +1213,11 @@ type Exclude<T, U> = T extends U ? never : T;
 // extract：提取，提取t中和u一样的类型，返回筛选后的t
 type Extract<T, U> = T extends U ? T: never;
 
-// omit: 忽略，忽略t中和u类型一样的属性，返回筛选后的t
-type Omit<T, U extends keyof any> = Pick<T, Exclude<keyof T, U>> = {
-  [P in Exclude<keyof T, U>]: T[P];
-} = {
-  [P in (keyof T extends U ? never : T)]: T[P];
-}
-
 // NonNullable：非空类型
 type NonNullable<T> = T extends null | undefined ? never : T;
 ```
 
-```typescript
+```typescript [Partial]
 interface Todo {
   title: string
   description: string
@@ -1192,7 +1228,7 @@ let p: Partial<Todo> = {
 }
 ```
 
-```typescript
+```typescript [Required]
 interface Todo {
   title: string
   description: string
@@ -1204,7 +1240,7 @@ let p: Required<Todo> = {
 }
 ```
 
-```typescript
+```typescript [Readonly]
 interface Todo {
   title: string
   description: string
@@ -1218,7 +1254,7 @@ let p: Readonly<Todo> = {
 p.title = 'edit title'
 ```
 
-```typescript
+```typescript [Record]
 interface Todo {
   title: string
   description: string
@@ -1232,7 +1268,7 @@ let p: Record<Page, Todo> = {
 }
 ```
 
-```typescript
+```typescript [Pick]
 interface Todo {
   title: string
   description: string
@@ -1246,7 +1282,7 @@ let p: Pick<Todo, Page> = {
 }
 ```
 
-```typescript
+```typescript [Omit]
 interface Todo {
   title: string
   description: string
@@ -1259,26 +1295,26 @@ let p: Omit<Todo, Page> = {
 }
 ```
 
-```typescript
+```typescript [Exclude]
 // 'b' | 'c'
 type T0 = Exclude<'a' | 'b' | 'c', 'a'>
 // string | number
 type T2 = Exclude<string | number | (() => void), Function>
 ```
 
-```typescript
+```typescript [Extract]
 // 'a'
 type T0 = Extract<'a' | 'b' | 'c', 'a'>
 // () => void
 type T2 = Extract<string | number | (() => void), Function>
 ```
 
-```typescript
+```typescript [NonNullable]
 // string | number
 type T = NonNullable<string | number | null | undefined>
 ```
 
-```typescript
+```typescript [Parameters]
 declare function f1 (arg: { a: number, b: string }): void
 // []
 type T0 = Parameters<() => string>
@@ -1299,14 +1335,14 @@ type T6 = Parameters<Function>
 type T7 = Parameters<any>
 ```
 
-```typescript
+```typescript [ConstructorParameters]
 // [message?: string | undefined]
 type T0 = ConstructorParameters<ErrorConstructor>
 // 报错，Type 'Function' does not satisfy the constraint 'abstract new (...args: any) => any'.
 type T1 = ConstructorParameters<Function>
 ```
 
-```typescript
+```typescript [ReturnType]
 // string
 type T0 = ReturnType<() => string>
 // unknown
@@ -1316,31 +1352,31 @@ type T2 = ReturnType<string>
 type T3 = ReturnType<Function>
 ```
 
-```typescript
+```typescript [Uppercase]
 type Greeting = 'hello'
 // HELLO
 type TitleGreeting = Uppercase<Greeting>
 ```
 
-```typescript
+```typescript [Lowercase]
 type Greeting = 'HeLlo'
 // hello
 type TitleGreeting = Lowercase<Greeting>
 ```
 
-```typescript
+```typescript [Capitalize]
 type Greeting = 'heLlo'
 // HeLlo
 type TitleGreeting = Capitalize<Greeting>
 ```
 
-```typescript
+```typescript [Uncapitalize]
 type Greeting = 'HeLlo'
 // heLlo
 type TitleGreeting = Uncapitalize<Greeting>
 ```
 
-```typescript
+```typescript [Awaited]
 // v4.5+
 // string
 type A = Awaited<Promise<string>>
@@ -1521,6 +1557,7 @@ const greaterThan2: number = arrayNumber.find(num => num > 2) as number
 - 任何类型都可以被断言为 any
 - any 可以被断言为任何类型
 - 若想 A 能够被断言为 B，只需 A 兼容 B，或 B 兼容 A；兼容指的是结构兼容。若 A 兼容 B，那么 A 可以被断言为 B，B 也可以被断言为 A，举例，因为子类结构兼容父类，所以子类可以被断言为父类，父类也可以被断言为子类
+- 非上述场景进行类型断言时，首先需要先断言成any/unknown，再断言为其他类型，即`value as unknown as number`
 
 使用：
 
@@ -1711,7 +1748,7 @@ y = x;
 
 类型守卫使用方式：
 
-- 类型判定：定义一个函数，返回值是一个类型谓词(`parameterName is Type`)
+- 类型判定：定义一个函数，返回值类型是一个类型谓词(`parameterName is Type`)，返回值符合类型Type（这里Type是parameterName设定的类型中的某一个类型）的boolean值
 - in操作符：用法为 `n in x`，其中n是一个字符串字面量或字符串字面量类型，x是一个联合类型，用于遍历可枚举类型的属性，生成对象的key，常用于对象的索引签名中（对象的键不确定的情况）；也可以表条件，条件为真表示有一个可选的或必须的属性n，条件为假表示有一个可选的或不存在的属性n
 - typeof类型守卫：typescript会将 `typeof v === 'typename'`和 `typeof v !== 'typename'`自动识别为类型守卫，且typename的值必须是number、string、boolean、symbol类型，其他类型会当成一个普通的表达式而已（不会当初类型守卫）
 - instanceof类型守卫：通过构造函数来细化类型的一种方式，用法为 `n instanceof x`，其中x必须是一个构造函数（类名）；typescript将细化为构造函数x的prototype属性的类型（非any类型），构造签名返回的类型的联合
@@ -1723,7 +1760,7 @@ y = x;
 
 ::: code-group
 
-```typescript
+```typescript [类型谓词]
 // 定义类型判定函数
 function isFish (pet: Fish | Bird): pet is Fish {
   return (pet as Fish).swim !== undefined
@@ -1737,7 +1774,7 @@ if (isFish(pet)) {
 }
 ```
 
-```typescript
+```typescript [in操作符]
 function move (pet: Fish | Bird) {
   if ('swim' in pet) {
     return pet.swim()
@@ -1746,7 +1783,7 @@ function move (pet: Fish | Bird) {
 }
 ```
 
-```typescript
+```typescript [instanceof操作符]
 function getRandomPadder () {
   return Math.random() < 0.5 ? new SpaceRepeatingPadder(4) : new StringPadder(' ')
 }
@@ -1949,7 +1986,7 @@ let mySquare = createSquare(squareOptions);
 - 类型断言 `obj as SquareConfig`
 - 索引签名 `[key: string]: any`
 
-### 可选属性(重点🟥🟥🟥)
+### 可选属性
 
 场景：用于只有在某些条件下存在，或者根本不存在的属性
 
@@ -1958,7 +1995,7 @@ let mySquare = createSquare(squareOptions);
 使用：
 
 - 可选属性可以对可能存在的属性进行预定义
-- 可以捕获引用了不存在的属性时的错误。当明确了该类型是某个接口时，只能引用该接口已有的属性
+- 🔴可以捕获引用了不存在的属性时的错误。当明确了该类型是某个接口时，只能引用该接口已有的属性
 
 ```typescript
 interface SquareConfig {
@@ -2565,6 +2602,29 @@ function queryData(): Promise<string> {
   })
 }
 queryData().then(data => console.log(data))
+```
+
+```typescript [参数和返回值个数]
+// 参数个数的通俗理解
+type Fn1 = (x: number) => void;
+type Fn2 = (x: number, y: number) => void
+
+// 由于Fn1仅有一个参数，所以必然报错，毕竟根本没有第二个参数y
+let fn1: Fn1 = (x: number, y: number) => {
+  console.log(x, y)
+}
+
+// 注意，由于Fn1的参数个数只有一个，所以只能传入一个参数
+fn1(1)
+
+// 正确用法
+let fn2: Fn2 = (x: number) => {
+  console.log(x)
+}
+// 即使右侧表达式只使用了一个参数，但是调用时必须传入2个参数，以符合Fn2的类型定义
+fn(1, 2)
+
+// 返回值个数和常规变量赋值一致，只能多的赋值给少的
 ```
 
 :::
