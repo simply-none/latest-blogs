@@ -103,6 +103,17 @@
 - getCurrentScope()
 - onScopeDispose()
 
+**script setup函数**：
+
+- defineProps()
+- defineEmits()
+- defineExpose()
+- defineSlots()
+- defineModel()
+- defineOptions()
+- useAttrs()
+- useSlots()
+
 **生命周期钩子**：
 
 - onBeforeMount

@@ -15,7 +15,7 @@ var、let、const比较：
 
 ::: code-group
 
-```typescript
+```typescript [作用域举例1]
 // 此处由于setTimeout是微任务，在所有宏任务执行完毕后再执行，此时i为10
 // 然后执行微任务，由于i是一个全局变量，所以每一条语句的i的值都为10
 for (var i = 0; i < 10; i++) {
@@ -31,7 +31,7 @@ for (var i = 0; i < 10; i++) {
 
 ```
 
-```typescript
+```typescript [作用域举例2]
 // 报错
 function f(x: number) {
   let x = 100
@@ -83,7 +83,7 @@ console.log(first, second)
 
 ::: code-group
 
-```typescript
+```typescript [类型声明]
 declare var Xxx;
 declare function () {}
 declare class {}
@@ -110,7 +110,7 @@ declare module './a' {
 const a: A = { x: 0, y: 0 };
 ```
 
-```typescript
+```typescript [加载模块类型]
 // 加载图片：
 // 定义图片声明：image.d.ts
 declare module '*.png' {
@@ -2095,7 +2095,7 @@ mySearch = function (src: string, sub: string) {
 
 ::: code-group
 
-```typescript
+```typescript [数字索引]
 interface StringArray {
   // 下面这个是数字索引签名，索引签名，就是`[index: number]`这部分
   [index: number]: string;
@@ -2107,7 +2107,7 @@ myArr = ['bob']
 let str: string = myArr[0]
 ```
 
-```typescript
+```typescript [混合索引]
 class Animal {
   name: string;
 }
@@ -2129,7 +2129,7 @@ interface Okay {
 
 ```
 
-```typescript
+```typescript [只读索引]
 interface ReadonlyStringArray {
   readonly [index: number]: string;
 }
@@ -2188,11 +2188,11 @@ let analog = createClock(AnalogClock, 7, 32);
 
 ```typescript
 interface ClockConstructor {
-  new (hour: number, minute: number);
+  new (hour: number, minute: number): ClockInterface;
 }
 
 interface ClockInterface {
-  tick();
+  tick(): void;
 }
 
 const Clock: ClockConstructor = class Clock implements ClockInterface {
@@ -2300,7 +2300,7 @@ class ImageControl implements SelectableControl {
 
 ::: code-group
 
-```typescript
+```typescript [函数声明]
 // 1
 // 普通函数声明
 function sum(x: number, y: number): number {
@@ -2399,7 +2399,7 @@ const admin = db.filterUsers(function (this: User) {
 
 ```
 
-```typescript
+```typescript [用法1]
 // 1
 function firstElement<Type>(arr: Type[]): Type | undefined {
   return arr[0];
@@ -2446,7 +2446,7 @@ function minimumLength<Type extends { length: number }> (
 }
 ```
 
-```typescript
+```typescript [用法2]
 // 1: push type parameters down
 function firstElementGood<Type>(arr: Type[]) {
   return arr[0]
