@@ -6,15 +6,15 @@ const updatedVersion = require("./updatedVersion").updatedVersion
 // 先获取下个 版本号
 const nextVersion = generateVersion(pkg.version)
 
+// 更新项目的版本号
+updatedVersion(pkg.version)
+
+// 提交代码
 let gitAddMsg = shell.exec('git add .')
 if (gitAddMsg.code !== 0) {
   console.error(gitAddMsg.stderr)
 }
 
-// 更新项目的版本号
-updatedVersion(pkg.version)
-
-// 提交代码
 let gitCommitMsg = shell.exec(`git commit -m "chore(release): ${nextVersion}"`)
 if (gitCommitMsg.code !== 0) {
   console.error(gitCommitMsg.stderr)
