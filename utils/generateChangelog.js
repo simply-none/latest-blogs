@@ -58,7 +58,6 @@ for (let i = 0; i < commits.length; i++) {
     let tag = commit.tag.split(',').find(name => {
       return name.includes('tag:') || name.includes('HEAD')
     })
-    console.log(commit.tag)
     if (tag.includes('HEAD')) {
       tag = generateVersion(pkg.version)
     }
@@ -224,11 +223,11 @@ tagArr.forEach((tag, index) => {
   let tagTitle = ''
   let authorDate = curTagObj.info.authorDate.split(' ').slice(0, 1).join(' ')
   if (tag === 'current') {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.abbrevHash}...${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${commitObj[tagArr[index + 1]].info.abbrevHash}...v${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
   } else if (index === tagArr.length - 1) {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${firstCommit.abbrevHash}...${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${firstCommit.abbrevHash}...v${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
   } else {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.tagNum}...${curTagObj.info.tagNum}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${commitObj[tagArr[index + 1]].info.tagNum}...v${curTagObj.info.tagNum}) (${authorDate})\n\n`
 
   }
 
