@@ -1,6 +1,7 @@
 const gitlog = require("gitlog").default;
 const pkg = require('../package.json')
 const fs = require('fs')
+const generateVersion = require('./utils').generateVersion
 
 const repo = pkg.repository.url.replace('.git', '')
 
@@ -48,13 +49,19 @@ let commitObj = {
 for (let i = 0; i < commits.length; i++) {
   let commit = commits[i]
   firstCommit = commit
-  if (commit.tag.includes('tag:')) {
+  if (commit.tag.includes('tag:') || commit.tag.includes('HEAD')) {
     start = true
     if (!s) {
       s = i
     }
     // 对tag进行分类
-    let tag = commit.tag.split(',').find(name => name.includes('tag:'))
+    let tag = commit.tag.split(',').find(name => {
+      return name.includes('tag:') || name.includes('HEAD')
+    })
+    console.log(commit.tag)
+    if (tag.includes('HEAD')) {
+      tag = generateVersion(pkg.version)
+    }
     tag = tag.replace('tag:', '').replace('v', '').trim()
     let tagSort = tag.split('.').map(t => t.padStart(3, '0')).join('.')
     currentTag = tagSort
