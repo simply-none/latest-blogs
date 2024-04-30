@@ -2,6 +2,13 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.2.0](https://github.com/simply-none/latest-blogs/compare/0.1.9...0.2.0) (2024-04-30)
+
+### Build System
+
+* 2024-04-30 10:49:27  修改git commit逻辑 ([52be500](https://github.com/simply-none/latest-blogs/commit/52be500e2b15e2450b977e5925b075530212e7b5))
+* 2024-04-30 10:38:41  修改版本生成方式 ([8c13df2](https://github.com/simply-none/latest-blogs/commit/8c13df2d1958642a1af9a4f865881de2ad2694d5))
+
 ## [0.1.9](https://github.com/simply-none/latest-blogs/compare/0.1.8...0.1.9) (2024-04-29)
 
 ### Docs
