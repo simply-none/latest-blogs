@@ -27,7 +27,7 @@ if (gitTagMsg.code !== 0) {
 }
 
 // 推送到远程仓库
-let gitPushMsg = shell.exec('git push --follow-tags origin master')
+let gitPushMsg = shell.exec('git push --tags origin master')
 if (gitPushMsg.code !== 0) {
   console.error(gitPushMsg.stderr)
 }

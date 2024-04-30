@@ -2,14 +2,20 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
-## [0.2.0](https://github.com/simply-none/latest-blogs/compare/0.1.9...0.2.0) (2024-04-30)
+## [0.2.1](https://github.com/simply-none/latest-blogs/compare/v0.2.0...v0.2.1) (2024-04-30)
+
+### Build System
+
+* 2024-04-30 10:59:43  修复生成changelog的错误 ([f16a062](https://github.com/simply-none/latest-blogs/commit/f16a062b444b0c5680e30f02deb030e12cd3cc80))
+
+## [0.2.0](https://github.com/simply-none/latest-blogs/compare/v0.1.9...v0.2.0) (2024-04-30)
 
 ### Build System
 
 * 2024-04-30 10:49:27  修改git commit逻辑 ([52be500](https://github.com/simply-none/latest-blogs/commit/52be500e2b15e2450b977e5925b075530212e7b5))
 * 2024-04-30 10:38:41  修改版本生成方式 ([8c13df2](https://github.com/simply-none/latest-blogs/commit/8c13df2d1958642a1af9a4f865881de2ad2694d5))
 
-## [0.1.9](https://github.com/simply-none/latest-blogs/compare/0.1.8...0.1.9) (2024-04-29)
+## [0.1.9](https://github.com/simply-none/latest-blogs/compare/v0.1.8...v0.1.9) (2024-04-29)
 
 ### Docs
 
@@ -29,7 +35,7 @@
 
 * 2024-04-16 22:41:59  生成changelog ([125ad04](https://github.com/simply-none/latest-blogs/commit/125ad0441c69af387349539edf376a15b5721167))
 
-## [0.1.8](https://github.com/simply-none/latest-blogs/compare/0.1.7...0.1.8) (2024-04-16)
+## [0.1.8](https://github.com/simply-none/latest-blogs/compare/v0.1.7...v0.1.8) (2024-04-16)
 
 ### Bug Fixes
 
@@ -43,7 +49,7 @@
 * 2024-04-12 17:28:24  新增工作梳理文档 ([eab72a1](https://github.com/simply-none/latest-blogs/commit/eab72a1e8f7d39e667ea65c3f5da72e597c29cde))
 * 2024-04-12 09:54:33  更新changelog ([b299518](https://github.com/simply-none/latest-blogs/commit/b2995182cf72553ecb99bcffea6191943626fa15))
 
-## [0.1.7](https://github.com/simply-none/latest-blogs/compare/0.1.6...0.1.7) (2024-04-12)
+## [0.1.7](https://github.com/simply-none/latest-blogs/compare/v0.1.6...v0.1.7) (2024-04-12)
 
 ### Bug Fixes
 
@@ -79,7 +85,7 @@
 * 2024-04-01 00:35:00  自定义插件代码暂存 ([368f88e](https://github.com/simply-none/latest-blogs/commit/368f88e0cca222536d233dc4864aec266da9d84c))
 * 2024-03-31 18:34:06  移除vitepress@nolebase/*插件，生产环境无效 ([18a5820](https://github.com/simply-none/latest-blogs/commit/18a5820dce10b9e0707f7f3aa0de675168fbdae6))
 
-## [0.1.6](https://github.com/simply-none/latest-blogs/compare/0.1.5...0.1.6) (2024-03-31)
+## [0.1.6](https://github.com/simply-none/latest-blogs/compare/v0.1.5...v0.1.6) (2024-03-31)
 
 ### Docs
 
@@ -96,7 +102,7 @@
 
 * 2024-03-31 15:09:55  新增vitepress@nolebase/*插件，用于美化页面布局 ([d4fa660](https://github.com/simply-none/latest-blogs/commit/d4fa6606c59c00e76339a6f8a7187099ad5be35f))
 
-## [0.1.5](https://github.com/simply-none/latest-blogs/compare/0.1.4...0.1.5) (2024-03-30)
+## [0.1.5](https://github.com/simply-none/latest-blogs/compare/v0.1.4...v0.1.5) (2024-03-30)
 
 ### Docs
 
@@ -107,13 +113,13 @@
 
 * 2024-03-30 23:13:14  内容展示排版优化 ([19167c8](https://github.com/simply-none/latest-blogs/commit/19167c854341f226995e09a0813cccecf54a7054))
 
-## [0.1.4](https://github.com/simply-none/latest-blogs/compare/0.1.3...0.1.4) (2024-03-30)
+## [0.1.4](https://github.com/simply-none/latest-blogs/compare/v0.1.3...v0.1.4) (2024-03-30)
 
 ### Build System
 
 * 2024-03-30 10:40:10  优化changelog文件生成脚本 ([5c8aaa3](https://github.com/simply-none/latest-blogs/commit/5c8aaa30b4d7fd8b3d03093ccac4754fc18ee3d1))
 
-## [0.1.3](https://github.com/simply-none/latest-blogs/compare/0.1.2...0.1.3) (2024-03-29)
+## [0.1.3](https://github.com/simply-none/latest-blogs/compare/v0.1.2...v0.1.3) (2024-03-29)
 
 ### Docs
 
@@ -132,7 +138,7 @@
 
 * 2024-03-27 08:43:03  优化pc端的样式展示 ([9b3c048](https://github.com/simply-none/latest-blogs/commit/9b3c0484918075930b30e42a90c2cd4061c9bd82))
 
-## [0.1.2](https://github.com/simply-none/latest-blogs/compare/0.1.1...0.1.2) (2024-03-26)
+## [0.1.2](https://github.com/simply-none/latest-blogs/compare/v0.1.1...v0.1.2) (2024-03-26)
 
 ### Bug Fixes
 
@@ -180,7 +186,7 @@
 * 2023-12-05 15:59:45  更新感悟 ([0ce8f60](https://github.com/simply-none/latest-blogs/commit/0ce8f604409b75c8dec130a2fe8f4901abbf0979))
 * 2023-12-02 15:09:27  感悟更新 ([0bd99e5](https://github.com/simply-none/latest-blogs/commit/0bd99e58857f6fda86113dab0590f501d585b902))
 
-## [0.1.1](https://github.com/simply-none/latest-blogs/compare/0.1.0...0.1.1) (2023-11-16)
+## [0.1.1](https://github.com/simply-none/latest-blogs/compare/v0.1.0...v0.1.1) (2023-11-16)
 
 ### Features
 
@@ -200,7 +206,7 @@
 * 2023-10-17 10:54:15  新增vitepress使用 ([5fcc7f1](https://github.com/simply-none/latest-blogs/commit/5fcc7f1cc406ebc212a5506fad6c2e98d937c0b9))
 * 2023-10-15 16:16:52 **新增笔记:** 新增重要的工作共识文档 ([0fce120](https://github.com/simply-none/latest-blogs/commit/0fce120fe4598d6918a932356bc283e8598be702))
 
-## [0.1.0](https://github.com/simply-none/latest-blogs/compare/0.0.3...0.1.0) (2023-10-15)
+## [0.1.0](https://github.com/simply-none/latest-blogs/compare/v0.0.3...v0.1.0) (2023-10-15)
 
 ### Bug Fixes
 
@@ -297,7 +303,7 @@
 
 * 2023-06-07 16:54:38 **rw:** rqw ([ebc23ef](https://github.com/simply-none/latest-blogs/commit/ebc23efd41993c3a8aa9eafa08f36ca5568b06a2))
 
-## [0.0.3](https://github.com/simply-none/latest-blogs/compare/794c918...ebb7b2b) (2023-03-27)
+## [0.0.3](https://github.com/simply-none/latest-blogs/compare/v794c918...vebb7b2b) (2023-03-27)
 
 ### Bug Fixes
 
