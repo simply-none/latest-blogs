@@ -1,6 +1,7 @@
 const gitlog = require("gitlog").default;
 const pkg = require('../package.json')
 const fs = require('fs')
+const generateVersion = require('./utils').generateVersion
 
 const repo = pkg.repository.url.replace('.git', '')
 
@@ -48,13 +49,18 @@ let commitObj = {
 for (let i = 0; i < commits.length; i++) {
   let commit = commits[i]
   firstCommit = commit
-  if (commit.tag.includes('tag:')) {
+  if (commit.tag.includes('tag:') || commit.tag.includes('HEAD')) {
     start = true
     if (!s) {
       s = i
     }
     // 对tag进行分类
-    let tag = commit.tag.split(',').find(name => name.includes('tag:'))
+    let tag = commit.tag.split(',').find(name => {
+      return name.includes('tag:') || name.includes('HEAD')
+    })
+    if (tag.includes('HEAD')) {
+      tag = generateVersion(pkg.version)
+    }
     tag = tag.replace('tag:', '').replace('v', '').trim()
     let tagSort = tag.split('.').map(t => t.padStart(3, '0')).join('.')
     currentTag = tagSort
@@ -217,11 +223,11 @@ tagArr.forEach((tag, index) => {
   let tagTitle = ''
   let authorDate = curTagObj.info.authorDate.split(' ').slice(0, 1).join(' ')
   if (tag === 'current') {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.abbrevHash}...${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${commitObj[tagArr[index + 1]].info.abbrevHash}...v${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
   } else if (index === tagArr.length - 1) {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${firstCommit.abbrevHash}...${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${firstCommit.abbrevHash}...v${curTagObj.info.abbrevHash}) (${authorDate})\n\n`
   } else {
-    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/${commitObj[tagArr[index + 1]].info.tagNum}...${curTagObj.info.tagNum}) (${authorDate})\n\n`
+    tagTitle = `## [${curTagObj.info.tagNum}](${repo}/compare/v${commitObj[tagArr[index + 1]].info.tagNum}...v${curTagObj.info.tagNum}) (${authorDate})\n\n`
 
   }
 

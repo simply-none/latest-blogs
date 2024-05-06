@@ -414,6 +414,10 @@ export function sidebarUsageInterview() {
               text: "前端综合",
               link: "/usage-interview/速记手册/前端综合",
             },
+            {
+              text: "业务",
+              link: "/usage-interview/速记手册/business",
+            }
           ],
         },
         {

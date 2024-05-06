@@ -143,20 +143,40 @@ body {
 
 ### grid布局
 
+grid容器由网格线（水平：row，垂直：column）和网格组成
+
+设置为网格布局后，容器子元素（item）的float、display: inline-block、display: table-cell、vertical-align和column-*等设置都将失效
+
+对于单个网格，可以通过设置`grid-column`、`grid-row`来指定网格具体的位置，在指定了具体位置后，其他网格会自动跳过该位置
+
 ```css
 .box {
    display: grid | inline-grid;
 
-   /* 设置列宽：每一项代表一列，repeat代表列宽重复多少次（列），fr代表可用空间的一等份 */
-   grid-template-columns: 100px 100px 100px | 100px repeat(2, 100px) | 1fr 1fr 1fr | 100px 100px minmax(100px 3fr) | 100px auto 100px;
+   /* 
+      设置列宽：每一项代表一列，
+         repeat代表列宽重复多少次（列），第二个参数可以是列表，表示重复列表多少次
+         auto-fill表示自动填充，让定宽的网格尽量占满整个容器
+         minmax表示长度在范围内，设置宽度不小于min，不大于max
+         1fr代表可用空间的一等份，可以和其他单位）（px、%等）混合使用
+         auto表示由浏览器自动决定宽度
+         可以使用绝对单位，也可以使用百分比
+
+    */
+   grid-template-columns: 100px 100px 100px | 100px repeat(2, 100px) | repeat(2, 100px 20px 80px) | repeat(auto-fill, 100px) | 1fr 1fr 1fr | 100px 100px minmax(100px 3fr) | 100px auto 100px;
+
    /* 设置行高 */
    grid-template-rows: 100px 100px 100px | 100px repeat(2, 100px) | 1fr 1fr 1fr | 100px 100px minmax(100px 3fr) | 100px auto 100px;
+
    /* 定义内容块的区域，一个区域由多个单元格组成，该区域和实际代码位置无任何关联，下列的字母代表区域块所占领的单元格，通过给块类设置grid-area为该值即可 */
    grid-template-areas: none
       |"a b" /** 一行两列 */
       |"a b b"
-       "a c d";  /** 两行三列 */
-   /* 定义行列分区 */
+       "a c d"  /** 两行三列 */
+      | "a . c"
+        "d . f"  /** 两行三列，空白区域使用.表示 */
+   
+   /* 定义行列分区：grid-template === grid-template-columns + grid-template-rows + grid-template-areas */
    grid-template: none;
    grid-template: 100px 1fr / 50px 1fr; /** grid-template-rows / grid-template-columns */
    grid-template: [line1-name] 100px 1fr / [column1-name] 50px [column2-name] 1fr; /** 这里设置了每个单元格前面的那条线的名称 */
@@ -165,11 +185,13 @@ body {
       [line21] "a c"  50px [line22]
       / auto 1fr auto;  /** 列宽即grid-template-columns的值 */
 
-   /* 行间距 */
+   /* 行间距，新语法：row-gap */
    grid-row-gap: 10px;
-   /* 列间距 */
+
+   /* 列间距，新语法：column-gap */
    grid-column-gap: 30px;
-   /* row column合并 */
+
+   /* row column合并，新语法：gap */
    grid-gap: 10px 30px;
 
    /* 控制排列方向顺序，是先行后列、先列后行；dense表示尽可能占满表格，若当前单元格大于剩余宽度，会让后者先填上去 */
@@ -196,6 +218,7 @@ body {
    /* 指定网格项目所在的四个边框所在索引，以1开始，若有冲突重叠，可使用z-index, 1代表索引，而span 1代表占据1个单元格 */
    grid-column-start: 1 | span 1;
    grid-column-end: 2;
+   /* grid-column === grid-column-start / grid-column-end */
    grid-column: 1 / span 1;
    grid-row-start: 1;
    grid-row-end: 1;

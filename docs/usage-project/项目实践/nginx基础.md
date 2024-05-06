@@ -26,7 +26,7 @@ _nginx无法正常停止的方法_：
 详细配置如下：
 ::: code-group
 
-```conf [nginx配置示例1]
+```yaml [nginx配置示例1]
 # 开启gzip压缩服务
 gzip on;
 
@@ -84,7 +84,7 @@ gzip_vary on;
 gzip_disable "MSIE [1-6]\.";
 ```
 
-```conf [nginx配置示例2]
+```yaml [nginx配置示例2]
 #user  nobody;
 worker_processes  1;
 
