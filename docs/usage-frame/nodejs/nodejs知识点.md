@@ -19,6 +19,7 @@
 使用：当需要拼接一个路径的时候，有时会使用`path.join(__dirname, 'xxx')`进行拼接，也可以使用`require.resolve('xxx')`获取文件路径。它能够检查该路径是否存在，不存在则会抛出`cannot find xxx`的异常
 
 三种方式：
+
 ```javascript
 // 绝对路径 -> /Users/enhanced-resolve/lib/node.js
 require.resolve('/Users/enhanced-resolve/')
@@ -29,6 +30,7 @@ require.resolve('diff')
 ```
 
 例子：
+
 ```javascript
 // 读取文件
 // 使用path.join
@@ -36,4 +38,16 @@ fs.readFileSync(path.join(__dirname, './assets/some-file.txt'));
 
 // 使用require.resolve
 fs.readFileSync(require.resolve('./assets/some-file.txt'));
+```
+
+## 命令行`node`传参给脚本
+
+使用node命令行执行脚本时，可以通过`process.argv`获取到传入的普通参数，通过`process.env['npm_config_xxx']`获取到传入的键值对参数
+
+```javascript
+// 执行node test.js 123
+console.log(process.argv); // ['node', '/Users/xxx/test.js', '123']
+
+// 执行node test.js --name=test
+console.log(process.env); // { npm_config_name: 'test' }
 ```
