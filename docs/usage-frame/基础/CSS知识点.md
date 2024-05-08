@@ -393,6 +393,17 @@ dd + dd {
 
 **修改滚动条样式**：
 
+方法1：
+
+```scss
+html.dark {
+   // 将系统滚动条设为黑色模式
+   color-scheme: dark;
+}
+```
+
+方法2：
+
 ::: code-group
 
 ```scss [chrome-css]

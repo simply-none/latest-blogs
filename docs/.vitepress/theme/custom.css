@@ -88,3 +88,8 @@ html:not(.dark) .vp-doc [class*='language-'] > span.lang {
     width: calc(100% - var(--vp-sidebar-width)) !important;
   }
 }
+
+/* 修改details块内多个div之间的隔离 */
+div[class*='language-'] + div[class*='language-'] {
+  margin-top: 16px !important;;
+}

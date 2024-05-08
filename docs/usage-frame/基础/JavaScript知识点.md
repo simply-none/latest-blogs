@@ -86,6 +86,72 @@ function callback (mutationList, observer) {
 
 ```
 
+### 获取系统主题`MatchMedia`
+
+**通过JavaScript**：
+
+```javascript [获取系统主题]
+// 判断是否是dark模式
+const mediaQueryListDark = window.matchMedia('(prefers-color-scheme: dark)')
+if (mediaQueryListDark.matches) {
+  // 系统主题为dark
+} else {
+  // 系统主题为light
+}
+
+// 判断是否是light模式
+const mediaQueryListLight = window.matchMedia('(prefers-color-scheme: light)')
+
+// 监听系统主题变化
+mediaQueryListDark.addEventListener('change', (evt) => {
+  if (evt.matches) {
+    // 切换到了dark模式
+  } else {
+    // 切换到了light模式
+  }
+})
+```
+
+**通过css**：
+
+```css [获取系统主题]
+/* 第一种： */
+body {
+  color: #ccc;
+}
+/* 利用媒体查询检测用户是否将系统主题色设置为light或dark */
+@media (prefers-color-scheme: light) {
+  /* 系统主题为light时的样式 */
+  body {
+    color: #eee;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  /* 系统主题为dark时的样式 */
+  body {
+    color: #000;
+  }
+}
+
+/* 第二种：结合css变量 */
+:root {
+  --color: #ccc;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --color: #eee;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color: #000;
+  }
+}
+body {
+  color: var(--color);
+}
+```
+
 ## 其他
 
 ### js引擎

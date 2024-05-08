@@ -91,4 +91,3 @@ this.$bus.$emit('receiveParams', data)
 - css in js：使用js编写css，让css拥有独立的作用域，阻止代码泄露到外部，防止样式冲突
 - 预处理器
 - shadow DOM（比如微前端）
-

@@ -623,6 +623,49 @@ declare module 'pinia' {
   }
 }
 ```
+
+:::
+
+### 数据持久化插件
+
+**pinia-plugin-persistedstate**：
+
+::: details 用法
+
+引入插件：
+
+```typescript
+// main.ts
+import { createPinia } from 'pinia'
+import piniaPersist from 'pinia-plugin-persistedstate'
+
+const pinia = createPinia()
+pinia.use(piniaPersist)
+createApp(App).use(pinia).mount('#app')
+```
+
+数据保存：
+
+```typescript
+import { defineStore } from 'pinia'
+
+export const useStore = defineStore('user', {
+  state: () => ({
+    name: null,
+    age: null,
+    info: {
+      des: null
+    }
+  }),
+  // 第一种，默认保存
+  persist: true,
+  // 第二种，选择性保存
+  perist: {
+    paths: ['name', 'info.des']
+  }
+})
+```
+
 :::
 
 ## 在组件外使用store

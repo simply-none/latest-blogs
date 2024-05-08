@@ -201,7 +201,7 @@ degit anncwb/vue-vben-admin project-name
   - 加载为web worker（获取一个worker函数）：`import worker from './worker.js?worker'`
   - 构建web worker时，内联为base64字符串：`import inlineWorker from './worker.js?worker&inline'`
 - json文件可以直接被导入，且支持具名导入  
-- vite导入多个模块：`import.meta.glob('./dir/*.js')`，这将会导入dir目录下的所有js文件，返回一个以文件名路径为key，模块对象为value的对象；
+- vite导入多个模块：`import.meta.glob('./dir/*.js')`，这将会导入dir目录下的所有js文件，返回一个以文件名路径为key，模块对象为value的对象；可用于组件批量注册
   - 匹配到的文件默认是懒加载的，通过动态导入实现，会在构建时分离为独立的chunk；
   - 若想直接导入所有模块，可以传入`{eager: true}`作为第二个参数；
   - glob的导入形式可以通过第二个参数选项as属性实现，比如获取文件的内容`{as: 'raw'}`，获取文件的url`{ as: 'url'}`
@@ -505,6 +505,16 @@ interface ImportMeta {
 > - https://github.com/pure-admin/vue-pure-admin
 
 ```typescript
-
+module.exports = {
+  proxy: {
+    // string shorthand
+    '/foo': 'http://localhost:4567/foo',
+    // with options
+    '/api': {
+      target: 'http://jsonplaceholder.typicode.com',
+      changeOrigin: true,
+      rewrite: path => path.replace(/^\/api/, '')
+    }
+  }
+ }
 ```
-

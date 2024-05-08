@@ -1832,6 +1832,27 @@ import ComponentA from './ComponentA.vue'
 - 在dom中，使用闭合标签，即`</div>`
 - 特定元素仅在特定元素内部，比如tr在table内部，若想使用自定义组件替换tr，应使用`<tr is="vue:自定义组件名"></tr>`，在原生元素上is必须加前缀vue才会解析为一个vue组件。
 
+**自定义注册组件**：
+
+```javascript
+import { defineAsyncComponent } from 'vue'
+import JdBtn from './jdbtn/index.vue'
+
+export default {
+  install (app) {
+    const components = import.meta.glob('./*/index.vue')
+
+    for (let [key, component] of Object.entries(components)) {
+      const componentName = 'jd-' + key.replace('./', '').split('/')[0]
+      app.component(componentName, defineAsyncComponent(component))
+    }
+
+    // 非异步直接这样注册：
+    app.component('jd-btn', JdBtn)
+  }
+}
+```
+
 ### 动态组件
 
 语法：`<component :is="xxx">`，其中xxx可以是：
