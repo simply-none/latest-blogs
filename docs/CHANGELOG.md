@@ -2,6 +2,14 @@
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.2.2](https://github.com/simply-none/latest-blogs/compare/v0.2.1...v0.2.2) (2024-05-08)
+
+### Docs
+
+* 2024-05-08 17:19:25 **look for jobs:** 第一天，更新诸多知识点 ([3cfd7a5](https://github.com/simply-none/latest-blogs/commit/3cfd7a5012bfbb32b8d68713057cef2a3e53e6ce))
+* 2024-05-08 11:05:54  更新nodejs知识点 ([3c5abb0](https://github.com/simply-none/latest-blogs/commit/3c5abb0a9a8c7cf3fed598a443e478563ef214a0))
+* 2024-05-06 20:35:19  更新报错汇总以及共识总结 ([ea88880](https://github.com/simply-none/latest-blogs/commit/ea88880b68d1c2ee691f3ac3da626e0e78bde648))
+
 ## [0.2.1](https://github.com/simply-none/latest-blogs/compare/v0.2.0...v0.2.1) (2024-04-30)
 
 ### Build System
