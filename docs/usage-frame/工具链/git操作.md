@@ -7,10 +7,12 @@
 3. 设置ssh提交的密码，默认无密码
 4. 之后会生成对应名称的私钥和对应名称 + `.pub`的公钥
 5. 修改`user/.ssh/config`文件，添加内容如下：
+
    ```bash
     Host github.com
       IdentityFile C:\Users\Administrator\.ssh\github_rsa
    ```
+
 6. 登录github -> setting -> SSH and GPG keys -> New SSH key -> 输入名称（可随便命名），填入key（生成的公钥内容）
 7. 克隆项目，使用`git clone git@github.com:<github_name>/<github_repo>.git`
 8. 之后git push提交就不需要github密码了
@@ -62,6 +64,7 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 ### git提交失败
 
 失败信息有：
+
 ```bash
 fatal: unable to access 'https://github.com/simply-none/redict.git/': HTTP/2 stream 1 was not closed cleanly before end of the underlying stream
 
@@ -110,6 +113,7 @@ fatal: unable to access 'https://github.com/simply-none/redict.git/': The reques
 拉取项目作为初始化模板: 使用degit命令
 
 degit命令功能：
+
 - 对git仓库进行复制
 - 只会复制最新的提交，比git clone快得多
 
@@ -137,7 +141,6 @@ degit user/repo#1fd41saf4
 - git配置用户信息：`git config <--global | --local | --system> user.name|email xxx`
 
 ### 分支相关（branch）
-
 
 - 创建分支：`git branch <branch>`
 - 切换分支：`git checkout <branch>`
@@ -173,6 +176,7 @@ degit user/repo#1fd41saf4
 ### 提交回滚（revert、reset）
 
 **revert**：
+
 - 作用：
   - 撤销某次操作，但不会影响原本的提交记录，而是会增加一条新的提交记录来撤回之前的提交
 - 操作：
@@ -181,12 +185,81 @@ degit user/repo#1fd41saf4
   - `git revert commit_id1 commit_id2`：回滚多次commit，即`(commit_id1, commit_id2]`
 
 **reset**：
+
 - 作用：
   - 直接将提交记录退回到指定的commit上
+
+**rebase**:
+
+- 作用：重写提交历史，将git提交树重写为只有一条主线
+- 注意：可能会造成过多的冲突，若仅有一条主线，且是刚刚错误提交的，效果好
+
+::: details 用法
+
+合并commit:
+
+```bash
+# master: A -> B -> C
+# dev: A -> D -> E
+# 若dev分支的DE提交需要依赖master上的c提交，则可以在dev分支执行：
+git rebase master
+# 此时，dev分支会变成：
+# dev: A -> B -> C -> D' -> E'
+```
+
+删除某个历史commit：这种在多条主线上，可能会有冲突，需要手动解决:
+
+```bash
+git rebase -i <commit_id>
+# 之后会出现：
+pick 1234567 commit_message
+pick 1234568 commit_message
+pick 1234569 commit_message
+# 可将pick改为drop，即删除该commit，然后保存退出（:wq）
+
+# 可以回退上面的操作：
+git rebase --abort
+```
+
+:::
+
+::: details git树主线
+
+多条主线：
+
+```bash
+* 6fa5484 (HEAD -> master, feature) commit F
+*   875906b Merge branch 'master' into feature
+|\  
+| | 5b05585 commit E
+| | f5b0fc0 commit D
+* * d017dff commit C
+* * 9df916f commit B
+|/  
+* cb932a6 commit A
+```
+
+单条主线：
+
+```bash
+* 74199ce (HEAD -> master, feature) commit F
+* e7c7111 commit E
+* d9623b0 commit D
+* 73deeed commit C
+* c50221f commit B
+* ef13725 commit A
+```
+
+:::
+
+**参考**：
+
+- https://waynerv.com/posts/git-rebase-intro/
 
 ### 合并（merge、rebase、cherry-pick）
 
 **merge**：
+
 - 作用：
   - 适用于多人协作场合
   - 即把一个分支的修改合并到当前分支上，同时会产生一条额外的合并记录，类似`merge branch xxx into xxx`
@@ -195,11 +268,13 @@ degit user/repo#1fd41saf4
   - 非快速合并，主要是防止master混入开发分支的一些新特性，在回滚时搅乱master的提交历史：`git merge --no-ff <dev_branch>`
 
 **rebase**：
+
 - 作用：
   - 适用于个人分支
   - 变基，即把一个分支的修改合并到当前分支上
 
 **cherry-pick**：
+
 - 作用：
   - 意为挑拣，即将某个分支的单个commit，作为一个新的提交引入到当前分支上
 - 用法：
@@ -224,6 +299,7 @@ degit user/repo#1fd41saf4
 作用：将长命令简写
 
 注意：
+
 - 通过`--global`配置的别名，可在git全局配置文件中`.gitconfig`找到，其别名在`[alias]`条目下
 
 ```bash
@@ -240,9 +316,9 @@ git jlg
 ### 综合应用
 
 git仓库迁移的方法：
+
 - 克隆一份裸仓库`git clone --bare old.git`，推送到新仓库`git push --mirror new.git`
 - 直接切换remote url，`git remote set-url origin new.git`，`git push --mirror`
-
 
 ## 新仓库操作（提取自github）
 
