@@ -90,6 +90,6 @@ html:not(.dark) .vp-doc [class*='language-'] > span.lang {
 }
 
 /* 修改details块内多个div之间的隔离 */
-div[class*='language-'] + div[class*='language-'] {
+.details div[class*='language-'] + div[class*='language-'] {
   margin-top: 16px !important;;
 }

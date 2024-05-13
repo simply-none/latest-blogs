@@ -1,3 +1,6 @@
+---
+outline: [1, 2]
+---
 # Changelog
 
 本文档通过规范的git commit，结合gitlog npm包生成

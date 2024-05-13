@@ -279,7 +279,9 @@ tagArr.forEach((tag, index) => {
 
 })
 
-tagArrLine = `# Changelog\n\n` + `本文档通过规范的git commit，结合gitlog npm包生成\n\n` + tagArrLine
+const frontmatterConfig = `---\noutline: [1, 2]\n---\n`
+
+tagArrLine = `${frontmatterConfig}# Changelog\n\n` + `本文档通过规范的git commit，结合gitlog npm包生成\n\n` + tagArrLine
 
 tagArrLine = tagArrLine.replace(/\n*$/, '\n')
 
