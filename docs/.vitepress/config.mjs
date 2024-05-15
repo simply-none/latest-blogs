@@ -10,7 +10,6 @@ import { sidebar } from "./sibar";
 import GitChangelogMarkdownSection from '../../log'
 import log2 from '../../log2'
 
-console.log(join(__dirname, '../', '../'))
 const commitsOptions = {
   repo: join(__dirname, '../', '../')
 }
