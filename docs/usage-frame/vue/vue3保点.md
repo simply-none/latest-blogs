@@ -85,7 +85,7 @@ vscode插件：
 使用：
 
 - 附着的预处理器熟悉lang attribute：比如`script lang="ts"`, `template lang="pug"`, `style lang="scss"`，这个需要工具链支持
-- 附着的scr attribute：若喜欢将vue组件分散到多个文件中，可为一个元素块使用src属性来导入一个外部文件，比如`template src="./xxx.html"`等。src导入规则和js模块导入规则一样，比如使用相对路径，从npm包中导入资源`style src="todomvc-app-css/index.css`
+- 附着的src attribute：若喜欢将vue组件分散到多个文件中，可为一个元素块使用src属性来导入一个外部文件，比如`template src="./xxx.html"`等。src导入规则和js模块导入规则一样，比如使用相对路径，从npm包中导入资源`style src="todomvc-app-css/index.css`
 
 单文件组件的优势：
 
@@ -187,7 +187,7 @@ const border = {
   // 使用动态变量
   background-color: v-bind(bgColor);
   // 对于JavaScript表达式，需要用引号包裹
-  border-color: v-bind('border.color')
+  border-color: v-bind('border.color');
 }
 </style>
 ```
@@ -223,7 +223,7 @@ typescript用法：
 // 使用InstanceType定义组件的类型
 import Child from './child.vue'
 import {ElImage} from 'element-plus'
-// 🛑
+// 🟢
 type ElImageCtx = InstanceType<typeof ElImage>;
 type ChildCtx = InstanceType<typeof Child>;
 
@@ -404,9 +404,9 @@ const personRefs = toRefs(person)
 const { name } = toRefs(person)
 ```
 
-**toValue**:
+**toValue**: 针对的是不含Proxy的ref、值
 
-定义：将值、refs、getters转为非响应性值，若参数是一个getter（即函数），它将会被调用并返回它的返回值，否则原样返回
+定义：将值、refs、getters转为非响应性值，若参数是一个getter（即函数），它将会被调用并返回它的返回值，否则原样返回；若**参数是一个`ref(obj)`，则返回Proxy**
 
 ```typescript
 import type { MaybeRefOrGetter } from 'vue'
@@ -421,6 +421,18 @@ useFeature(1)
 useFeature(ref(1))
 useFeature(() => 1)
 ```
+
+**unref**: 针对的是ref，转为ref.value
+
+定义：如果参数是一个ref值，则返回其.value的值（**若ref包裹了一个对象，则返回Proxy**），否则返回参数本身
+
+**toRaw**：针对的是Proxy
+
+定义：
+
+- 语法：`toRaw(proxy)`
+- 返回响应式对象【**Proxy**】（reactive、readonly、shallowReactive、shallowReadonly）的原对象，返回值再用对应的api包裹，又会返回响应式对象
+- 是一个可用于临时读取而不引起代理访问/跟踪开销，或写入不触发更改的特殊方式，不建议持久引用
 
 **isRef**:
 
@@ -437,10 +449,6 @@ useFeature(() => 1)
 **isReadonly**:
 
 定义：检查对象是否是由readonly、shallowReadonly创建的代理，返回boolean
-
-**unref**:
-
-定义：如果参数是一个ref值，则返回其.value的值，否则返回参数本身
 
 **shallowRef**：
 
@@ -640,20 +648,12 @@ function getNewObj () {
 
 :::
 
-**toRaw**：
-
-定义：
-
-- 语法：`toRaw(proxy)`
-- 返回响应式对象（reactive、readonly、shallowReactive、shallowReadonly）的原对象，返回值再用对应的api包裹，又会返回响应式对象
-- 是一个可用于临时读取而不引起代理访问/跟踪开销，或写入不触发更改的特殊方式，不建议持久引用
-
 **markRaw**：
 
 定义：
 
 - 语法：`markRaw(obj)`
-- 将对象标记为不可转为代理（proxy），然后返回该对象本身，这一句仅是常规对象和proxy的区别（即isReactive返回值区别）
+- 将对象标记为不可转为代理proxy（即使用reactive包裹该对象后，返回的还是该对象，而非proxy），然后返回该对象本身，这一句仅是常规对象和proxy的区别（即isReactive返回值区别）
 
 用途：
 
