@@ -1,14 +1,3 @@
-<!--
- * @Author: jousindea jousindea@163.com
- * @Date: 2024-03-30 22:28:38
- * @LastEditors: jousindea jousindea@163.com
- * @LastEditTime: 2024-03-30 23:11:35
- * @FilePath: \latest-blogs\docs\about.md
- * @Description: 
- * 
- * Copyright (c) 2024 by jousindea, All Rights Reserved. 
--->
-
 # 关于本站
 
 ## 符号标记
@@ -20,6 +9,7 @@
 - 😢：表示尚未搞懂的内容   
 - ⛔：阅读中断标志
 - 🔴：重点、易混淆、难以理解的内容
+- 【📗注：xxx】：再读时的注释、理解
 
 ## 内容解释
 
