@@ -252,6 +252,31 @@ git rebase --abort
 
 :::
 
+**git commit --amend**：
+
+- 作用：回滚本地上一次的commit到暂存区（git add 之后的内容）
+- 用法：
+  - 如果上一次的commit有误，或者想增删内容，则可以使用`git commit --amend`
+  - 可以连续使用多次该命令，相当于多次撤销
+
+```bash
+# 若仅想修改上一次的commit内容和msg，则可以：
+git commit --amend
+# 修改内容:xxxx
+# 提交
+git commit --amend -m 'new commit msg'
+
+# 若想修改上一次的commit内容和msg，且还想继续增加内容，则可以：
+# 把需要增加的内容先add到暂存区：
+git add .
+# 然后执行：
+git commit --amend
+# 修改内容:xxxxx
+# 提交
+git commit --amend -m 'new commit msg'
+
+```
+
 **参考**：
 
 - https://waynerv.com/posts/git-rebase-intro/
@@ -293,6 +318,45 @@ git rebase --abort
 - 查看git所有的贡献人提交排名：`git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r`
 - 查看所有贡献人贡献的代码量：`git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done`
 - 查看某个贡献人贡献的代码量：`git log --author="<user_name>" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'`
+
+### 标签（tag）
+
+```bash
+# 展示所有标签
+git tag
+git tag -l
+git tag --list
+# 展示标签，过滤，注意是双引号
+git tag -l "v1.0*"
+
+# 查看标签信息
+git show v1.0
+
+# 轻量标签：只是某个commit id的引用
+# 创建轻量标签
+git tag [tag_name]
+git tag [tag_name] [commit_id]
+
+# 附注标签：是存储在git仓库的一个完整对象，记录了标签的创建者、标签创建日期、标签信息
+# 创建附注标签，使用-a参数
+git tag -a [tag_name] -m "tag message"
+git tag -a [tag_name] [commit_id] -m "tag message"
+
+# 删除标签
+git tag -d [tag_name]
+
+# 推送指定的标签到远程仓库
+git push origin [tag_name]
+# 推送所有不在远程仓库的标签到远程仓库
+git push origin --tags
+
+# 删除远程仓库指定的标签
+git push origin :refs/tags/[tag_name]
+git push origin --delete [tag_name]
+
+# 从某个标签创建分支
+git checkout -b [branch_name] [tag_name]
+```
 
 ### 别名（alias）
 
