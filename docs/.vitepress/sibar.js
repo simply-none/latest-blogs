@@ -41,8 +41,8 @@ export function sidebarUsageFrame() {
           link: "/usage-frame/vue/elementui知识点",
         },
         {
-          text: "vue3保点",
-          link: "/usage-frame/vue/vue3保点",
+          text: "vue3知识回顾",
+          link: "/usage-frame/vue/vue3知识回顾",
         },
         {
           text: "vue3-API",

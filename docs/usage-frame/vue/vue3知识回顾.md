@@ -1,17 +1,15 @@
-# vue3保点
+# vue3知识回顾
 
 > 参考文档：    
 > vuejs官方迁移文档（旧）   
 > <https://vue3.chengpeiquan.com/component.html#%E7%94%A8%E6%B3%95%E4%B8%8A%E7%9A%84%E5%8F%98%E5%8C%96>
 
-## 注意事项
+## 阅读前须知
 
 > 若项目出现问题，时刻注意依赖间版本兼容的问题    
 > vue的某些api，只能在顶层作用域调用，不然可能会出现异常    
 
-## 使用vue的多种方式
-
-vue的使用场景：
+## vue的使用场景
 
 - 独立脚本，使用script引入的vue.js文件的（类似jQuery）
 - 作为web component嵌入
@@ -23,21 +21,21 @@ vue的使用场景：
 - 混合应用：Quasar
 - 渲染器：比如 [WebGL](https://troisjs.github.io/) 甚至是[终端命令行](https://github.com/vue-terminal/vue-termui)
 
-## 安装
+## 开发前配置
 
-安装方式：
+**项目初始化**：
 
-- 通过vite：`npm init vite project-name -- --template vue`或者`yarn create vite project-name --template vue`
+- 通过vite：`npm create vue@latest`, `npm init vite project-name -- --template vue`或者`yarn create vite project-name --template vue`
 - 通过vue-cli：`npm install -g @vue/cli`或`yarn global add @vue/cli`，然后`vue create project-name`
 
-**vue2和vue3共存**：需要非全局下载vue-cli(Vue2)和@vue/cli(vue3)，然后分别在对应目录下找到例如`D:\vue-version-cache\node_modules\.bin\vue`的文件
+**vue2和vue3共存**：使用npm非全局下载vue-cli(Vue2)和@vue/cli(vue3)，分别在对应目录下找到例如`D:\vue-version-cache\node_modules\.bin\vue`的文件
 
-- 然后使用该文件绝对路径进行创建即可
-- 或者将vue文件对应的.bin目录存放到全局环境变量path中，然后对vue文件和vuecmd文件改成vue2或vue3即可。后面就能够直接在命令行中使用vue2和vue3进行项目创建
+- 使用该文件绝对路径进行创建
+- 将vue文件对应的.bin目录存放到全局环境变量path，然后对vue文件和vuecmd文件改成vue2或vue3即可。后面就能够直接在命令行中使用vue2和vue3进行项目创建
 
 注意：
 
-- 防止代码出现警告：从vue2迁移到vue3后，需要安装valor插件，同时工作区需要禁用vetur插件
+- 防止代码出现警告：从vue2迁移到vue3后，需要安装vue - official插件，同时工作区需要禁用vetur插件
 
 **Typescript环境支持**：
 
@@ -45,17 +43,43 @@ vue的使用场景：
 
 - `compilerOptions.isolatedModules`应为true，因为vite使用esbuild来转译ts并受限于单文件转译的限制
 - 若使用选项式API，需要将`compilerOptions.strict`或`compilerOptions.noImplicitThis`设为true，才能获得对组件选项中this的类型检查，否则this类型为any
-- 若配置了路径解析别名resolve.alias，需要在`compilerOptions.paths`选项重新配置一遍
+- `vue.config.js`或`vite.config.js`配置了resolve.alias，需要在`compilerOptions.paths`选项重新配置一遍
 
-vscode插件：
+::: details
+
+配置别名：
+
+```ts
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+})
+```
+
+鼠标点击代码中的别名跳转到对应文件的配置：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // 冒号前后均需配置通配符，表示以src开头的路径都使用@替代
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+:::
+
+**vscode必备插件**：
 
 - typescript vue plugin
-- volar（已废弃，继续使用会导致vscode编辑器代码出现类型报错，可迁移到vue official）
+- vue - official
 - vetur：vue2专用，用在vue3中会产生报错信息
-
-注意：
-
-- 为了让vue单文件组件和ts一起工作，同时普通的ts由vscode内置的ts语言服务处理，应该开启Volar的Takeover模式，即在当前的工作空间禁用typescript and JavaScript language features，然后重新启动vscode
 
 ## 模板语法
 
@@ -105,93 +129,6 @@ vscode插件：
 - 关注点分离不是教条式的将其视为文件类型的区别和分离
 - 在组件中，模板、逻辑、样式本身是有内在联系且耦合的，放在一起能够增强内聚性和可维护性
 
-### 单文件组件样式特性
-
-**`<style scoped>`**:
-
-- 处理方式：通过postcss将样式转为带属性选择器的样式，即元素上添加了自定义属性data-xxx，样式上也添加了同样的属性选择器data-xxx
-- 父组件的样式不会泄露到子组件当中，但是子组件根节点的样式会由子组件和父组件共同作用（和vue2一样，但通过v-html创建的内容不会被影响，不过也能通过deep伪类设置样式）
-- 若想父组件影响子组件样式，可以使用`:deep(选择器)`函数伪类，比如`div :deep(.child) {}`
-- 若想修改插槽内的样式（使用该组件时传过来的插槽内容，是由使用该组件的地方控制样式的，非该组件本身能控制），故而可以通过`:slotted(选择器)`伪类实现
-- 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global(选择器)`伪类实现
-- 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
-- 小心递归组件中的后代选择器，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
-
-::: code-group
-
-```typescript [deep()函数]
-<style scoped>
-.a :deep(.b) {
-  // xxx
-}
-
-// 将会编译为
-.a[data-v-f2fdsadf] .b {
-  // xxx
-}
-</style>
-```
-
-```typescript [插槽选择器]
-<style scoped>
-// 插槽中div会变成红色
-:slotted(div) {
-  color: red;
-}
-</style>
-```
-
-```typescript [全局选择器]
-<style scoped>
-// 所有的div都将变成红色
-:global(div) {
-  color: red;
-}
-</style>
-```
-
-:::
-
-**`<style module>`**：
-
-- 仅作用于当前组件
-- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方（比如在template中）通过类似$style.red的方式访问样式
-- 可以给module定义一个值`<style module="classes">`，这样就能将$style替换成这个值了`classes.red`
-- 若想在setup选项或`<script setup>`中使用注入的类，需要使用函数`useCssModule()`或者是`useCssModule('classes')`
-- 若样式模块想用到script内部导出的变量（data中的，或者setup导出的），可以使用`v-bind`函数绑定
-
-```typescript
-<template>
-  <p :class="$style.red"></p>
-</template>
-
-<script>
-export default {
-  data () {
-    return {
-      bgColor: 'blue'
-    }
-  }
-}
-</script>
-
-<script setup>
-const border = {
-  color: 'green'
-}
-</script>
-
-<style module>
-.red {
-  color: red;
-  // 使用动态变量
-  background-color: v-bind(bgColor);
-  // 对于JavaScript表达式，需要用引号包裹
-  border-color: v-bind('border.color');
-}
-</style>
-```
-
 ## 响应性基本原理
 
 **深层响应性**：
@@ -203,7 +140,7 @@ vue中的状态是默认深层响应式的，会检测到响应性变量的深�
 原始对象：不会触发视图更新
 响应式对象（代理对象）：会触发视图更新
 
-## 响应式api
+## 响应式API
 
 声明响应式状态的方式：
 
@@ -741,8 +678,8 @@ scope.stop()
 - 对于在`<script setup>`里创建的自定义指令，必须以`vMyDirective`的形式命名，这样它才能够在template中以`<h1 v-my-directive>title</h1>`的形式使用；而对于导入的指令，也应当符合`vMyDirective`的命名形式（即通过`import { myDirective as vMyDirective} from xxx`语法重新命名导入的指令名）
 - 对于props和emit的声明，必须使用`defineProps`和`defineEmits`（仅在`<script setup>`内有效，且不需要导入能直接使用）函数来声明，其接收的参数和选项式语法相同
 - 由于传入到defineProps和defineEmits的选项会从setup中提升到模块的范围，所以他们不能引用在setup内部定义的变量，否则会引起编译错误。但是他们可以引用import导入的内容（这也是模块的范围）
-- defineProps和defineEmits要么使用运行时声明，要么使用类型声明，同时使用两种声明方式会导致编译报错，运行时声明即普通用法`defineProps({xxx})`，类型声明即ts用法`defineProps<{xxx}>()`。3.2以下版本中，defineProps的泛型类型参数只能使用类型字面量或者本地接口的引用，但在3.3版本中得到解决，支持在类型参数的位置引用导入的和有限的复杂类型，但是由于类型到运行时的转换是基于AST的，不支持使用需要 实际类型分析的 复杂类型，比如可以在单个prop上使用条件类型，但不能对整个props对象使用条件类型
-- 对于类型声明的defineProps没有可以给props提供默认值的方式，但可以通过withDefaults编译器宏实现，`props = withDefaults(defineProps<{}>(), {默认值对象})`，第二个参数就是一个提供prop属性默认值的对象。对于提供了默认值的prop，会进行类型检查，若prop是可选的，但是提供了默认值，则会自动删除该prop的可选标志变成必填
+- defineProps和defineEmits要么使用运行时声明，要么使用类型声明，同时使用两种声明方式会导致编译报错，运行时声明即普通用法`defineProps({xxx})`，类型声明即ts用法`defineProps<Type>()`。3.2以下版本中，defineProps的泛型类型参数只能使用类型字面量或者本地接口的引用，但在3.3版本中得到解决，支持在类型参数的位置引用导入的和有限的复杂类型，但是由于类型到运行时的转换是基于AST的，不支持使用需要 实际类型分析的 复杂类型，比如可以在单个prop上使用条件类型，但不能对整个props对象使用条件类型
+- 对于类型声明的defineProps没有可以给props提供默认值的方式，但可以通过withDefaults编译器宏实现，`props = withDefaults(defineProps<Type>(), defaultValueObj)`，第二个参数就是一个提供prop属性默认值的对象。对于提供了默认值的prop，会进行类型检查，若prop是可选的，但是提供了默认值，则会自动删除该prop的可选标志变成必填
 - 若想在父组件中使用`<script setup>`中的变量/方法，和setup选项式类似，这里需要使用defineExpose编译器宏（不需要导入，语法和选项式相同）函数将变量/方法暴露出去，例如`defineExpose({暴露的对象})`
 - defineOptions编译器宏可以声明组件选项，比如inheritAttrs，即使用script setup时不需要再定义一个script设置组件选项了（仅支持3.3+版本），定义的选项将被提升到模块作用域中，无法访问script setup中非字面常数的局部变量
 - defineSlots宏可以用于为IDE提供插槽名称和props类型检查的类型提示，只接受类型参数，无运行时参数，类型参数是一个类型字面量，属性名是插槽名，值是插槽函数类型，函数的第一个canasta是插槽期望接收的props，返回类型目前被忽略，可以是any。该宏返回一个slots对象，等同于setup上下文中暴露或由useSlots()返回的slots对象（仅支持3.3+版本）
@@ -843,13 +780,15 @@ defineProps<{
 
 :::
 
-## setup()
+## setup选项
 
 定义：setup选项在组件被创建之前执行，一旦props被解析完成，它就将被作为组合式api的入口
 
 使用：
 
 - setup选项可以和data、methods等选项并列使用，它是一个函数，可接收props和context参数
+- setup选项内部能够使用大部分在`<script setup>`中使用的api，除了宏(以`define`、`use`开头的函数)
+- setup选项内部可以使用生命周期钩子，用法和`<script setup>`中一样
 - 在setup函数中，可以访问的属性有props、attrs、slots、emit，无法访问的组件选项（即在与setup同级定义的选项）有data、computed、methods、refs
 - 若setup返回一个对象，则该对象的属性以及props参数的属性都可以在模板中访问，此时这些内容是被自动浅解包的，直接使用，不需要带.value
 
@@ -859,7 +798,7 @@ defineProps<{
 - setup中避免使用this，他不会找到组件实现（因为在创建之前执行的）
 - setup的调用发生在data、computed、methods被解析之前，所以他们都无法在setup中被获取
 
-### setup函数参数
+**setup函数参数**：
 
 setup第一个参数props：
 
@@ -907,92 +846,146 @@ setup(props, { attrs, slots, emit, expose }) {
 
 :::
 
-### setup内生命周期钩子
+**setup返回值**：
 
-setup内生命周期钩子的使用：该行为是保持选项式API和组合式API的完整性
+第1种：返回一个对象，该对象属性可供其他选项（使用this.xxx）或template（使用xxx）引用
 
-- 组合式API的生命周期钩子是在选项式API的基础上加了前缀on（使用驼峰命名），例如`mounted` => `onMounted`
-- 这些钩子接受一个回调函数参数，和选项式一样，当被组件调用时，回调函数参数将被执行
+第2种：**setup返回一个渲染函数**：
 
-setup内其他钩子的使用：
+- 只有setup选项可以返回渲染函数，`script setup`语法糖不能使用render
+- 用法：返回一个`return () => h()`或返回多个`return () => [h(), h()]`
+- 若返回渲染函数，则不能返回其他的属性对象，若想将这些属性暴露给外部（比如通过父组件的ref）访问，可以使用expose
 
-**watch**：
-定义：该函数和选项式APIwatch选项设置侦听器一样，使用时需要从vue中导入
-使用：
+```typescript
+import { h, ref, reactive } from 'vue'
+import Hello from './hello.vue'
+export default {
+  componentns: { Hello },
+  setup (props, { expose }) {
+    function changeCount () {
+      count.value++
+    }
+    const count = ref(0)
+    const list = reactive([
+      { id: 1, text: 'hhh' },
+      { id: 2, text: '特色菜' }
+    ])
 
-- watch接收三个参数，依次是一个想要侦听的响应式引用或getter函数、一个回调（响应式引用变化时执行的函数）、一个可选的配置选项对象（例如deep等）
+    // 若想在外部访问这个组件的其他属性，由于setup返回了渲染函数，此时这些属性必须通过expose暴露给外部
+    expose({
+      changeCount
+    })
 
-**computed**：
+    return () => [
+      // 设置div的class
+      h('div', { className: 'count-wrapper count-wrapper-highlight' }, count.value),
+      // 绑定事件
+      h('button', { onClick: changeCount }, '按钮')
+      // 循环渲染
+      h('ul', list.map(item => {
+        return h('li', item.text)
+      })),
+      // 渲染导入组件
+      h(Hello)
+    ]
+  }
+}
+```
 
-定义：
+## style
 
-- 用于描述依赖响应式状态的复杂逻辑
-- 会自动追踪响应式依赖，只有它依赖的响应式数据变化时，才会同时更新；反之依赖的响应式数据不变时，或者依赖的是非响应式数据，它永不更新。而方法调用总是会在重渲染时再次执行该方法，当逻辑太过于复杂时，可能会有性能损耗
+**`<style scoped>`**:
 
-使用：
-
-- 接收一个getter函数（和选项式computed一致）作为参数，根据函数的返回值返回一个只读的响应式ref，该ref会自动解包，加不加.value都不紧要
-- 接收一个具有set和get函数的对象（和选项式computed类似）作为参数，用于创建一个可读写的ref
-- 在使用时，修改或获取computed值，和ref变量类似，都是xxx.value的形式
-- 在computed中使用props的变量，也需要使用xxx.value形式引用，不然要报错
-
-注意：
-
-- getter函数不应该有副作用：计算属性声明中描述的是如何根据其他值派生一个值，即getter函数内部只做计算和返回计算后的内容。不要在getter中做异步请求或更改dom，这些操作应使用watch
-- 避免直接修改计算属性的值：应该视为只读的，即只更新它所依赖的原状态触发计算属性的更新。故而谨慎使用set/get的对象作为参数。
+- 处理方式：通过postcss将样式转为带属性选择器的样式，即元素上添加了自定义属性data-xxx，样式上也添加了同样的属性选择器data-xxx
+- 父组件的样式不会泄露到子组件当中，但是子组件根节点的样式会由子组件和父组件共同作用（和vue2一样，但通过v-html创建的内容不会被影响，不过也能通过deep伪类设置样式）
+- 若想父组件影响子组件样式，可以使用`:deep(选择器)`函数伪类，比如`div :deep(.child) {}`
+- 若想修改插槽内的样式（使用该组件时传过来的插槽内容，是由使用该组件的地方控制样式的，非该组件本身能控制），故而可以通过`:slotted(选择器)`伪类实现
+- 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global(选择器)`伪类实现
+- 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
+- 小心递归组件中的后代选择器，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
 
 ::: code-group
 
-```typescript [基础用法]
-import { computed, reactive } from 'vue'
+```typescript [deep()函数]
+<style scoped>
+.a :deep(.b) {
+  // xxx
+}
 
-const books = reactive(['科幻', '计算机', '文学'])
-
-// 只读的getter函数作为参数（推荐）
-const getValByBooksLength = computed(() => {
-  return books.length > 3 ? '展示复杂分类' : '展示简单分类'
-})
-
-// 一个含set/get的对象作为参数
-const setAndGetValByBooksLength = computed({
-  get () {
-    return books.length > 3 ? '展示复杂分类' : '展示简单分类'
-  },
-  set (newVal) {
-    if (newVal.includes('复杂')) {
-      // 此处不能这样写，视图不刷新，同时报错不能分配给常量，因为books是const
-      books = [1, 2, 3]
-      // 改为
-      // 第一种方式：reactive变量改成ref，然后使用.value的形式修改
-      // 第二种方式：reactive变量使用对象的形式，然后用obj.xxx的形式修改
-      // 第三种方式：使用不改变原来引用的方式，比如数组的push等
-      books.splice(0, books.length, ...[1, 2, 3])
-    } else {
-      books.splice(0, books.length, ...[1])
-    }
-  }
-})
+// 将会编译为
+.a[data-v-f2fdsadf] .b {
+  // xxx
+}
+</style>
 ```
 
-```vue [typescript类型定义]
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+```typescript [插槽选择器]
+<style scoped>
+// 插槽中div会变成红色
+:slotted(div) {
+  color: red;
+}
+</style>
+```
 
-const count = ref(0)
-
-// 自动推导：ComputedRef<number>
-const double = computed(() => count.value * 2)
-
-// 泛型参数：
-const double = computed<number>(() => count.value * 2)
-</script>
+```typescript [全局选择器]
+<style scoped>
+// 所有的div都将变成红色
+:global(div) {
+  color: red;
+}
+</style>
 ```
 
 :::
 
-**setup中的生命周期钩子**：这些hooks接受一个回调函数，当钩子被组件调用时，回调函数将被执行
+**`<style module>`**：
 
-- vue3中，在setup内使用生命周期钩子，需要先进行导入才能够使用
+- 仅作用于当前组件
+- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方（比如在template中）通过类似$style.red的方式访问样式
+- 可以给module定义一个值`<style module="classes">`，这样就能将$style替换成这个值了`classes.red`
+- 若想在setup选项或`<script setup>`中使用注入的类，需要使用函数`useCssModule()`或者是`useCssModule('classes')`
+- 若样式模块想用到script内部导出的变量（data中的，或者setup导出的），可以使用`v-bind`函数绑定
+
+```typescript
+<template>
+  <p :class="$style.red"></p>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      bgColor: 'blue'
+    }
+  }
+}
+</script>
+
+<script setup>
+const border = {
+  color: 'green'
+}
+</script>
+
+<style module>
+.red {
+  color: red;
+  // 使用动态变量
+  background-color: v-bind(bgColor);
+  // 对于JavaScript表达式，需要用引号包裹
+  border-color: v-bind('border.color');
+}
+</style>
+```
+
+## 生命周期钩子
+
+组合式API的生命周期钩子(`setup选项`、`<script setup>`)是在选项式API的基础上加了前缀on（使用驼峰命名），例如`mounted` => `onMounted`。
+
+使用生命周期钩子，需要先进行导入才能够使用，钩子接受一个回调函数，当钩子被组件调用时，回调函数将被执行。
+
+选项式api和组合式api的生命周期钩子对应关系：
 
 | 选项式 API | Hook inside `setup` |
 | --- | --- |
@@ -1132,92 +1125,16 @@ onMounted(() => {
 
 使用：`onRenderTriggered(({effect,target, type, key, newValue, oldValue,oldTarget}) => {})`
 
-### setup返回值
+## 选项式API
 
-**setup返回一个渲染函数**：
+选项式api实例方法，也可在`<template>`中使用：
 
-- 只有setup选项可以返回渲染函数，`script setup`语法糖不能使用render
-- 用法：返回一个`return () => h()`或返回多个`return () => [h(), h()]`
-- 若返回渲染函数，则不能返回其他的属性对象，若想将这些属性暴露给外部（比如通过父组件的ref）访问，可以使用expose
+- $data, $options, $refs
+- $el, $parent, $root
+- $props, $slots,  $attrs, $emit()
+- $watch(),$forceUpdted(), $nextTick()
 
-```typescript
-import { h, ref, reactive } from 'vue'
-import Hello from './hello.vue'
-export default {
-  componentns: { Hello },
-  setup (props, { expose }) {
-    function changeCount () {
-      count.value++
-    }
-    const count = ref(0)
-    const list = reactive([
-      { id: 1, text: 'hhh' },
-      { id: 2, text: '特色菜' }
-    ])
-
-    // 若想在外部访问这个组件的其他属性，由于setup返回了渲染函数，此时这些属性必须通过expose暴露给外部
-    expose({
-      changeCount
-    })
-
-    return () => [
-      // 设置div的class
-      h('div', { className: 'count-wrapper count-wrapper-highlight' }, count.value),
-      // 绑定事件
-      h('button', { onClick: changeCount }, '按钮')
-      // 循环渲染
-      h('ul', list.map(item => {
-        return h('li', item.text)
-      })),
-      // 渲染导入组件
-      h(Hello)
-    ]
-  }
-}
-```
-
-### defineComponent
-
-定义：
-
-- 用于typescript的类型推导，简化很多编写过程中的类型定义（vue中固有的类型，自定义的类型除外），这样就可以专注于具体业务，而不用书写繁琐的类型定义了
-
-```typescript
-// 例如在script标签内，不使用defineComponent
-import { Slots } from 'vue'
-interface Data {
-  [key: string]: unknown;
-}
-interface ContextType {
-  attrs: Data,
-  slots: Slots,
-  emit: (event: string, ...args: unknown[]) => void
-}
-export default {
-  setup (props: PropsType, context: ContextType): Data {
-    return {
-      // xxx
-    }
-  }
-}
-
-// 使用defineComponent
-import { defineComponent } from 'vue'
-export default defineComponent {
-  setup (props, context) {
-    return {
-      // xxx
-    }
-  }
-}
-
-```
-
-## 选项式api
-
-选项式api实例方法：$data, $props, $el, $options, $parent, $root, $slots, $refs, $attrs, $watch(),$emit(), $forceUpdted(), $nextTick()
-
-选项式api组件实例：
+::: details 选项式api组件实例
 
 ```vue
 <script>
@@ -1297,6 +1214,8 @@ export default {
 </script>
 ```
 
+:::
+
 ## 组合式API
 
 定义：
@@ -1310,9 +1229,7 @@ export default {
 - 更好的类型推导：支持ts
 - 更小的生产包体积
 
-### 创建应用实例
-
-使用到的api：
+应用级api：
 
 - createApp：创建应用实例app的方法
 - app.mount：将app挂载到容器元素中
@@ -1322,6 +1239,8 @@ export default {
 - app.config.globalProperties：注册能够被应用内所有组件实例访问到的全局属性的对象
 - app.unmount：卸载一个应用，将触发应用组件树所有组件的卸载生命周期钩子
 - app.runWithContext(cb)：立即执行回调函数cb
+
+::: details 创建应用实例
 
 ```typescript
 import { createApp, inject } from 'vue'
@@ -1508,7 +1427,11 @@ const instance = getCurrnetInstance()
 console.log(instance.proxy.$axios)
 ```
 
-### 其他通用api
+:::
+
+**其他通用api**：
+
+::: details 其他api例子
 
 ```typescript
 import { version, nextTick, defineComponent, defineAsyncComponent, defineCustomElement } from 'vue'
@@ -1550,6 +1473,8 @@ const Bar = defineComponent(<T extends string | number>(props: { msg: T; list: T
 // 由于该函数是一个函数调用，为了让某些构建工具（比如webpack，而vite不需要）不产生副作用而能被tree-shake，可以添加注释
 export default /*#__PURE__*/ defineComponent(/* ... */)
 ```
+
+:::
 
 ## 组合式函数
 
@@ -2198,7 +2123,8 @@ const person = reactive({
 ```
 
 ### v-bind
-#### 基础知识
+
+**基础知识**:
 
 - class和style都是attribute，可以和其他普通attribute一样使用v-bind将它们和字符串进行绑定。在复杂的逻辑时，vue为它们提供了特殊的功能增强（对象和数组形式）
 - 若某组件只有一个根元素，当使用该组件时携带了class，将会合并到组件内部的根元素上
@@ -2206,7 +2132,7 @@ const person = reactive({
 - 动态绑定多个值：通过不带参数的v-bind，可以将包含多个attribute的对象绑定到单个元素上，比如`<div v-bind="{id: 'jou', class: 'jade'}"></div>`，和`<div id="jou" class="jade"></div>`寓意相同
 - v-bind合并行为： 若同时定义了`v-bind="{ id: red }" id="blue"`这两个相同的不同表示法，声明的顺序决定了最后渲染谁，上面的由于id在后，所以渲染为`id="blue"`，替换下顺序，就渲染成不同的内容
 
-#### class类绑定
+**class类绑定**:
 
 ```vue
 <template>
@@ -2251,7 +2177,7 @@ const classObject = reactive({
 </script>
 ```
 
-#### style样式绑定
+**style样式绑定**:
 
 - 当在`:style`中使用了需要特殊浏览器前缀的css属性时，vue会自动添加前缀
 - 可以对一个样式属性提供多个不同前缀的值，数组仅会渲染浏览器支持的最后一个值，比如`:style="{display: ['-webkit-box', '-ms-flexbox', 'flex']}"`，在支持不需要特殊前缀的浏览器中都会渲染成flex
@@ -2290,7 +2216,7 @@ const styleObject = reactive({
 </script>
 ```
 
-## 特殊attributes
+## 特殊的attributes
 
 **key**：
 
@@ -2657,18 +2583,91 @@ nextTick(() => {
 })
 ```
 
+## computed
+
+定义：
+
+- 用于描述依赖响应式状态的复杂逻辑
+- 会自动追踪响应式依赖，只有它依赖的响应式数据变化时，才会同时更新；反之依赖的响应式数据不变时，或者依赖的是非响应式数据，它永不更新。而方法调用总是会在重渲染时再次执行该方法，当逻辑太过于复杂时，可能会有性能损耗
+
+使用：
+
+- 接收一个getter函数（和选项式computed一致）作为参数，根据函数的返回值返回一个只读的响应式ref，该ref会自动解包，加不加.value都不紧要
+- 接收一个具有set和get函数的对象（和选项式computed类似）作为参数，用于创建一个可读写的ref
+- 在使用时，修改或获取computed值，和ref变量类似，都是xxx.value的形式
+- 在computed中使用props的变量，也需要使用xxx.value形式引用，不然要报错
+
+注意：
+
+- getter函数不应该有副作用：计算属性声明中描述的是如何根据其他值派生一个值，即getter函数内部只做计算和返回计算后的内容。不要在getter中做异步请求或更改dom，这些操作应使用watch
+- 避免直接修改计算属性的值：应该视为只读的，即只更新它所依赖的原状态触发计算属性的更新。故而谨慎使用set/get的对象作为参数。
+
+::: code-group
+
+```typescript [基础用法]
+import { computed, reactive } from 'vue'
+
+const books = reactive(['科幻', '计算机', '文学'])
+
+// 只读的getter函数作为参数（推荐）
+const getValByBooksLength = computed(() => {
+  return books.length > 3 ? '展示复杂分类' : '展示简单分类'
+})
+
+// 一个含set/get的对象作为参数
+const setAndGetValByBooksLength = computed({
+  get () {
+    return books.length > 3 ? '展示复杂分类' : '展示简单分类'
+  },
+  set (newVal) {
+    if (newVal.includes('复杂')) {
+      // 此处不能这样写，视图不刷新，同时报错不能分配给常量，因为books是const
+      books = [1, 2, 3]
+      // 改为
+      // 第一种方式：reactive变量改成ref，然后使用.value的形式修改
+      // 第二种方式：reactive变量使用对象的形式，然后用obj.xxx的形式修改
+      // 第三种方式：使用不改变原来引用的方式，比如数组的push等
+      books.splice(0, books.length, ...[1, 2, 3])
+    } else {
+      books.splice(0, books.length, ...[1])
+    }
+  }
+})
+```
+
+```vue [typescript类型定义]
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+const count = ref(0)
+
+// 自动推导：ComputedRef<number>
+const double = computed(() => count.value * 2)
+
+// 泛型参数：
+const double = computed<number>(() => count.value * 2)
+</script>
+```
+
+:::
+
 ## 数据监听
 
-#### watch
+### watch
 
-语法`watch(source, cb: (value, oldValue, onCleanup) => void, options)`或`watch(source[], cb: (value, oldValue, onCleanup)[] => void, options)`，其中source的值可以是：
+语法：
+
+- `watch(source, cb: (value, oldValue, onCleanup) => void, options)`
+- `watch(source[], cb: (value, oldValue, onCleanup)[] => void, options)`
+
+接收三个参数，依次是：一个想要侦听的响应式引用或getter函数(`source`)、一个回调（响应式引用变化时执行的函数）(`cb`)、一个可选的配置选项对象（例如deep等）(`options`)，其中source的值可以是：
 
 - ref变量
-- getters，即箭头函数、对象的属性值，返回值应当是`.value`的形式
+- getters，即箭头函数，返回`ref.value`、响应式对象的某个属性
 - 响应式对象，比如reactive
 - 前三者的对象组合形式
 
-停止监听：直接调用watch的返回值（是一个函数）就行
+停止监听：调用watch的返回值（是一个函数）
 
 ```typescript
 import { watch } from 'vue'
@@ -2712,7 +2711,7 @@ watch(
 | onTrack | (e) => void |  |  | 在数据源被追踪时调用（开发模式有效） |
 | onTrigger | (e) => void |  |  | 在监听回调被触发时调用（开发模式有效） |
 
-#### watchEffect
+### watchEffect
 
 解释：
 
@@ -2859,7 +2858,21 @@ import { ref } from 'vue'
 let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
 </script>
 
-<!-- 类型3：作用域插槽 -->
+<!-- 类型3：条件插槽 -->
+<template>
+  <div v-if="$slots.header">
+    <slot name="header"></slot>
+  </div>
+  <div v-if="$slots.default">
+    <slot></slot>
+  </div>
+  <div v-if="$slots.footer">
+    <slot name="footer"></slot>
+  </div>
+</template>
+
+
+<!-- 类型4：作用域插槽 -->
 <!-- 定义组件 -->
 <template>
   <div>
@@ -2919,6 +2932,44 @@ let dyncSlot = Date.now() % 2 === 0 ? ref('header') : ref('footer')
 注意：
 
 - 虽然无渲染组件有趣，但大部分能用无渲染组件实现的功能都能通过高效的组合式API实现，而且还不会产生组件嵌套带来的额外开销
+
+## defineComponent
+
+定义：
+
+- 用于typescript的类型推导，在定义 Vue 组件时提供类型推导的辅助函数。
+- 简化很多编写过程中的类型定义（vue中固有的类型，自定义的类型除外），这样就可以专注于具体业务，而不用书写繁琐的类型定义
+
+```typescript
+// 例如在script标签内，不使用defineComponent
+import { Slots } from 'vue'
+interface Data {
+  [key: string]: unknown;
+}
+interface ContextType {
+  attrs: Data,
+  slots: Slots,
+  emit: (event: string, ...args: unknown[]) => void
+}
+export default {
+  setup (props: PropsType, context: ContextType): Data {
+    return {
+      // xxx
+    }
+  }
+}
+
+// 使用defineComponent
+import { defineComponent } from 'vue'
+export default defineComponent {
+  setup (props, context) {
+    return {
+      // xxx
+    }
+  }
+}
+
+```
 
 ## 组件
 
@@ -3219,6 +3270,16 @@ export default {
 const emit = defintEmits(['inFocus', 'submit'])
 
 // 第一步：事件声明，ts语法形式, 3.3以下版本
+// 基于选项：
+const emit = defineEmits({
+  inFocus: (arg1: number, arg2: string) => {
+    // 返回bool值，表示验证通过或失败
+  },
+  submit: (arg1: string) => {
+    // 返回bool值，表示验证通过或失败
+  }
+})
+// 基于类型：
 const emit = defineEmits<{
   (e: 'inFocus', arg1: number): void
   (e: 'submit', arg1: string): void
