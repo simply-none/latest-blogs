@@ -212,6 +212,15 @@ export function sidebarUsageFrame() {
             },
           ],
         },
+        {
+          text: "浏览器插件",
+          items: [
+            {
+              text: "chrome插件开发",
+              link: "/usage-frame/前端综合/浏览器插件/chrome插件开发",
+            },
+          ],
+        },
       ],
     },
     {
