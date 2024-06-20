@@ -10,7 +10,7 @@
 var、let、const比较：
 
 - var声明可以在包含他的函数、模块、命名空间、全局作用域中的任何位置被访问到，可以多次使用var声明同一个变量，属于函数作用域或var作用域
-- let声明：只能在包含他们的块内访问（比如大括号括起的，又比如同一个文件内），声明之前不能被读写（暂时性死区），只能声明一次（又，不能对函数参数使用let重新声明，除非在函数内一个明显的块内（用大括号括起的）），属于词法作用域或块作用域
+- let声明：只能在其定义的块作用域中被访问（比如大括号括起的，又比如同一个文件内），声明之前不能被读写（暂时性死区），只能声明一次（注意函数参数不能在函数顶层使用let重新声明，不过可以在函数内的块作用域内重新声明），属于词法作用域或块作用域
 - const声明：赋值后不能再改变，拥有与let相同的作用域规则
 
 ::: code-group
@@ -139,7 +139,7 @@ import logo from './assets/logo.png'
 
 ### `any`
 
-定义：表示一个当前时刻不清楚类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
+定义：表示一个当前时刻未知类型的变量，可以将任何类型赋值给该类型，可以使用任意类型方法/属性（编译不报错）。
 
 使用：
 
@@ -148,7 +148,7 @@ import logo from './assets/logo.png'
 
 注意：
 
-- 声明且没对变量赋值，若未指定类型，会被识别为 any 类型，但是不能调用该值没有的方法或属性。比如它的类型可能是undefined，故在赋值之前不能调用某些方法，比如toString。
+- 声明且没对变量赋值，若未指定类型，会被识别为隐式的any类型，此时不能调用该值没有的方法或属性。因为它的类型可能是undefined，故在赋值之前不能调用某些方法，比如toString。
 
 ```typescript
 let a;
@@ -282,7 +282,6 @@ const [a, b, ...c] = tuple1
 
 - 枚举类型表示可以有特殊名字的一组值
 - 枚举成员分为常量成员(字面量枚举表达式、对先前枚举成员的引用、带括号的常量枚举表达式、应用于常量枚举表达式的一元运算符`+`, `-`, `~`之一、二进制操作符`+`, `-`, `*`, `/`, `%`, `<<`, `>>`, `>>>`, `&`, `|`, `^`)和计算成员(除常量枚举表达式情形下的其他情形，且值必须是数值，不然报错)
-- 字面量
 - 字面量枚举成员类型：指不带初始值的常量枚举成员、值被初始化为字符串字面量、数字字面量的成员。
 - 当所有枚举成员都有字面量枚举值时，他们就成为了字面量枚举成员类型。而枚举类型也是枚举成员类型的联合类型
 - 常量枚举通过修饰符const定义，只能使用常量枚举表达式（无计算成员等），且会在编译阶段进行删除
@@ -417,7 +416,7 @@ let k: ColorKeyType = 'Red'
 
 使用：
 
-- 用于创造函数 new 创建的对象。比如 `new Boolean()`，是对象类型 `Boolean`，而非某些特定的原始类型 `boolean`
+- 用于创建 new 关键字创建的对象。比如 `new Boolean()`，是对象类型 `Boolean`，而非某些特定的原始类型 `boolean`
 - 不属于基本类型，避免在任何时候用作一个类型
 
 ```typescript
@@ -1680,7 +1679,7 @@ const obj3 = {
 
 ::: code-group
 
-```typescript
+```typescript [值兼容]
 interface Named {
   name: string
 }
@@ -1688,9 +1687,22 @@ let x: Named
 let y = { name: 'alice', location: 'beijing' }
 // x能够兼容y，因为y的结构包含x的结构，对于对象，可以多不能少
 x = y
+
+// 对于对象字面量的赋值，下面写法报错：
+// Object literal may only specify known properties, and 'age' does not exist in type 'Named'.
+let xx: Named = {
+  name: 'jade',
+  age: 23
+}
+// 只能将另一个对象赋值给该对象，就不会报错，例如下面不会报错：
+let xxx = {
+  name: 'jade',
+  age: 23
+}
+let xxxx: Named = xxx
 ```
 
-```typescript
+```typescript [函数参数兼容]
 let x = (a: number) => 0
 let y = (a: number, s: string) => 0
 // 兼容，对于函数参数，可以少不能多
@@ -1699,7 +1711,7 @@ y = x
 x = y
 ```
 
-```typescript
+```typescript [函数返回值兼容]
 let x = (a: number) => ({ name: 'alice' })
 let y = (a: number) => ({ name: 'alice', location: 'beijing' })
 // 兼容，对于返回值，可以多不能少
@@ -1708,7 +1720,7 @@ x = y
 y = x
 ```
 
-```typescript
+```typescript [接口兼容]
 interface Event { timestamp: number }
 interface MouseEvent extends Event { x: number, y: number }
 interface KeyEvent extends Event { keyCode: number }
@@ -1722,7 +1734,7 @@ listenEvent('Mouse', (e: Event) => console.log((e as MouseEvent).x))
 listenEvent('Mouse', ((e: MouseEvent) => console.log(e.x)) as (e: Event) => void)
 ```
 
-```typescript
+```typescript [可选参数兼容]
 // 目标函数
 function invoke(callback: (...args: any[]) => void) { callback() }
 // 源函数有可选参数，不会报错，当未传入时，值为undefined
@@ -1735,7 +1747,7 @@ function invoke(callback: (x: any, y?: any, z?: any) => void) {
 invoke((x, y) => console.log(x + ',' + y))
 ```
 
-```typescript
+```typescript [泛型兼容]
 // 泛型参数对泛型兼容性的影响1
 interface Empty<T> {
   name: string
