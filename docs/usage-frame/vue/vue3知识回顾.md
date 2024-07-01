@@ -183,8 +183,7 @@ let childRef = ref<ElImageCtx | null>(null)
 ref解包（即不需要使用.value进行访问）：
 
 - 定义：当ref变量直接作为setup函数返回对象（注：非setup环境，而在setup环境中，作为一个顶级变量时）的第一级属性时，在模板template中访问会自动浅层次解包它内部的值，即可不带.value直接访问到；
--
-- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了；或者是直接解构该对象，得到一个顶层的响应式对象；仅包含一个文本插值（用`{{}}`表示）而无相关运算时（比如`pureObj.refValue`）也会被自动解包，相当于`pureObj.refValue.value`
+- 在访问非第一级ref属性时需要加上.value，若不想访问实际的对象实例（即通过.value的形式访问，可以将这个ref属性变量用reactive包裹起来，后续就能够直接访问（不需加.value）了；或者是直接解构该对象，得到一个顶层的响应式对象；模板中双大括号内仅包含一个文本插值而无相关运算时（比如`pureObj.refValue`）也会被自动解包，相当于`pureObj.refValue.value`
 - 若ref变量作为响应式对象reactive的属性，当他被访问或被修改后，会自动解包他的内部值（即不需要通过.value的形式访问）。同时ref变量和响应式对象reactive的属性是互相影响的（引用地址相同），当属性重新赋值之后，他们就互不相关了（修改不会影响对方）。只有当嵌套在深层响应式对象内才会进行解包，在浅层响应式对象shallowXxx中不会。
 - ref解包仅发生在响应式对象reactive（类型为普通Object对象）嵌套（ref作为属性）的时候，当ref变量作为其他原生集合类型Map或Array的属性或元素时，不会进行解包，这时仍然要通过.value进行访问
 
@@ -669,7 +668,7 @@ scope.stop()
 基本语法：
 
 - 被`<script setup>`包裹的代码会被编译成组件中setup()函数的内容，意味着他会在每次组件实例被创建的时候执行（和created类似，每引用一次该组件，就执行一次），而普通的script只在组件首次引入时执行一次
-- 里面声明的顶层的`变量`、`函数声明`，以及`import导入的内容`，都能在模板template中直接使用，不需通过methods暴露它（函数， import导入的函数），不需通过新建变量暴露（变量，import导入的变量），不需要在compoments引入（import导入的组件）
+- 里面声明的顶层的`变量`、`函数声明`，以及`import导入的内容`，都能在模板template中直接使用，不需通过methods暴露它（函数， import导入的函数），不需在data等处新建变量暴露（变量，import导入的变量），不需要在components引入（import导入的组件）
 - 通过import导入的组件，为了保持一致性，建议在template中使用驼峰式命名，而不是短横线命名，这也有助于区分原生的自定义元素
 - 当import导入的组件用在动态组件component中时，其is属性的值就是这个导入的组件的名字`:is="comName"`
 - 单文件组件可以通过它的文件名被自己引用，这种方式相比于import导入的组件优先级更低
@@ -794,9 +793,8 @@ defineProps<{
 
 注意：
 
-- setup中this不是该活跃实例的引用，因为setup是在其他选项之前被调用的，所以内部的this行为和其他选项中的this不同
-- setup中避免使用this，他不会找到组件实现（因为在创建之前执行的）
-- setup的调用发生在data、computed、methods被解析之前，所以他们都无法在setup中被获取
+- setup中避免使用this，因为setup在组件创建之前执行，此时还没有组件的实现，故而此处的this并非指的是组件的实例
+- setup的调用发生在data、computed、methods被解析之前，所以无法在setup中获取这些选项
 
 **setup函数参数**：
 
@@ -899,9 +897,9 @@ export default {
 - 处理方式：通过postcss将样式转为带属性选择器的样式，即元素上添加了自定义属性data-xxx，样式上也添加了同样的属性选择器data-xxx
 - 父组件的样式不会泄露到子组件当中，但是子组件根节点的样式会由子组件和父组件共同作用（和vue2一样，但通过v-html创建的内容不会被影响，不过也能通过deep伪类设置样式）
 - 若想父组件影响子组件样式，可以使用`:deep(选择器)`函数伪类，比如`div :deep(.child) {}`
-- 若想修改插槽内的样式（使用该组件时传过来的插槽内容，是由使用该组件的地方控制样式的，非该组件本身能控制），故而可以通过`:slotted(选择器)`伪类实现
-- 若想将某样式应用到全局所有符合规则的条件，也可以使用`:global(选择器)`伪类实现
-- 在这种条件下，应该尽量使用class或者id渲染样式，避免性能损失
+- 若想修改插槽内的样式（使用该组件时，传过来的插槽内容样式是由使用该组件的地方控制的，非该组件本身能控制），此时可以通过`:slotted(选择器)`伪类实现
+- 若想将某样式在整个应用全局都生效，可以使用`:global(选择器)`伪类实现
+- 该条件下，应该尽量使用class或者id渲染样式，避免造成性能损失
 - 小心递归组件中的后代选择器，对于一个使用了 .a .b 选择器的样式规则来说，如果匹配到 .a 的元素包含了一个递归的子组件，那么所有的在那个子组件中的 .b 都会匹配到这条样式规则。
 
 ::: code-group
@@ -942,8 +940,8 @@ export default {
 **`<style module>`**：
 
 - 仅作用于当前组件
-- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方（比如在template中）通过类似$style.red的方式访问样式
-- 可以给module定义一个值`<style module="classes">`，这样就能将$style替换成这个值了`classes.red`
+- 该标签会被编译为css module，并将生成的css类作为$style对象的键暴露给组件，即可在其他地方（比如在template中）通过类似`$style.red`的方式访问样式
+- 可以给module定义一个值`<style module="classes">`，这样就能将`$style.red`替换成`classes.red`
 - 若想在setup选项或`<script setup>`中使用注入的类，需要使用函数`useCssModule()`或者是`useCssModule('classes')`
 - 若样式模块想用到script内部导出的变量（data中的，或者setup导出的），可以使用`v-bind`函数绑定
 
@@ -1181,14 +1179,6 @@ export default {
       immediate: true
     },
     'height.h': function (val, old) {},
-    arr: [
-      size,
-      function handle (val, old) {},
-      {
-        handler (val, old) {},
-        deep: true
-      }
-    ]
   },
   data () {
     return {
@@ -2704,10 +2694,10 @@ watch(
 监听选项options：
 
 | 选项 | 类型 | 默认值 | 可选值 | 作用 |
-| --- | --- | --- | --- | --- |---|
-| deep | boolean | false | true | false | 是否进行深度监听 |
-| immediate | boolean | false | true | false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化就执行 |
-| flush | string | 'pre' | 'pre' | 'post' | 'sync' | 控制监听回调的调用时机，其中post可以访问更新后的dom，或使用`watchPostEffect`函数 |
+| --- | --- | --- | --- | --- |
+| deep | boolean | false | true, false | 是否进行深度监听 |
+| immediate | boolean | false | true, false | 是否立即执行监听回调，即是否初始化，首次不需监听值发生变化就执行 |
+| flush | string | 'pre' | 'pre', 'post', 'sync' | 控制监听回调的调用时机，其中post可以访问更新后的dom，或使用`watchPostEffect`函数 |
 | onTrack | (e) => void |  |  | 在数据源被追踪时调用（开发模式有效） |
 | onTrigger | (e) => void |  |  | 在监听回调被触发时调用（开发模式有效） |
 
