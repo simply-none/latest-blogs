@@ -5,6 +5,16 @@ outline: [1, 2]
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.2.4](https://github.com/simply-none/latest-blogs/compare/v0.2.3...v0.2.4) (2024-07-01)
+
+### Docs
+
+* 2024-07-01 17:18:02  修订vue3文档 ([fa03a01](https://github.com/simply-none/latest-blogs/commit/fa03a01bc1e5751a7b65fdbe80d1fd623590a80c))
+* 2024-06-20 16:29:55  修订typescript文档 ([dc6eadb](https://github.com/simply-none/latest-blogs/commit/dc6eadbd1abe824e095ddb6dc249201be62d90dc))
+* 2024-06-13 10:10:14  新增chrome查看开发文档 ([ded92d2](https://github.com/simply-none/latest-blogs/commit/ded92d2814cdc8889974ed808abd89dad461d1ce))
+* 2024-06-05 17:00:15  调整vue3文档结构，并将文档名改为vue3知识回顾 ([632c66a](https://github.com/simply-none/latest-blogs/commit/632c66a9406b1e1a153eb37e2ccf0b29caa6e69c))
+* 2024-06-04 16:17:13  修订git操作 ([1643ca8](https://github.com/simply-none/latest-blogs/commit/1643ca885ed5b1426d84df9ca2f96cbcdc298d70))
+
 ## [0.2.3](https://github.com/simply-none/latest-blogs/compare/v0.2.2...v0.2.3) (2024-06-03)
 
 ### Features
