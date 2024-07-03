@@ -779,7 +779,7 @@ let abc: ABC = {
     }
 };
 
-// 🔴若接口交叉时，属性相同，属性类型不相同【📗注】
+// 🔴若接口交叉时，属性相同，属性类型不相同【📗注】🔴🔴🔴
 // 属性的类型为原始类型
 interface X {
   a: string;
@@ -794,7 +794,7 @@ type XY = X & Y;
 // XY：never
 let xy: XY = 1 as never
 
-// 属性的类型包含对象类型
+// 属性的类型包含对象类型🔴🔴🔴
 interface XX {
   a: {
     c: number;
@@ -1168,7 +1168,7 @@ type Record<K extends keyof any, T> = {
 2. `Required<Type>`：表必须，构造一个所有属性均必填的类型Type
 3. `Readonly<Type>`：表只读，构造一个所有属性均为只读的类型Type
 4. `Record<Keys, Type>`：构造一个类型，他的属性名为联合类型Keys（一般是字符串字面量类型的联合，其中类型string也可看做所有字符串的联合类型）的因子类型K（`keyof Keys`），属性值的类型为Type
-5. `Pick<Type, Keys>`：表挑选，从类型Type中挑选只存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
+5. `Pick<Type, Keys>`：表挑选，从类型Type中挑选只存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型🔴🔴🔴
 6. `Omit<Type, keys>`：表剔除，从类型Type(一般是对象接口类型)中剔除存在于联合类型Keys（一般是字符串字面量类型的联合）的属性名，构造一个新的类型
 7. `Exclude<Type, ExcludedUnion>`：表排斥，从联合类型Type中剔除能够赋值给联合类型ExcludedUnion的因子类型T后，构造一个新的类型
 8. `Extract<Type, Union>`：表提取，从联合类型Type中提取能够赋值给联合类型Union的因子类型T，构造一个新的类型
@@ -1422,8 +1422,8 @@ type C = Awaited<boolean | Promise<number>>
 
 定义：`typeof valueAlias`
 
-- 获取右侧标识符（变量或属性值）的类型
-- 对于获取有些表达式、函数调用、类型的类型会报错，即不能使用typeof XXX的形式
+- 获取右侧标识符（变量或属性值）的类型，右侧不能是类型
+- 对于获取有些表达式、函数调用的类型会报错，即不能使用typeof XXX的形式
 
 语法：
 
@@ -1477,7 +1477,18 @@ type M = keyof Mapish;
 
 - 用在索引签名中：`{ [Key in StrUnion]: string }`, `{ [Key in keyof Obj]: string}`
 - 用在类型守卫中（函数内部），之后就能够使用对应的方法和属性了：`if ('age' in Person) { console.log(Person.age)}`
-- 用在类型守卫中（函数返回值类型）：`function isFish(pet: Fish | Bird): pet is Fish { return (pet as Fish).swim !== undefind }`
+
+**is**：
+
+用法：
+
+- 用在类型守卫中（函数返回值类型）
+
+```typescript
+function isFish(pet: Fish | Bird): pet is Fish { 
+  return (pet as Fish).swim !== undefind 
+}
+```
 
 **infer**：
 
@@ -1860,7 +1871,10 @@ type Tree<T> = {
 }
 // 与交叉类型使用，LinkedList是一个具有无限嵌套属性next的类对象结构
 type LinkedList<T> = T & { next: LinkedList<T> }
-// 🈲，类型别名不能直接出现在右侧（官方web演练场未报错， v4.7.4）
+// 🈲，类型别名出现在右侧不能造成无限循环
+// 错误
+type A = A
+// 正确
 type Yikes = Array<Yikes>
 ```
 
