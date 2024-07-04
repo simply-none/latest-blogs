@@ -1431,7 +1431,18 @@ console.log(version)
 
 // ✅nextTick：等待下一次dom刷新时调用，能够访问更新后的dom
 // 可以传递一个回调函数做参数，或者return await promise
+// 使用await形式
+// nexttick之前代码（此时DOM未更新）
+// ......
 await nextTick()
+// nexttick之后的代码（此时DOM已经更新，可以获取到新的dom）
+// ......
+
+// 和vue2一样的方式
+nextTick(() => {
+  // 获取更新后的dom
+  // ......
+})
 // 下面就能够访问更新的dom了
 console.log(doucment.getElementById('app')).innerText
 
@@ -2551,28 +2562,6 @@ export default {
 }
 ```
 
-### nextTick用法
-
-更改响应式状态对象后，DOM不会立即更新，而是等到更新周期的下个时机时，将所有状态的更改一次进行更新。
-
-若要访问更新后的状态，可以调用nextTick函数后进行获取。
-
-```typescript
-import { nextTick } from 'vue'
-// 使用await形式
-// nexttick之前代码（此时DOM未更新）
-// ......
-await nextTick()
-// nexttick之后的代码（此时DOM已经更新，可以获取到新的dom）
-// ......
-
-// 和vue2一样的方式
-nextTick(() => {
-  // 获取更新后的dom
-  // ......
-})
-```
-
 ## computed
 
 定义：
@@ -3343,7 +3332,7 @@ function handleClick (arg) {
 
 :::
 
-### props
+## props
 
 定义：
 
@@ -3525,7 +3514,7 @@ defineProps({
 - 若props的类型是Boolean，则传递无值的prop（比如`<a disabled/>`），默认为true，不传递则为false
 - 若props的类型包括Boolean、Number、String中的多个类型，当String在前面时，则传递无值的prop，默认为`''`，其他情况为true
 
-### 属性透传
+## 属性透传
 
 透传属性`$attrs`：即没有在子组件props中声明的属性（v-bind，包括class、style），以及尚未被定义在emits/defineEmits上的监听事件（v-on）
 
@@ -3658,7 +3647,7 @@ const MyDirective = {
   // vnode：绑定元素的底层VNODE
   // prevNode：之前渲染中指令绑定的元素vnode，仅在beforeUpdate和updated可用
   // 在绑定元素的attribute前或事件监听器应用前调用
-  created (el, binding, vnode, preVnode) {}
+  created (el, binding, vnode, preVnode) {},
   // 元素插入到dom前调用
   beforeMount () {},
   // 在绑定元素的父组件，及元素的所有子节点都挂载完成后调用
@@ -3694,7 +3683,7 @@ const vName = (el, binding) => {
 
 定义：即多根组件，此时需要明确传入的内容（比如`$attrs`）定义在哪个节点上
 
-```typescript
+```vue
 <!-- Layout.vue -->
 <template>
   <header>...</header>
