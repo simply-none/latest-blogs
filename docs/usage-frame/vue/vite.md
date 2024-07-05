@@ -283,6 +283,13 @@ degit anncwb/vue-vben-admin project-name
 - 较小的资源（小于`assetsInlineLimit`选项配置的）会被内联为base64
 - git lfs占位符会自动排除在内联之外，因为他们不包含他们所表示的文件的内容，要获得内联，需确保在构建之前通过git lfs下载文件内容
 - 默认typescript不会将静态资源导入视为有效的模块，解决这个问题，需添加`vite/client`
+- 通过 url() 内联 SVG，当在 JS 中手动构造 url() 并传入一个 SVG 的 URL 时，应该用双引号将变量包裹起来。
+
+```typescript
+// 通过 url() 内联 SVG
+import imgUrl from './img.svg'
+document.getElementById('hero-img').style.background = `url("${imgUrl}")`
+```
 
 **public目录**：
 
@@ -299,8 +306,15 @@ degit anncwb/vue-vben-admin project-name
 
 - `import.meta.url`是esm原生功能，会暴露当前模块的url，和原生url构造器`new URL`一起使用，可得到一个完整解析的静态资源url，比如`const imgurl = new URL('./img.png', import.meta.url).href`，这能在现代浏览器中直接使用，不需vite处理
 - 还支持动态url，通过模板字符串引入动态变量路径
-- 不支持完全的变量名作为路径，出上面的模板字符串外，必须是静态字符串
+- 不支持完全的变量名作为路径，除上面的模板字符串外，必须是静态字符串
 - 无法在ssr中使用
+
+```typescript
+// 模板字符串动态url
+function getImageUrl (name) {
+  return new URL(`./dir/${name}.png`, import.meta.url).href
+}
+```
 
 ## 使用插件
 

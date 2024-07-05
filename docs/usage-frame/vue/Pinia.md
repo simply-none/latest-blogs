@@ -660,7 +660,7 @@ export const useStore = defineStore('user', {
   // 第一种，默认保存
   persist: true,
   // 第二种，选择性保存
-  perist: {
+  persist: {
     paths: ['name', 'info.des']
   }
 })

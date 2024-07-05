@@ -85,7 +85,7 @@ export default defineNuxtConfig({
       '/**': { isr: true }
     }
   },
-  $development: {}
+  $development: {},
 
   // 导出全局可用的环境变量，给server-side和client-side使用；
   // 在构建后需要指定的变量（比如私有token）
