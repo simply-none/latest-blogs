@@ -4,6 +4,14 @@
 
 > 参考：https://juejin.cn/post/7055101823442485255
 
+标识符：
+
+- `@`：内置规则
+- `$`：变量
+- `#{}`：插值表达式（字符串内嵌变量）
+
+::: details 语法详情
+
 ```SCSS
 // 命令行scss -> css
 npm install -g sass
@@ -127,7 +135,15 @@ $count: 1;
 
 ```
 
-## less知识点
+:::
+
+## less
+
+概要：
+
+- `@`：变量/函数
+
+::: details 语法详情
 
 ```less
 // 命令行less -> css
@@ -221,11 +237,16 @@ div {
 };
 ```
 
+:::
+
 ## stylus
 
 特性：
+
 - 冒号、分号、逗号、括号可有可无
 - 语法可和css一样
+
+::: details 语法详情
 
 ```stylus
 // 导入
@@ -355,18 +376,21 @@ body
       font font
 ```
 
+:::
+
 ## postcss
 
 > 参考：https://github.com/postcss/postcss/blob/main/docs/README-cn.md
 
 定义：
+
 - 是一个允许使用js插件转换样式的工具
 - 这些插件可以检查lint项目的css，支持编译尚未被浏览器广泛支持的css语法
 - 利用自身的parser将css代码解析为AST抽象语法树，最终输出改写后的css
 
 ::: code-group
 
-```vue [移动端适配vue3+vite]
+```javascript [移动端适配vue3+vite]
 // 对不同机型的宽高进行适配
 // 将px转为rem
 npm install postcss-pxtorem

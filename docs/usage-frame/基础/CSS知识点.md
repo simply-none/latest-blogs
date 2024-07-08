@@ -7,6 +7,7 @@
 用法：calc(expression)
 
 注意：
+
 1. calc函数可进行加、减、乘、除运算
 2. 针对的表达式因子包括：length、angle（角度）、time、percentage、number
    1. length: width、margin、padding、font-size、border-width、text-shadow
@@ -174,7 +175,7 @@ grid容器由网格线（水平：row，垂直：column）和网格组成
       |"a b b"
        "a c d"  /** 两行三列 */
       | "a . c"
-        "d . f"  /** 两行三列，空白区域使用.表示 */
+        "d . f";  /** 两行三列，空白区域使用.表示 */
    
    /* 定义行列分区：grid-template === grid-template-columns + grid-template-rows + grid-template-areas */
    grid-template: none;
@@ -237,6 +238,7 @@ grid容器由网格线（水平：row，垂直：column）和网格组成
 场景：菜单项从上到下、从左到右自适应布局，且每列之间可加一个分割线。
 
 多列布局属性：
+
 - column-count：指定内容的列数
 - column-width：指定理想的列宽，列数由浏览器决定，通常为(`Math.floor(totalWidth / columnWidth)`)
 - column-rule：`column-rule-width column-rule-style column-rule-color`的简写，类似border属性
@@ -244,6 +246,7 @@ grid容器由网格线（水平：row，垂直：column）和网格组成
 - column-span：让column多列布局内部的某个元素跨越所有的列，值为all
 
 注意：
+
 - 在使用多列布局时，其内容无法定位，也无法为单个列指定样式，所有列都将保持相同的大小。但可通过column-*相关的属性定义对应的规则
 - 使用多列布局时，应当给包裹菜单项的父元素设置最大高度
 
@@ -255,6 +258,7 @@ grid容器由网格线（水平：row，垂直：column）和网格组成
 > https://juejin.cn/post/6953145161895378951    
 
 position属性：
+
 - static：元素在文档常规流中当前的布局位置，是元素使用的正常布局行为，默认值
 - relative：元素相对自身位置进行定位
 - absolute：元素被移出正常文档流，通过指定元素相当于**最近的非static定位祖先元素**的偏移去确定元素的位置
@@ -262,6 +266,7 @@ position属性：
 - sticky：粘性布局，根据正常文档流定位，相对它的最近滚动祖先和最近块级祖先，基于top、right、bottom、left的值进行偏移，然后固定在离他最近的一个拥有滚动机制的祖先元素上
 
 注意：
+
 - sticky的约束：
   - sticky最初处于正常文档流位置，然后慢慢的随着滚动而移动，直到移动到其定位后的位置（根据top、right、left、bottom确定）后进行固定，类似于先相对relative，后固定fixed。然后当粘性元素的父元素慢慢远离屏幕可视区域时，它的活动就由固定fixed，变成相对relative（因为父元素的视口可见高度不足以显示其定位高度了），然后随着父元素完全消失在视口，其也消失在视口区域
   - 当最近祖先元素的overflow属性为auto、scroll、overlay时，必须指定其高度，否则粘性布局失效
@@ -315,9 +320,7 @@ dd + dd {
 </style>
 ```
 
-
 :::
-
 
 ## 媒体查询
 
@@ -328,17 +331,20 @@ dd + dd {
 定义：
 
 媒体类型：
+
 - all：适用于所有设备，默认值
 - print：适用于在打印预览模式下在屏幕上查看的分页材料和文档
 - screen：适用于屏幕设备
 - speech：适用于语音合成器
 
 媒体特性：媒体类型的具体特征，有：
+
 - height、max-height
 - width、max-width
 - ...
 
 逻辑操作符：用于联合类型、特性构造复杂的媒体查询，有：
+
 - and：当前后规则都为真时，才生效
 - `,`或or：有一条规则为真时，就生效
 - only：仅在所有规则都为真时，才生效
@@ -360,7 +366,7 @@ dd + dd {
    div {}
 }
 
-/* not：注意，not应该应用在一条完整的规则之上，即通过,或or分割，但是包含and */
+/* not：注意，not应该应用在一条完整的规则之上，即通过 `,` 或 `or` 分割，但是包含 `and` */
 /* 正确的表示 */
 @media not all and (monochrome), print {
    div {}
@@ -500,6 +506,7 @@ div {
 ### css文字纵向排列
 
 `writing-mode`：定义了文本在水平、垂直方向上的排列方式，有以下值：
+
 - horizontal-tb：正常文本格式，水平方向，内容从左往右（左对齐，右对齐相反，horizontal），从上往下（top-bottom）
 - vertical-lr：垂直方向，内容从上往下（vertical），从左往右（left-right）
 - vertical-rl：垂直方向，内容从上往下（vertical），从右往左（right-left）
