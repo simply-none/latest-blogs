@@ -53,6 +53,7 @@ function CountLabel ({ count }) {
    const [prevCount, setPrevCount] = useState(count)
    const [trend, setTrend] = useState(null)
 
+   // 初始化之后，后续因props造成的改动，需要通过调用设置函数对值进行更新
    // 注意，在顶层作用域中，必须根据条件修改，否则一直重渲染导致报错
    if (preCount !== count) {
       setPrevCount(count)
@@ -86,7 +87,7 @@ function CountLabel ({ count }) {
 2. dependencies?: setup 内部引用的所有响应式值的列表（props、state、所有直接在组件内部声明的变量和函数）
    - 依赖项列表的元素数量必须固定
    - 使用 Object.is 比较依赖项和其先前的值
-   - 省略参数，则在重渲染后，重新运行 effect（setup）
+   - 省略参数，在组件发生重渲染后，将会重新运行 effect（setup）
    - 若effect内部代码不使用任意响应式值，则依赖项列表为空数组，此时组件的props、state变更时，该 effect 不会重新运行
 3. setup 的返回值`cleanup`的作用：与 setup 逻辑对称，用于停止/撤销 setup 做的事情
 
@@ -134,7 +135,7 @@ function Page({ url, shoppingCart }) {
 
 ### useMemo
 
-作用：缓存计算的结果m（通常缓存变量，虽然说可以缓存函数和JSX节点），在组件重渲染时，若依赖项没有发生变化，则直接返回缓存的m，不重新进行计算
+作用：缓存计算的结果m（通常缓存变量，虽然说可以缓存函数和JSX节点），在组件重渲染时，若依赖项没有发生变化，不会重新进行值的计算（即通过calculateValue获取值），而是直接返回之前缓存的m。（相当于vue的computed）
 
 定义：`const m = useMemo(calculateValue, dependencies)`
 
@@ -278,7 +279,7 @@ const Report = memo(function Report({ item }) {
 
 注意：
 
-- 组件是的useContext的调用仅仅受包裹了对应的SomeContext.Provider的上级组件的影响，而非调用了SomeContext的上级组件的
+- 组件里useContext的调用结果仅仅受 包裹了 对应的SomeContext.Provider的上级组件影响，而非调用了SomeContext的上级组件
 - 🔴在provider接收到不同的value开始，会重渲染使用了该特定context的所有子级，可使用memo（包裹子组件）或使用useCallback/useMemo包裹value以跳过重渲染（但是context的值还是传过去了，只是不会导致组件重新渲染）
 - 当组件重新渲染时，如果provider的value属性值是对象和函数（引用对象，渲染后和之前不是同一个内存地址），则还会重新渲染所有调用对应的useContext的组件，此时可以使用useCallback包裹函数，使用useMemo包裹对象，以此来进行性能优化，至此当组件重渲染时，调用对应的useContext的组件不会发生重渲染，除非包裹的对象和函数依赖的值发生变化了
 - 可以将provider封装成组件使用
@@ -590,6 +591,91 @@ function CatFriends(){
 
             ))}
          </ul>
+      </>
+   )
+}
+```
+
+:::
+
+### useImperativeHandle
+
+作用：暴露子组件的方法给父组件
+
+定义：`useImperativeHandle(ref, createHandle, dependecies?)`
+
+参数：
+
+- 参数ref：父组件传递过来的ref，是被forwardRef包裹的当前组件的第二个参数
+- 参数createHandle：返回一个想要暴露出来的方法的对象
+- 可选参数dependecies：参数createHandle内部代码使用到的所有依赖项（props、states、组件内部创建的变量和函数）
+- 返回值：返回undefined
+
+::: code-group
+
+```javascript [暴露所有的方法]
+import { forwardRef, useImperativeHandle, useRef } from 'react'
+
+const Child = forwardRef(function MyInput (props, ref) {
+   // 暴露input的所有方法给父组件
+   return <input {...props} ref={ref}/>
+})
+
+const Parent = function Parent () {
+   const myRef = useRef(null)
+
+   const handleClick = () => {
+      // 这里可以拿到Child组件内input元素的所有的方法
+      myRef.current.focus()
+   }
+
+   return (
+      <>
+         <button onClick={handleClick}>点击</button>
+         <Child ref={myRef}/>
+      </>
+   )
+}
+
+```
+
+```javascript [暴露部分方法]
+import { forwardRef, useImperativeHandle, useRef } from 'react'
+
+const Child = forwardRef(function MyInput (props, ref) {
+   const inputRef = useRef(null)
+
+   useImperativeHandle(ref, () => {
+      // 暴露特定的几个方法
+      return {
+         focus() {
+            inputRef.current.focus()
+         },
+         scrollIntoView() {
+            inputRef.current.scrollIntoView()
+         },
+         // 同时，这里也可以暴露其他无关的方法
+         add () {
+            console.log('add')
+         },
+         // ...
+      }
+   }, [])
+
+   return <input {...props} ref={inputRef}/>
+})
+
+const Parent = function Parent () {
+   const myRef = useRef(null)
+
+   const handleClick = () => {
+      myRef.current.focus()
+   }
+
+   return (
+      <>
+         <button onClick={handleClick}>点击</button>
+         <Child ref={myRef}/>
       </>
    )
 }
