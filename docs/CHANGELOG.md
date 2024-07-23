@@ -5,7 +5,22 @@ outline: [1, 2]
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
-## [0.2.4](https://github.com/simply-none/latest-blogs/compare/v0.2.3...v0.2.4) (2024-07-01)
+## [0.2.5](https://github.com/simply-none/latest-blogs/compare/v0.2.4...v0.2.5) (2024-07-23)
+
+### Features
+
+* 2024-07-03 17:26:37  新增草稿文件夹，修正typescript文档 ([f0df8e1](https://github.com/simply-none/latest-blogs/commit/f0df8e162f8903e758d83da70c4e235fd7313026))
+
+### Docs
+
+* 2024-07-23 09:04:14  新增删除文件夹工具 ([8692ddf](https://github.com/simply-none/latest-blogs/commit/8692ddf77321b6c17c3975596649d14c144ed056))
+* 2024-07-18 11:55:33  修订react文档 ([ca00b93](https://github.com/simply-none/latest-blogs/commit/ca00b93c6594b8822e8cc5d9717f2f3b5794940a))
+* 2024-07-11 16:48:56  修订工作梳理描述 ([be7e92e](https://github.com/simply-none/latest-blogs/commit/be7e92e2177b539ff6ec98d4a4e55f6258da6d28))
+* 2024-07-08 16:55:57  修订electron文档内容 ([ae31bfc](https://github.com/simply-none/latest-blogs/commit/ae31bfc74987a0a1f0a9bd441b5779ef93d08347))
+* 2024-07-05 18:16:52  修订部分文档内容；新增感悟 ([8b7ef1e](https://github.com/simply-none/latest-blogs/commit/8b7ef1e2f5d7eec12fd511f408fe131b4147ca30))
+* 2024-07-04 16:57:42  修订vue3文档；新增感悟 ([fe69150](https://github.com/simply-none/latest-blogs/commit/fe69150018ed3bd58c2b06a1d5fc6778cf843645))
+
+## [0.2.4](https://github.com/simply-none/latest-blogs/compare/v0.2.3...v0.2.4) (2024-07-02)
 
 ### Docs
 
