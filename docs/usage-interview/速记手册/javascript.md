@@ -1,5 +1,98 @@
 # JavaScript
 
+## 空值合并运算符`??`和逻辑或运算符`||`
+
+- `??`：空值合并运算符，当左侧值为null或undefined时，返回右侧值
+- `||`：逻辑或运算符，当左侧值为假值(`null`, `undefined`, `false`, `0`, `-0`, `0n`, `NaN`, `''`, `document.all`)时，返回右侧值
+
+## 中止Web请求`AbortController`、`AbortSignal`
+
+**`AbortController`**：控制器对象，允许根据需要中止一个或多个Web请求
+
+实例属性和方法：
+
+- `abortController.signal`：返回一个AbortSignal实例，可以用它和异步操作通信或者中止这个操作
+- `abortController.abort()`：中止一个尚未完成的异步操作
+
+**`AbortSignal`**：信号对象，允许通过AbortController对象与DOM请求进行通信，并在需要时中止它
+
+属性和方法：
+
+- `AbortSignal.aborted`：是否已中止
+- `AbortSignal.abort()`: 返回一个已经被设置为中止的AbortSignal实例
+- `AbortSignal.timeout(ms)`：返回一个在指定时间后自动终止的AbortSignal实例
+
+::: code-group
+
+```javascript [使用显式信号中止fetch操作]
+let controller
+const url = 'video.mp4'
+
+const downloadBtn = document.querySelector('#download')
+const abortBtn = document.querySelector('#abort')
+
+downloadBtn.addEventListener('click', fetchVideo)
+
+abortBtn.addEventListener('click', () => {
+  if (controller) {
+    controller.abort()
+    console.log('已中止')
+  }
+})
+
+function fetchVideo() {
+  controller = new AbortController()
+  const signal = controller.signal
+
+  fetch(url, { signal }).then(res => {
+    console.log(res, '下载完成')
+  }).catch(err => {
+    console.log(err, '下载失败')
+  })
+}
+```
+
+```javascript [中止超时的读取操作]
+const url = 'video.mp4'
+
+try {
+  // 1000ms后自动中止
+  const res = await fetch(url, { signal: AbortSignal.timeout(1000) })
+  const result = await res.blob()
+  // ...
+} catch (err) {
+  if (err.name === 'AbortError') {
+    console.log('fetch abort by user action')
+  } else if (err.name === 'TimeoutError') {
+    console.log('fetch timeout')
+  } else if (err.name === 'TypeError') {
+    console.log('abortSignal.timeout() is not a function')
+  } else {
+    console.log('fetch error')
+  }
+}
+```
+
+```javascript [超时或显式中止fetch]
+try {
+  const controller = new AbortController()
+  // 1s后自动中止
+  const timeoutId = setTimeout(() => controller.abort(), 1000)
+  const res = await fetch(url, { signal: controller.signal })
+  const body = await res.json()
+} catch (err) {
+  if (err.name === 'AbortError') {
+    // 用户中止
+  } else {
+    console.log('fetch error')
+  }
+} finally {
+  clearTimeout(timeoutId)
+}
+```
+
+:::
+
 ## 对象的数据属性和访问器属性
 
 数据属性：
