@@ -213,6 +213,15 @@ export function sidebarUsageFrame() {
           ],
         },
         {
+          text: "数据可视化",
+          items: [
+            {
+              text: "echarts",
+              link: "/usage-frame/前端综合/数据可视化/echarts",
+            },
+          ],
+        },
+        {
           text: "浏览器插件",
           items: [
             {
