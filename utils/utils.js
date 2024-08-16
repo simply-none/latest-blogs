@@ -1,5 +1,20 @@
 const pkg = require("../package.json");
 
+/**
+ * 最小版本号数字终结的概率，比如0.1.3 => 0.1.4还是变成0.2.0
+ * 3：40
+ * 4：50
+ * 5：60
+ * 6：60
+ * 7：70
+ * 8：80
+ * 9：80
+ * 10：90
+ * 11：90
+ * 12：100
+ */
+function startNewVersion () {}
+
 function generateVersion(version = pkg.version) {
   let maxTag = 9
   let versionA = version.split(".");
