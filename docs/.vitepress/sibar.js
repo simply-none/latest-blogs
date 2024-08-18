@@ -205,6 +205,7 @@ export function sidebarUsageFrame() {
       items: [
         {
           text: "微前端",
+          collapsed: true,
           items: [
             {
               text: "qiankun",
@@ -214,6 +215,7 @@ export function sidebarUsageFrame() {
         },
         {
           text: "数据可视化",
+          collapsed: true,
           items: [
             {
               text: "echarts",
@@ -223,6 +225,7 @@ export function sidebarUsageFrame() {
         },
         {
           text: "浏览器插件",
+          collapsed: true,
           items: [
             {
               text: "chrome插件开发",
