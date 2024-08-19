@@ -1169,6 +1169,102 @@ const option = {
 
 :::
 
+### 标签和富文本标签
+
+标签label是系列series内图形上的文本，用于说明图形上的数据信息，比如值、名称等。
+
+标签label包含的属性分类：
+
+- 是否显示：show
+- 标签文本：formatter，支持字符串模板和回调函数
+  - 字符串模板：支持标签变量有系列名`{a}`、数据名`{b}`、数据值`{c}`、数据中xxx维度的值`{@xxx}`、数据中维度索引为n时该维度的值`{@[n]}`，其他内容则为字符串
+  - 回调函数：`(params: Object|Array) => string`，params是formatter需要的单个数据集
+- 位置：position（标签相对图形的位置，可为string(top、inside等)、绝对像素、百分比）、distance（标签与图形之间的距离，position为string时有效）、offset（标签相对于图形的偏移量，会和distance叠加）、rotate（标签旋转角度）
+- 文本排版样式：width、height、padding、lineHeight（行高）、align（文字水平对齐）、verticalAlign（文字垂直对齐）
+- 文本样式：color、backgroundColor、字体（fontStyle、fontWeight、fontSize）、边框（borderColor、borderWidth、borderRadius、borderType）、阴影（shadowColor、shadowBlur、shadowOffsetX、shadowOffsetY）、文字边框（textBorderColor、textBorderWidth、textBorderRadius、textBorderType）、文字阴影（textShadowColor、textShadowBlur、textShadowOffsetX、textShadowOffsetY）
+- 文本省略样式：overflow、ellipsis
+- 富文本标签：rich，配合formatter使用，定制文本样式
+
+::: details 标签代码示例
+
+```javascript
+const option = {
+  xAxis: {
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  },
+  yAxis: {},
+  series: [
+    {
+      type: 'line',
+      data: [21, 23, 45, 56, 23, 34, 12],
+      label: {
+        show: true,
+        position: 'top',
+        distance: 3,
+        offset: [0, 10],
+        rotate: 45,
+        formatter: function(params) {
+          console.log(params)
+          let paramsObj = {
+            componentType: 'series',
+            componentSubType: 'line',
+            componentIndex: 0,
+            // 系列
+            seriesType: 'line',
+            seriesIndex: 0,
+            seriesName: 'series\u00000',
+            // 类目名
+            name: 'Mon',
+            dataType: null,
+            dataIndex: 0,
+            // 原始数据
+            data: 21,
+            value: 21,
+            // 维度
+            dimensionIndex: undefined,
+            deimensionNames: ['x', 'y'],
+            // 坐标轴映射信息
+            encode: {
+              x: [0],
+              y: [1]
+            },
+            $vars: ['seriesName', 'name', 'value'],
+            color: '#5470c6',
+            borderColor: undefined,
+            status: 'normal',
+          }
+
+          // 返回字符串，其中：
+          // {rich样式名|文本内容}，rich样式名可以在rich中定制样式
+          return [
+            `{type|图类型：${params.seriesType}}`,
+            `{name|类目名：${params.name}}`,
+            `{value|数据值：${params.value}}`,
+          ].join('\n')
+        },
+        rich: {
+          // rich样式名，定制文本内容样式
+          type: {
+            fontSize: 18,
+            color: 'red',
+          },
+          name: {
+            fontSize: 16,
+            color: 'blue',
+          },
+          value: {
+            fontWeight: 'bold',
+            backgroundColor: 'green',
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+:::
+
 ### 事件与行为
 
 在echarts的图表中，用户的操作将会触发相应的事件，常用的事件和事件对应参数在[events](https://echarts.apache.org//api.html#events)文档中可查询到。监听这些事件，通过回调函数进行相应的处理，比如跳转到一个地址、弹出对话框、做数据下钻、重新更新图表等。
@@ -1491,6 +1587,118 @@ setInterval(function () {
     }]
   })
 }, 1000)
+```
+
+:::
+
+### 绘制图形
+
+绘制图形的方式：
+
+- graphic：支持的图形包括image（自定义图像）, text, circle, sector（扇形）, ring（圆环）, arc（圆弧）, polygon（多边形，可以描绘一些图形）, polyline（折线，可以描绘一些图形）, rect, line, bezierCurve（贝塞尔曲线）, group，同时支持图形嵌套
+- series.markPoint
+- series.markLine
+- series.markArea
+
+::: details 绘制图形代码示例
+
+```javascript
+const option = {
+  graphic: {
+    id: 'a',
+    elements: [
+      {
+        type: 'group',
+        children: [
+          {
+            type: 'rect',
+            shape: {
+              width: 100,
+              height: 100
+            },
+            style: {
+              fill: 'red',
+              stroke: 'blue'
+            }
+          }
+        ]
+      },
+      // 多边形
+      {
+        type: 'polygon',
+        shape: {
+          points: [
+            [10, 20],
+            [30, 40],
+            [50, 60],
+            [70, 80],
+          ]
+        }
+      }
+    ]
+  },
+  xAxis: {},
+  yAxis: {},
+  series: [
+    {
+      type: 'line',
+      data: [
+        [10, 20],
+        [30, 40],
+        [50, 60],
+        [70, 80],
+        [90, 100],
+      ],
+      markPoint: {
+        symbol: 'pin',
+        data: [
+          {
+            name: '坐标位置',
+            coord: [10, 20]
+          },
+          {
+            name: '屏幕像素坐标',
+            x: 100,
+            y: 200
+          }
+        ]
+      },
+      markLine: {
+        symbol: 'pin',
+        data: [
+          // 元素也是一个数组，首尾坐标
+          [
+            {
+              // 支持的属性：可以用xAsix、yAxis的索引指定范围
+              // { type , valueIndex , valueDim , coord , name , x , y , xAxis , yAxis , value , symbol , symbolSize , symbolRotate , symbolKeepAspect , symbolOffset , lineStyle , label , emphasis , blur }
+              name: '坐标位置',
+              coord: [10, 20]
+            },
+            {
+              coord: [30, 40]
+            }
+          ]
+        ]
+      },
+      // 是一个矩形，对角线围成的区域
+      markArea: {
+        data: [
+          // 元素也是一个数组
+          [
+            {
+              name: '坐标位置',
+              coord: [10, 20]
+            },
+            {
+              coord: [30, 40]
+            }
+          ]
+        ]
+      },
+
+    }
+  ]
+}
 ```
 
 :::
