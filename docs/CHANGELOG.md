@@ -5,6 +5,21 @@ outline: [1, 2]
 
 本文档通过规范的git commit，结合gitlog npm包生成
 
+## [0.2.6](https://github.com/simply-none/latest-blogs/compare/v0.2.5...v0.2.6) (2024-08-20)
+
+### Features
+
+* 2024-08-20 10:26:30  首页新增统计徽章 ([4c31b39](https://github.com/simply-none/latest-blogs/commit/4c31b395ae237a3845b0e8e7a7ea4ecaa1d094b6))
+
+### Docs
+
+* 2024-08-20 17:14:36  新增html知识点文件，修改前端诸多知识点 ([8b7e3d8](https://github.com/simply-none/latest-blogs/commit/8b7e3d890cc626f742676215fd671c2dd22044a9))
+* 2024-08-19 16:38:20  更新echarts知识点 ([a4b3aec](https://github.com/simply-none/latest-blogs/commit/a4b3aecbe5736af5930c6b962ee1d45d45cfc4b2))
+* 2024-08-18 18:28:53  更新echarts知识点 ([2afb1c2](https://github.com/simply-none/latest-blogs/commit/2afb1c2fdcee5df44f2793d2f063e0531b3ae1cb))
+* 2024-08-16 17:10:19  更新echarts知识点 ([a9ba236](https://github.com/simply-none/latest-blogs/commit/a9ba236f5ec5e3cf445d7f71bbd0b63a2761382f))
+* 2024-08-15 17:07:43  新增echarts知识点 ([e37bbbb](https://github.com/simply-none/latest-blogs/commit/e37bbbb5b69ba6ebe2d5505d4d1e0d3cedce9dae))
+* 2024-08-09 10:49:25  新增JavaScript知识点 ([18b9cf3](https://github.com/simply-none/latest-blogs/commit/18b9cf3cff9941eba1669cb59bc5f8dc901e738f))
+
 ## [0.2.5](https://github.com/simply-none/latest-blogs/compare/v0.2.4...v0.2.5) (2024-07-23)
 
 ### Features
