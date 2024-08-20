@@ -445,7 +445,6 @@ const option = {
 
 同时，并非所有图表都支持dataset，目前支持dataset的图表有：line、bar、pie、scatter、effectScatter、parallel、candlestick、map、funnel、custom
 
-
 ::: code-group
 
 ```javascript [系列(series)]
@@ -908,7 +907,6 @@ type DimesionIndex = number;
 #### 数据转换器sort
 
 sort是内置的起排序作用的数据转换器。主要用于在类目轴（axis.type: 'category'）中显示排过序的数据
-
 
 sort的功能有：
 
@@ -2082,7 +2080,6 @@ const opiton = {
 
 注意:
 
-
 ::: details 饼图示例代码
 
 1. 普通/圆环饼图: data中的value不需要是百分比数据,echarts会根据所有数据的value,按比例分配他们所占的百分比(圆弧的弧度)
@@ -2329,3 +2326,67 @@ const option = {
 ```
 
 :::
+
+## 常用配置项
+
+setOption方法参数常用属性：
+
+- title: 图表标题组件
+- legend：图例组件，控制系列series的展示隐藏
+- dataZoom：区域缩放组件
+- visualMap：视觉映射组件
+- tooltip：提示框组件
+- graphic：原生的图形元素组件，可以在图表中绘制特定图形
+- dataset：数据集组件，可被多个组件复用
+- series：系列
+- axisPointer：坐标轴指示器组件，提示当前鼠标位置所在的标线和刻度
+- toolbox：工具栏，比如导出图片，数据视图，动态类型切换，数据区域缩放，重置等
+- brush：区域选择组件
+- timeline：时间线组件
+- darkMode：是否开启暗黑模式
+- color：调色盘颜色列表，若系列没有设置颜色，则会依次循环从该列表中取颜色作为系列颜色
+- backgroundColor：图表背景色
+- textStyle：全局字体样式
+- animation：是否开启动画
+- aniamtionDuration：动画时长
+- aniamtionEasing：动画缓动效果
+- aniamtionDelay：动画延迟
+- aniamtionDurationUpdate：更新动画时长
+- animationEasingUpdate：更新动画缓动效果
+- aniamtionDelayUpdate：更新动画延迟
+- hoverLayerThreshold：图形数量阈值
+- options：用于timeline的option数组
+- media：移动端自适应
+
+坐标系：
+
+- grid：直角坐标系及其网格分区
+- xAxis：直角坐标系的X轴组件
+- yAxis：直角坐标系的Y轴组件
+- polar：极坐标系
+- radiusAxis：极坐标系的径向轴
+- angleAxis：极坐标系的角度轴
+- radar：雷达图坐标系组件
+- geo：地理坐标系组件
+- parallel：平行坐标系组件
+- parallelAxis：平行坐标系轴
+- singleAxis：单轴，展现一维数据
+- calendar：日历坐标系组件
+
+子配置：
+
+- itemStyle：图形样式
+- lineStyle：线条样式
+- areaStyle：区域填充样式
+- textStyle：字体样式
+- emphasis：高亮样式
+- data：数据
+- label：图形的标签配置
+- endLabel：端点标签设置
+- labelLine：标签的视觉引导线
+- rich：富文本样式
+- markPoint：标记点
+- markLine：标记线
+- markArea：标记区域
+- select：数据选中的样式
+- blur：淡出时的样式

@@ -8,24 +8,28 @@ export function sidebarUsageFrame() {
           link: "/usage-frame/基础/技术栈工具链",
         },
         {
-          text: "http知识点",
-          link: "/usage-frame/基础/http知识点汇总",
-        },
-        {
-          text: "electron",
-          link: "/usage-frame/基础/electron知识",
-        },
-        {
-          text: "JavaScript",
-          link: "/usage-frame/基础/JavaScript知识点",
+          text: "html",
+          link: "/usage-frame/基础/html",
         },
         {
           text: "CSS",
           link: "/usage-frame/基础/CSS知识点",
         },
         {
+          text: "JavaScript",
+          link: "/usage-frame/基础/JavaScript知识点",
+        },
+        {
           text: "css处理器",
           link: "/usage-frame/基础/CSS处理器",
+        },
+        {
+          text: "http知识点",
+          link: "/usage-frame/基础/http知识点汇总",
+        },
+        {
+          text: "electron",
+          link: "/usage-frame/基础/electron知识",
         },
       ],
     },
