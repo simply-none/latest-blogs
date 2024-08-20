@@ -38,8 +38,15 @@ onMounted(() => {
             ><span>璎耜 <small>v{{ pkg.version }}</small></span></a
           >
         </h1>
-        <p class="cover-main-icon">
-          <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg"/>
+        <p class="cover-main-icon badge-icons">
+          <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/simply-none/latest-blogs/deploy.yml"/>
+          <img alt="GitHub Release" src="https://img.shields.io/github/v/release/simply-none/latest-blogs"/>
+          <img alt="GitHub commits since latest release" src="https://img.shields.io/github/commits-since/simply-none/latest-blogs/latest?color=%236268fb"/>
+          <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/t/simply-none/latest-blogs?label=total%20commit&color=red"/>
+          <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/simply-none/latest-blogs?color=orange"/>
+          <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/simply-none/latest-blogs?color=%23f5ec00"/>
+          <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/simply-none/latest-blogs?color=%231af500"/>
+          <img alt="Static Badge" src="https://img.shields.io/badge/commitizen-friendly-yellow"/>
         </p>
 
         <blockquote>
@@ -86,10 +93,19 @@ section.cover {
   color: black;
 }
 
-.cover-main-icon {
+.cover-main-icon, .badge-icons {
   display: flex;
   align-content: center;
   justify-content: center;
+}
+.badge-icons {
+  flex-flow: row wrap;
+  gap: 2;
+  padding: 0 33%;
+}
+.badge-icons img {
+  margin-left: 5px;
+  margin-bottom: 5px;
 }
 section.cover.show {
   display: flex;
