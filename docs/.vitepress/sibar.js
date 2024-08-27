@@ -12,16 +12,30 @@ export function sidebarUsageFrame() {
           link: "/usage-frame/基础/html",
         },
         {
-          text: "CSS",
-          link: "/usage-frame/基础/CSS知识点",
+          text: "CSS专题",
+          collapsed: true,
+          items: [
+            {
+              text: "CSS基础",
+              link: "/usage-frame/css专题/CSS知识点",
+            },
+            {
+              text: "CSS预处理器",
+              link: "/usage-frame/css专题/CSS预处理器",
+            },
+            {
+              text: "tailwindcss",
+              link: "/usage-frame/css专题/tailwindcss",
+            },
+            {
+              text: "unocss",
+              link: "/usage-frame/css专题/unocss",
+            }
+          ]
         },
         {
           text: "JavaScript",
           link: "/usage-frame/基础/JavaScript知识点",
-        },
-        {
-          text: "css处理器",
-          link: "/usage-frame/基础/CSS处理器",
         },
         {
           text: "http知识点",
