@@ -23,7 +23,12 @@ npx tailwindcss init
 // postcss.config.js
 module.exports = {
   plugins: {
+    // 默认配置文件名为tailwind.config.js
     tailwindcss: {},
+    // 🎈修改tailwind配置文件名及其路径
+    tailwindcss: {
+      config: './tailwind-config.js',
+    },
     autoprefixer: {},
   }
 }
@@ -33,6 +38,7 @@ module.exports = {
 
 ```javascript
 // tailwind.config.js
+// 增加类型说明
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // 匹配的路径搜寻类名
@@ -44,9 +50,27 @@ module.exports = {
 }
 ```
 
+对于typescript项目，配置如下：
+
+```typescript
+import type { Config } from 'tailwindcss';
+
+export default {
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  theme: {
+    extend: {},
+  }
+} satisfies Config;
+```
+
+完整的tailwind配置文件参考[1](https://github.com/tailwindlabs/tailwindcss/blob/master/stubs/config.full.js)。
+
 4，引入tailwind基础样式：
 
 ```css
+/* 🎈可以在css中自定义tailwind配置文件的路径，如果使用import，该内容放最后 */
+@config "./tailwind-config.js";
+
 /* main.css */
 @tailwind base;
 @tailwind components;
@@ -756,3 +780,627 @@ module.exports = {
   /* xxx */
 }
 ```
+
+## preflight
+
+preflight构建在[modern-normalize](https://github.com/sindresorhus/modern-normalize)之上，是一组用于tailwind项目的基础样式，旨在消灭浏览器间的差异性，同时让你更轻松的在设计系统的约束下工作。
+
+当在css中使用`@tailwind base`时，会自动注入这些样式。preflight应用的所有样式表参见[1](https://unpkg.com/tailwindcss@%5E3/src/css/preflight.css)。
+
+功能主要有：
+
+- 将标题、块引用、段落等元素的margin设置为0
+- 清除标题的样式，比如字体大小、字体粗细
+- 清除列表样式，包括list-style,margin,padding等，此时若想将其声明为一个列表，需要加上role属性，比如`<ul role="list">`
+- 将图像设置为块级元素
+- 将图像宽度设置为100%，高度改为自适应，避免溢出容器
+- 重置所有元素的边框样式，当遇到第三方库样式混乱时，需要自行自定义样式覆盖preflight，比如`.google-map * { border-style: none }`
+
+如果想要在preflight上添加自己的基本样式，只需要用@layer指令将其加入到css中即可。
+
+```css
+@tailwind base;
+@layer base {
+  /* 加入自己的基本样式 */
+  h1 {
+    @apply text-2xl
+    /* ... */
+  }
+}
+```
+
+禁用该选项可以在corePlugins中设置preflight为false。
+
+## config字段配置
+
+介绍tailwind.config.js中可用的配置项。
+
+### content
+
+content字段用于指定tailwind扫描哪些文件，以生成css。只要文件内使用了tailwind工具类，都必须将该文件放在content字段中。
+
+content字段的值是glob模式配置的路径，能够尽可能多的匹配更多的文件，比如`./pages/**/*.{html,vue,js,ts,jsx,tsx}`，解释如下：
+
+- 使用通配符`*`匹配除斜杠和隐藏文件以外的任何内容
+- 使用`**`匹配零个或多个目录
+- 使用`{}`匹配文件后缀
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './components/**/*.{html,js}',
+    './pages/**/*.{html,js}',
+    './node_modules/vue-tailwind-modal/**/*.{html,js}',
+    // monorepo项目，需要这样设置:
+    path.join(path.dirname(require.resolve('vue-tailwind-modal')), '**/*.{html,js}'),
+    // 扫描原始内容，而非文件，通常情况下应使用安全列表代替它：
+    { raw: '<div class="font-bold text-red-500">', extension: 'html' },
+  ]
+}
+```
+
+上述路径是相对于项目根目录的，而非相对于tailwind.config.js文件。如果tailwind.config.js在其他自定义位置，这里的相对路径也是相对于项目根目录。
+
+为了获得更佳的性能，应该尽可能的缩小范围路径，使用多个更具体的路径配置，而非使用一个宽泛的路径配置（比如`./**/*.{html,js,ts}`，此处可能会匹配node modules目录）。
+
+一定要将项目的入口html文件放在content字段中，同时，如果js文件中通过操作dom添加class，也必须将js文件放在content字段中。注意，不要将任何css文件放在content字段中。
+
+tailwind扫描源代码文件中的class方式十分简单，就是使用正则表达式提取每个可能是类名的字符串，而非编写代码解析器的形式。同时，tailwind只会提取源代码中完整不间断的类名（`text-red-600`），所以，如果通过动态构造（比如插值`text-{{err? 'red' : 'blue'}}-600`，或字符串和变量连接`'text-' + redVar`）的类名，将找不到，从而不会生成相应的css得到想要的结果。可以使用变量分组的形式达到动态构造的效果，比如：
+
+```javascript
+function Button({ color, children}) {
+  const colorVariants = {
+    // 也是可以动态构造的，就是需要将类名写全，而不是部分拼接
+    blue: 'bg-blue-500 hover:bg-blue-700',
+    red: 'bg-red-500 hover:bg-red-700',
+  }
+
+  return (
+    <button className={`${colorVariants[color]} rounded-lg py-2 px-4 text-white font-semibold`}>
+      {children}
+    </button>
+  )
+}
+```
+
+如果项目中使用到了第三方库，同时你想自己自定义该库的样式，建议不要使用@layer指令包裹，而是直接在导入了`@tailwind`的css文件中像寻常一样写样式，这会保证tailwind始终包含这些样式，比让tailwind扫描第三方库要快很多。
+
+同时，如果某些node_modules也使用到了tailwind样式，也需要将这些模块放入到content字段中。
+
+**content.relative**：默认情况下，tailwind会扫描相对于当前工作目录（而非tailwind.config.js）的非绝对路径，若想让其扫描相对于tailwind.config.js的非绝对路径，需要将relative字段设置为true，同时将content改为files，这种配置方式会成为下个大版本的默认行为，配置如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: {
+    relative: true,
+    files: [
+      './components/**/*.{html,js}',
+      './pages/**/*.{html,js}',
+    ]
+  }
+}
+```
+
+**content.transform**：如果使用的是诸如markdown这样的可编译为html格式的文件，在扫描类名时将其编译为html是有意义的，用法如下；
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: {
+    files: [
+      './src/**/*.{html,md}',
+    ],
+    transform: {
+      md: (content) => {
+        return remark().process(content)
+      }
+    }
+  }
+}
+```
+
+**content.extract**：覆盖tailwind默认的类名提取逻辑，通常不需要，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: {
+    files: [
+      './src/**/*.{html,wtf}',
+    ],
+    extract: {
+      wtf: (content) => {
+        return content.match(/[^<>"'`\s]*/g)
+      }
+    }
+  }
+}
+```
+
+### theme
+
+theme字段用于自定义项目的主题，包括调色板colors、字体、breakpoints等等，结构如下所示：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+module.exports = {
+  // 样式会覆盖默认主题
+  theme: {
+    // 屏幕宽度（breakpoints）
+    screens: {
+      sm: '480px',
+      md: '768px',
+      lg: '1024px',
+    },
+    // 全局间距（包括margin、padding、(max,min)width/height、flex-basis、gap、inset、space、translate等
+    spacing: {
+      px: '1px',
+      0: '0',
+      1: '0.25rem',
+      2: '0.5rem',
+    },
+    // 边框半径
+    borderRadius: {
+      'none': '0',
+      'sm': '.125rem',
+      'md': '.375rem',
+      // 默认值，无后缀的，可以直接使用，比如rounded
+      DEFAULT: '.25rem',
+      'full': '9999px',
+    },
+    // 当属性是一个函数时，永远要返回一个对象({theme}) => ({...theme('colors.gray')})，而非直接返回某个属性({theme}) => theme('colors.gray')。
+    // 引用配置中的其他值，通过theme函数
+    backgroundSize: ({theme}) => ({
+      auto: 'auto',
+      cover: 'cover',
+      // 这里会将theme.spacing对象下的所有属性都放在这里
+      ...theme('spacing'),
+    }),
+    // 禁用某个工具类错误的方式，正确用法是在corePlugins中将其设为false：
+    opacity: {},
+    // 调色板
+    colors: {
+      'transparent': 'transparent',
+      'blue': '#07c',
+      'red': '#c00',
+      'yellow': '#ffc',
+      gray: {
+        100: '#f7fafc',
+        200: '#edf2f7',
+      },
+    },
+    fontFamily: {
+      sans: ['ui-sans-serif', 'system-ui'],
+      serif: ['ui-serif', 'Georgia'],
+    },
+    // 样式扩展
+    extend: {
+      // 使用：3xl:text-lg
+      screen: {
+        '3xl': '1536px',
+      },
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
+      fontFamily: {
+        // 后续使用：font-display
+        display: 'ui-sans-serif, system-ui, Oswald',
+        // 引用默认主题的配置
+        sans: [
+          'lato',
+          ...defaultTheme.fontFamily.sans,
+        ]
+      }
+    }
+  },
+}
+```
+
+### screens
+
+screens字段用于自定义默认的breakpoints，注意该字段默认是从小往大排列的（使用`min-width`移动端优先，越往后，优先级越高），如果想使用`max-width`，应该从大到小排列，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    // screens内从小到大排列，写在该处的内容会覆盖tailwind原有默认的类配置
+    screens: {
+      // @media (min-width: 640px) { ... }，后面类似
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
+    // 覆盖某个类，或者扩展类
+    extend: {
+      screens: {
+        // 用相同的名称替换，不会修改上述breakpoint的顺序
+        // @media (min-width: 992px) { ... }
+        'lg': '992px',
+        // 添加比上面breakpoint更大的breakpoint，这会添加到上述列表的末尾
+        '3xl': '1920px',
+      }
+    }
+  },
+}
+```
+
+添加较小断点的方式可以使用下面方法：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+module.exports = {
+  theme: {
+    screens: {
+      'xs': '320px',
+      ...defaultTheme.screens,
+    }
+  }
+}
+```
+
+可以使用自定义的breakpoint名称，替换上面的sm, md, lg等值，用法和上述一致。
+
+固定breakpoint的范围，同时指定`max-width`和`min-width`，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    screens: {
+      // @media (min-width: 640px) and (max-width: 767px) { ... }
+      'sm': {
+        'min': '640px',
+        'max': '767px',
+      },
+      // @media (min-width: 768px) and (max-width: 1023px) { ... }
+      'md': {
+        'min': '768px',
+        'max': '1023px',
+      },
+      // ...
+    }
+  }
+}
+```
+
+多范围breakpoint，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    screens: {
+      'sm': '640px',
+      'md': [
+        {
+          min: '668px',
+          max: '767px',
+        },
+        {
+          min: '868px'
+        }
+      ],
+      'lg': '1024px',
+    }
+  }
+}
+```
+
+若想原样输出自定义的媒体查询，使用以下方式：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    extend: {
+      screens: {
+        'tall': {
+          // 此时min和max都会被忽略
+          // @media (min-height: 800px) { ... }
+          raw: '(min-height: 800px)'
+        }
+      }
+    }
+  }
+}
+```
+
+### colors
+
+自定义项目的默认调色板，默认情况下，这些颜色可以在使用颜色的任何工具类中使用，比如文本颜色、边框颜色、背景颜色等。用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+
+module.exports = {
+  theme: {
+    // 此处将会覆盖tailwind默认的颜色配置，即只有此处写了的，样式才生效
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      'white': '#ffffff',
+      // 对象语法使用：bg-tahiti-100, text-tahiti-100
+      tahiti: {
+        100: '#f9fafb',
+        200: '#f3f4f6',
+        // 无后缀形式：bg-tahiti
+        DEFAULT: '#f9fafb',
+        // ...
+      },
+      // 使用内置的默认颜色
+      gray: colors.gray,
+      // 使用别名
+      green: colors.emerald,
+
+      // ...
+    },
+    // 颜色新增、修改
+    extend: {
+      colors: {
+        // 新增
+        brown: {
+          100: '#f8f5f3',
+          200: '#f1eee8',
+          // ...
+        },
+        // 修改已有的颜色
+        blue: {
+          950: '#192734',
+        }
+      }
+    }
+  }
+}
+```
+
+当在class等处使用任意的自定义值时，需要用中括号括起来，比如`bg-[#f9fafb]`。
+
+同时，你可以使用一些有意义的名称用于颜色命名，比如primary，使用时就可以用`bg-primary`。
+
+如果想将颜色定义为css变量，同时又能够和opacity一起使用，需要将这些变量定义为just the color channels（即不能出现rgb，rgba函数），例如：
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 不能是rgb(250, 173, 66 / <alpha-value>) */
+    --color-primary: 250 173 66;
+
+    /* For hsl(198deg 93% 60% / <alpha-value>) */
+    --color-primary: 198deg 93% 60%;
+
+    /* For rgba(255, 115, 179, <alpha-value>) */
+    --color-primary: 255, 115, 179;
+  }
+}
+```
+
+然后再在配置文件中设置：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    colors: {
+      // 使用rgb
+      primary: 'rgb(var(--color-primary) / <alpha-value>)',
+
+      // 使用hsl
+      primary: 'hsl(var(--color-primary) / <alpha-value>)',
+
+      // 使用rgba
+      primary: 'rgba(var(--color-primary), <alpha-value>)',
+    }
+  }
+}
+```
+
+其他有用的链接（生成颜色）：
+
+- https://uicolors.app/
+- https://palettte.app/
+- https://colorbox.io/
+      
+### spacing
+
+spacing字段用来自定义项目中的默认间距和大小缩放比例，默认情况下，由下列这些工具类继承：(min/max)width/height, (scroll)padding/margin, gap, inset, translate，配置如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    // 这里的会覆盖默认的值，属性名可以自定义
+    spacing: {
+      '0': '0px',
+      'px': '1px',
+      '1': '8px',
+      '2': '16px',
+      '3': '24px',
+      '4': '32px',
+    },
+    extend: {
+      // 新增、修改值，可以用于p-13
+      spacing: {
+        '13': '48px',
+        '14': '56px',
+      }
+    }
+  }
+}
+```
+
+### plugins
+
+plugins字段，用处和`@layer xxx`大致相同。
+
+### presets
+
+创建自己的自定义配置，用于替换官方的配置，同时也会被tailwind.config.js中的配置覆盖。
+
+### safelist
+
+safelist字段的作用是，该字段声明的内置工具类会始终被保留，即使class是通过不完整拼接而成的或者是动态构造的，同样会生成你所期待的效果，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  safeList: [
+    'bg-red-500',
+    // 可以使用正则表达式批量生成永远保留的内置类
+    // 注意这里只能包含工具类，而不能包含变量修饰符，比如/hover:bg-red-100/会无法匹配
+    {
+      pattern: /bg-(red|green|blue)-(100|200|300)/,
+    },
+    // 包含变量修饰符的写法；
+    {
+      pattern: /bg-(red|green|blue)-(100|200|300)/,
+      variants: ['hover', 'lg', 'focus', 'lg:hover'],
+    }
+  ]
+}
+```
+
+在js文件中，或html模板中，可以使用类似`'bg' + 'red' + '500'`，这同样会让元素的背景改成红色，即使他是不完整的拼接字符串。
+
+### blocklist
+
+blocklist字段的作用是，忽略tailwind扫描到的一些类，即放在该字段下的工具类不会保留到最终生成的文件中。仅支持字符串形式，用法如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  blocklist: [
+    'bg-red-500',
+  ]
+}
+```
+
+### prefix
+
+prefix作用是给tailwind内置的工具栏增加前缀，后续使用时必须带上前缀，样式才会生效。
+
+配置如下：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  prefix: 'tw-',
+}
+```
+
+配置了前缀之后，使用时，必须也加上前缀：
+
+```html
+<!-- 正常用法 -->
+<div class="tw-bg-blue-500 tw-p-4"></div>
+
+<!-- 使用修饰符，前缀在冒号后面，在工具类前面 -->
+<div class="hover:tw-bg-red-500"></div>
+
+<!-- 负值的短斜杠，应在前缀之前 -->
+<!-- 表示：margin: -4rem; padding: -4rem -->
+<div class="-m-4 -tw-p-4"></div>
+```
+
+配置了前缀之后，使用@layer指令增加的自定义样式，需要自己手动增加前缀：
+
+```css
+@layer utilities {
+  .tw-filter-none {
+    /*  */
+  }
+}
+
+/* 使用：class="tw-filter-none" */
+```
+
+### important
+
+important字段作用是调整tailwind内置工具类的选择器优先级，可通过以下方式进行优先级变更：
+
+- 将字段值设置为true，则所有内置工具类都会加上!important修饰符，同时在@layer内自定义的也是如此。这种方式可能覆写第三方库的样式和内联样式，造成样式混乱。
+- 将字段值设置为项目根据元素的id值，后续所有内置工具类都是后代选择器（`根id xxx {}`）的形式，让工具类的优先级较高，而不会覆盖内联样式。此时需要将根级别所在的文件包含在content字段中。
+- 给工具类增加`!`前缀，加上之后该工具类会加上!important修饰符，用法`sm:hover:!tw-bg-blue`。
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  // 1
+  important: true,
+  // 2
+  improtant: '#app',
+  content: [
+    'index.html',
+  ],
+}
+```
+
+### separator
+
+separator字段的作用是将tailwind变量和工具类分开，默认是`:`，比如`sm:bg-blue`。
+
+当项目中有不支持冒号的文件（比如pug文件）时，修改它很有必要。
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  sparator: '--',
+}
+```
+
+### corePlugins
+
+corePlugins字段可以启用/关闭tailwind内置的工具类，用法有以下几种：
+
+```javascript
+// tailwind.config.js
+moudle.exports = {
+  // 1, 对象形式：关闭
+  corePlugins: {
+    // 比如不会生成诸如m-4, my-4这样的class
+    margin: false,
+  },
+  // 2, 数组形式：开启，没列出的会关闭
+  corePlugins: [
+    'margin',
+  ],
+  // 3, 关闭所有，空数组形式
+  corePlugins: []
+}
+```
+
+核心插件列表可以参考[这里](https://tailwindcss.com/docs/configuration#core-plugins)。
+
+### 在js中使用配置
+
+要在js文件中使用tailwind配置文件的内容，可以通过tailwind内置的辅助函数resolveConfig，用法如下：
+
+```javascript
+import resolveConfig from 'tailwindcss/resolveConfig'
+import tailwindConfig from './tailwind.config.js'
+
+const fullConfig = resolveConfig(tailwindConfig)
+
+// '768px'
+console.log(fullConfig.theme.screens.md)
+```
+
+注意，上述用法将会传递大量的构建时依赖项，增加客户端的打包体积。为了避免这种情况发生，可以使用像`babel-plugin-preval`这样的插件，在构建时生成配置文件的静态版本。
