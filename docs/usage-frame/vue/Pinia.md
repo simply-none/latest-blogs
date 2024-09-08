@@ -853,3 +853,24 @@ export const useAuthStore = defineStore('auth', {
   })
 })
 ```
+
+## 应用
+
+### 在组件外使用pinia
+
+为了兼容在组件外使用pinia的情形，需要将pinia store实例用函数包裹起来，用法如下：
+
+```typescript
+import { createPinia, defineStore } from 'pinia'
+
+const pinia = createPinia()
+
+// 只能在调用createPinia后使用
+export const useUserStore = defineStore('user', {})
+
+// 这种方式使用，可以兼容到组件外使用的情况
+export function useUserStoreHook () {
+  return useUserStore(pinia)
+}
+
+```
