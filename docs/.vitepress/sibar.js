@@ -239,6 +239,10 @@ export function sidebarUsageFrame() {
               text: "echarts",
               link: "/usage-frame/前端综合/数据可视化/echarts",
             },
+            {
+              text: "vue-echarts",
+              link: "/usage-frame/前端综合/数据可视化/vue-echarts",
+            },
           ],
         },
         {

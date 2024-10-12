@@ -167,10 +167,12 @@ degit user/repo#1fd41saf4
 ### 暂存工作区间（stash）
 
 - `git stash`：把本地的改动暂存起来
+- `git stash push file1 file2 ...`：把指定文件暂存起来
 - `git stash save 'message'`：把本地的改动暂存起来，添加备注，方便查找
 - `git stash pop`：应用最近一次暂存的修改，同时删除暂存记录
 - `git stash apply stash@{$num}`：无参数默认使用`stash@{0}`
 - `git stash list`：查看当前stash缓存列表
+- `git stash drop stash@{$num}`：删除指定stash缓存
 - `git stash clear`：删除所有stash缓存
 
 ### 提交回滚（revert、reset）
