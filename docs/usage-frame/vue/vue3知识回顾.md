@@ -1291,8 +1291,8 @@ const MyDirectiveInstance = app.directive('my-directive')
 // 多次调用，插件只会安装一次
 app.use(MyPlugin)
 
-// ✅runWidthContext：立即执行回调
-app.runWidthContext(() => {
+// ✅runWithContext：立即执行回调
+app.runWithContext(() => {
   // 即使没有当前活动的组件实例，也能够获取app提供的provide
   const id = inject('id')
   connsole.log(id)
@@ -1499,7 +1499,7 @@ export default /*#__PURE__*/ defineComponent(/* ... */)
 - `script setup`是唯一在调用await之后仍可调用组合式函数的地方（而setup函数不是），编译器会在异步操作之后自动恢复当前组件实例，然后去注册生命周期钩子、watch、computed
 - 组合式函数可接收一般变量和响应式变量（例如ref，可对响应式变量进行监听追踪）作为参数。最好在处理参数时对两者进行兼容，即处理响应式变量时，使用unref函数获取变量的值（响应式变量返回.value，否则原样返回）；同时若操作会根据响应式变量变化而变化，应该使用watch监听响应式变量，或者在watchEffect中调用unref解构响应式变量追踪其变化
 - 推荐在组合式函数中始终返回一个包含多个ref的普通非响应式对象（即组合式函数返回`{ a: ref(xx), b: ref(xx) }`），这样在对象被解构时，对象属性仍能保持响应性，因为返回一个响应式对象在对象解构时会丢失和组合式函数内状态的响应性连接。若希望以对象属性的方式使用组合式函数中返回的状态，可以在调用组合式函数的时候使用reactive进行包裹（例如`reactive(useFn())`）
-- 在组合式函数中执行相关操作时，应当在正确的生命周期中访问（比如访问dom，应该在挂载之后，即onMounted钩子中）；同时确保在onUnmounted中清除带来的某些操作（比如事件监听器）。
+- 在组合式函数中执行相关操作时，应当在正确的生命周期中访问（比如访问dom，应该在挂载之后，即onMounted钩子中）；同时确保在onUnmounted中清除带来的某些副作用（比如事件监听器）。
 - 每一个调用组合式函数的组件实例会创建其独有的状态拷贝，组件实例之间不会互相影响。若想在组件中共享状态，可使用状态管理相关的知识点。
 - 组合式函数可随意封装
 
@@ -2059,17 +2059,22 @@ contenteditable：content + edit + able
 作用：
 
 - 用于缓存一个模板的子树，在原生标签或组件标签上均可使用
-- 实现缓存的原理是，传入一个固定长度的依赖值数组，比较这个数组的项的值与最后一次渲染的值是否发生变化，若变化了则重新渲染该元素下的结构，否则跳过渲染，即使元素内部使用的变量已经发生变更（这时展示的还是之前的值）
+- 实现缓存的原理是，传入一个固定长度的依赖值数组，比较这个数组的项的值与最后一次重渲染的值是否发生变化，若变化了则重新渲染该元素（包括元素内的所有内容），否则跳过渲染，即使元素内部使用的变量已经发生变更（这时展示的还是之前的值）
 
 ### v-cloak
 
 语法：
 
-```typescript
-// template
-<div v-cloak>{{ message }}</div>
-// style
+```vue
+<!-- 使用步骤： -->
+<!-- 1. 在template内 -->
+<template>
+  <div v-cloak>{{ message }}</div>
+</template>
+<!-- 2. 在style内 -->
+<style>
 [v-cloak] { display: none; }
+</style>
 ```
 
 作用：
@@ -2259,7 +2264,7 @@ const styleObject = reactive({
 
 注意：
 
-- 在组件上使用ref会造成父子组件更加紧密耦合，如无必要请使用props/emit的方式进行父子组件的交互，只要绝对需要时才使用组件引用
+- 在组件上使用ref会造成父子组件更加紧密耦合，非必要请使用props/emit的方式进行父子组件的交互，只要绝对需要时才使用组件引用
 - 使用了script setup的组件默认是私有的，父组件无法访问使用了它的子组件的任何东西，除非子组件通过expose（defineExpose）显式暴露某些内容。
 
 警告:warning:：

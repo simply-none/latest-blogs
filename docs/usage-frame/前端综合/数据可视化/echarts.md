@@ -2390,3 +2390,221 @@ setOption方法参数常用属性：
 - markArea：标记区域
 - select：数据选中的样式
 - blur：淡出时的样式
+
+### tooltip
+
+定义：提示框组件
+
+用途：在全局(`setOption({tooltip: xxx})`)、坐标系(`grid.tooltip`等)、系列(`series.tooltip`)、系列的每个数据项(`series.data.tooltip`)当中均可设置。
+
+tooltip对象的属性如下：
+
+```javascript
+// tooltip对象的属性如下：
+let tooltipAttrs = {
+  show: true,
+  // 触发类型：
+  // item: 数据项图形触发，在无类目轴的图表中使用，比如饼图、散点图
+  // axis：坐标轴触发，在有类目轴的图表中使用，比如柱状图、折线图
+  // none：不触发
+  trigger: 'item',
+  // 坐标轴指示器配置项：优先级低于轴上的该配置项
+  //    坐标轴指示器是指示坐标轴当前刻度的工具
+  axisPointer: {
+    // 指示器类型：
+    // line: 直线
+    // shadow：阴影
+    // cross：十字准星（启动两条相交的直线）
+    // none
+    type: 'cross',
+    // 指示器坐标轴，默认情况下坐标系会自动选择显示哪个轴上的axisPointer
+    // 值：auto、x、y、radius、angle
+    axis: 'auto',
+    // 坐标轴指示器是否自动吸附到点上，默认自动判断（在时间轴和数值轴比较有意义）
+    snap: true,
+    // 坐标轴指示器的文本标签，即当前指示器所处的轴对应的值
+    label: {
+      // 常用属性：
+      // show、formatter、precision（小数的精度）
+      // 文本颜色/字体/长宽/字体边框/字体阴影/省略/边框/阴影
+    },
+    // axisPointer.type = line有效，表示线的样式
+    lineStyle: {
+      // 常用值：类似边框属性（color、width、type）、线条末端绘制方式cap
+      // 阴影、透明度等
+    },
+    // axisPointer.type = shadow有效，表示阴影的样式
+    shadowStyle: {
+      // 常用值：color、阴影、透明度
+    },
+    // axisPointer.type = cross有效，表示相交的线的样式
+    crossStyle: {
+      // 常用值和type = line一致
+    },
+    // 动画属性
+    // 是否开启动画
+    animation: true,
+    // 开启动画的阈值，当系列series显示的图形数量大于该值，关闭动画
+    animationThreshold: 2000,
+    // 动画时长
+    animationDuration: 1000,
+    // 动画缓动效果
+    animationEasing: 'cubicOut'
+    // 动画延迟
+    animationDelay: 1000
+  },
+  // 是否显示提示框
+  showContent: true,
+  // 是否永远显示提示框
+  alwaysShowContent: false,
+  // 提示框触发的条件：
+  // mousemove、click、mousemove|click、none
+  // 若不在mousemove、click触发，可手动通过action.tooltip.showTip/hideTip、axisPointer.handle触发/隐藏
+  triggerOn: 'mousemove|click',
+  // 显示/隐藏提示框的延迟时间，默认无延迟，不建议设置
+  showDelay: 3000,
+  hideDelay: 3000,
+  // 鼠标是否可进入label浮层当中，默认false
+  // 当需要和浮层内详情数据交互，可设为true
+  enterable: true,
+  // 浮层渲染方式：html（默认）、richText(富文本)
+  renderMode: 'html',
+  // 是否将tooltip框限制在图表区域内
+  confine: false,
+  // 将tooltip的dom添加到某节点下，html时有效，默认为null
+  appendTo: string | HTMLElement | (chartContainer: HTMLElement) => HTMLElement | undefined | null,
+  // 指定tooltip的dom节点的类名
+  className: 'tooltip-jade',
+  // 提示框浮层的移动动画过渡时间(s)
+  transitionDuration: 0.4,
+  // 提示框浮层的位置：
+  // 值：数组、返回数组或对象（包括left、right、top、bottom）的函数
+  // 值：inside(图形中心)、top、left、right、bottom
+  // 相对于容器左上角[10, 20]、['50%', '50%']
+  position: [10, 20],
+  // 提示框浮层内容的格式器，支持字符串模板和回调函数
+  // 字符串模板：'{a}, {b}, {c}, {d}, {e}'，多个系列series可使用下标{a0}, {a1}
+  // 回调函数：(params: Object|Array, ticket: string, callback: (ticket: string, html: string)) => string | HTMLElement | HTMLElement[]
+  formatter: function (params, ticket, callback) {
+    $.get('detail?name=' + params.name, function (content) {
+        callback(ticket, toHTML(content));
+    });
+    return 'Loading';
+  },
+  // tooltip数值显示部分的格式化回调函数
+  valueFormatter: (value) => '$' + value.toFixed(2),
+  // 提示框浮层背景颜色
+  backgroundColor: 'red',
+  // 提示框浮层的边框颜色
+  borderColor: 'yellow',
+  borderWidth: 2,
+  // 提示框浮层内边距：5, [5, 10], [5, 10, 5, 10],
+  padding: 2,
+  // 提示框浮层的文本样式
+  textStyle: {
+    // 常用属性：颜色、字体、宽高、文本边框/阴影、省略
+  },
+  // 额外附加到浮层的css样式
+  extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);',
+  // 多序列提示框浮层排列顺序，默认为seriesAsc
+  // 值：seriesAsc系列升序、seriesDesc系列降序、valueAsc值升序、valueDesc值降序
+  order: 'seriesDesc',
+}
+```
+
+### axisPointer
+
+该属性是坐标轴指示器的全局公用设置，坐标轴指示器是指示坐标轴当前刻度的工具。
+
+直角坐标系grid、极坐标系polar、单轴坐标系single中的每个轴都有自己的axisPointer。他们的axisPointer默认不显示，可通过下列方式让其显示：
+
+- 设置轴上的`axisPointer.show = true`，则显示该轴的axisPointer
+- 设置`tooltip.trigger = axis`，或`tooltip.axisPointer.type = 'cross'`，则此时坐标轴会自动选择显示哪个轴上的axisPointer，也可以使用`tooltip.axisPointer.axis`改变这种选择。当轴上设置了axisPointer时，会覆盖该设置。
+
+axisPointer默认只显示指示线，如何显示axisPointer的label：
+
+- 设置轴上的`axisPointer.label.show = true`
+- 设置`tooltip.axisPointer.type = 'cross'`，此时会自动显示axisPointer的label
+
+触屏的axisPointer显示：设置轴上的`axisPointer.handle.show = true`，则会显示出此axisPointer的拖拽按钮。若发现此效果不好，可以设置`tooltip.triggerOn = 'none'`，这时只在手指按住按钮时显示tooltip，松开时隐藏tooltip，或者设置`tooltip.alwaysShowContent = true`，这时会一直显示tooltip
+
+联动不同类型的轴，比如axisA type为category，axisB type为time，可以在每个link group中写转换函数mapper进行值的转换：
+
+```javascript
+const link = [
+  {
+    xAxisIndex: [0, 1],
+    yAxisName: ['yy'],
+    mapper: function (sourceVal, sourceAxisInfo, targetAxisInfo) {
+      if (sourceAxisInfo.axisName === 'yy') {
+        // from timestamp to '2012-02-05'
+        return echarts.time.format('yyyy-MM-dd', sourceVal)
+      } else if (targetAxisInfo.axisName === 'yy') {
+        // from '2012-02-05' to date
+        return echarts.time.parse(dates[sourceVal])
+      } else {
+        return sourceVal
+      }
+    }
+  }
+]
+```
+
+axisPointer对象的属性如下：
+
+```javascript
+// 下列属性，若未说明，可在上述tooltip节中寻找对应说明
+const axisPointerAttrs = {
+  // 组件id，指定时可用在option、api中引用该组件
+  id: 'we-axis',
+  show: false,
+  // 指示器类型：line、shadow、none
+  type: 'line',
+  snap: true,
+  label: {},
+  lineStyle: {},
+  shadowStyle: {},
+  // 是否触发系列强调功能，v5.4.3+
+  triggerEmphasis: true,
+  // 是否触发tooltip
+  triggerTooltip: true,
+  // 触屏下的拖拽手柄配置
+  handle: {
+    show: true,
+    // 手柄图标
+    icon: '图标资源的路径',
+    // 手柄尺寸
+    size: 45,
+    // 手柄和轴的距离
+    margin: 50,
+    // 手柄颜色
+    color: 'red',
+    // 手柄拖拽触发视图的更新周期
+    throttle: 40,
+    // 图形阴影模糊、颜色、偏移量
+    shadowBlur: 3,
+    shadowColor: 'rgba(0, 0, 0, 0.5)',
+    shadowOffsetX: 2,
+    shadowOffsetY: 2
+  },
+  // 当使用拖拽手柄时，指定其初始位置所处的值
+  value: number,
+  // 当前状态：显示、隐藏
+  status: 'show' | 'hide',
+  triggerOn: 'mousemove|click',
+  // 不同轴的axisPoint可以进行联动，在此处设置
+  // 联动表示轴能同步一起活动，值是一个对象数组，每个对象（link group）能够一起进行联动
+  link: [
+    // 对象属性可以是：someAxisIndex、someAxisName、someAxisId
+    // 对象属性值可以是：单个值及其构成的数组、all
+    {
+      xAxisIndex: [0, 2, 4],
+      yAxisName: 'someName',
+    },
+    {
+      xAxisId: ['aa', 'cc'],
+      angleAxis: 'all'
+    }
+  ]
+}
+```

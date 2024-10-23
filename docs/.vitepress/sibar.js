@@ -67,6 +67,10 @@ export function sidebarUsageFrame() {
           link: "/usage-frame/vue/vue3-API",
         },
         {
+          text: "vue3更新",
+          link: "/usage-frame/vue/vue更新",
+        },
+        {
           text: "vue实战技巧",
           link: "/usage-frame/vue/vue实战技巧",
         },
